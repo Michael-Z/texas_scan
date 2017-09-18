@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ruilonglai.texas_scan">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <application
+        android:name=".application.MainAppliction"
+        android:allowBackup="true"
+        android:icon="@mipmap/icon_256"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/icon_128"
+        android:supportsRtl="true"
+        android:theme="@style/ImageTranslucentTheme">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.LaunchActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.ShowLogActivity" />
+        <activity android:name=".activity.LogListActivity" />
+        <activity android:name=".activity.PokerDetailActivity" />
+        <activity
+            android:name=".activity.FindpwdActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.JihuoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.RegActivity"
+            android:screenOrientation="portrait" />
+
+        <service android:name=".service.ScreenCapService" />
+
+        <receiver android:name=".download.ApkInstallReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="TD_APP_ID"
+            android:value="A2A17B8DEA844ECE911145791C78AD18" />
+        <meta-data
+            android:name="TD_CHANNEL_ID"
+            android:value=" E0493A651AFC116CD24E3B5955E297ED" /> <!-- value值为texas_scan加密生成的MD5 -->
+
+        <activity android:name=".activity.SettingActivity"></activity>
+    </application>
+
+</manifest>

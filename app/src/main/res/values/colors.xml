@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="red">#df2424</color>
+    <color name="green">#24df5f</color>
+    <color name="hui">#DBDBDB</color>
+    <color name="huiBai">#EDEDEE</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="main_bottom_tab_textcolor_normal">#999999</color>
+    <color name="main_bottom_tab_textcolor_selected">@color/normal_color</color>
+    <color name="win_4">#349800</color>
+    <color name="win_3">#67CD00</color>
+    <color name="win_2">#9ACD68</color>
+    <color name="win_1">#CCFF9A</color>
+    <color name="los_1">#FFCC33</color>
+    <color name="los_2">#FF9728</color>
+    <color name="los_3">#FB0100</color>
+    <color name="los_4">#A01413</color>
+    <color name="normal_color">#0093fe</color>
+    <color name="statusBarColor">#DFDFD5</color>
+    <color name="nocolor">#DFDFD5</color>
+</resources>

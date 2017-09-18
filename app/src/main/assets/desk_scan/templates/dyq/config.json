@@ -1,0 +1,598 @@
+{
+"seatcheckvalue":3000000,
+
+"seat9flag1x":175,
+"seat9flag1y":80,
+"seat9flag1width":79,
+"seat9flag1height":79,
+
+"seat6flag1x":29,
+"seat6flag1y":308,
+"seat6flag1width":94,
+"seat6flag1height":94,
+
+"seat2flag1x":29,
+"seat2flag1y":500,
+"seat2flag1width":94,
+"seat2flag1height":94,
+
+"Watchflag1x":540,
+"Watchflag1y":1216,
+"Watchflag1width":60,
+"Watchflag1height":60,
+"Watchflag1value":3000000,
+
+"logox":206,
+"logoy":582,
+"logowidth":305,
+"logoheight":128,
+"curdichix":343,
+"curdichiy":312,
+"curdichiwidth":91,
+"curdichiheight":24,
+"dichix":291,
+"dichiy":338,
+"dichiwidth":140,
+"dichiheight":27,
+"mycardwidth":62,
+"mycardheight":89,
+"mycardposes":[
+  [338,1094],
+  [408,1094]
+  ],
+"lefttopflagwidth":50,
+"lefttopflagheight":50,
+"lefttopx":22,
+"lefttopy":46,
+"righttopflagwidth":50,
+"righttopflagheight":50,
+"righttopx":646,
+"righttopy":46,
+"leftbottomflagwidth":50,
+"leftbottomflagheight":50,
+"leftbottomx":42,
+"leftbottomy":1199,
+"rightbottomflagwidth":50,
+"rightbottomflagheight":50,
+"rightbottomx":641,
+"rightbottomy":1200,
+"deskinfox":245,
+"deskinfoy":807,
+"deskinfowidth":234,
+"deskinfoheight":28,
+"deskinfoFalsex":187,
+"deskinfoFalsey":1088,
+"deskinfofalsewidth":50,
+"deskinfofalseheight":25,
+"isdeskinfonagtive":1,
+"betflagwidth":30,
+"betflagheight":30,
+"seat9":{
+  "namewidth":130,
+  "nameheight":26,
+  "nameposes":[
+    [219,1068],
+    [11,733],
+    [11,474],
+    [11,226],
+    [183,64],
+    [408,64],
+    [579,226],
+    [579,474],
+    [579,733],
+    [295,921]
+    ],
+  "boardcardwidth":73,
+  "boardcardheight":106,
+  "boardcards":[
+	[149,599],
+	[232,599],
+	[315,599],
+	[405,599],
+	[493,599]
+	],
+  "namecheckerwidth":30,
+  "namecheckerheight":25,
+  "namecheckerposes":[
+    [133,765],
+    [133,506],
+    [133,259],
+    [160,98],
+    [528,98],
+    [560,259],
+    [560,506],
+    [560,765],
+    [418,955]
+    ],
+  "moneywidth":89,
+  "moneyheight":22,
+  "moneyposes":[
+    [227,1194],
+    [31,860],
+    [31,601],
+    [31,353],
+    [202,191],
+    [428,191],
+    [599,353],
+    [599,601],
+    [599,860],
+    [315,1049]
+    ],
+  "betwidth":70,
+  "betheight":24,
+  "betposes":[
+    [334,1025],
+    [202,752],
+    [202,521],
+    [202,350],
+    [190,242],
+    [456,242],
+    [443,350],
+    [443,521],
+    [443,752],
+    [344,848]
+    ],
+  "betconfuse":[
+    [4,200,239,230,242],
+    [5,486,239,416,242]
+  ],
+  "buttonwidth":34,
+  "buttonheight":34,
+  "buttonposes":[
+    [258,1034],
+    [129,797],
+    [129,538],
+    [129,291],
+    [298,186],
+    [388,186],
+    [557,291],
+    [557,538],
+    [557,797],
+    [343,882]
+  ],
+  "seatwidth":100,
+  "seatheight":100,
+  "seatposes":[
+    [100,100],
+    [26,755],
+    [26,496],
+    [26,249],
+    [197,87],
+    [422,87],
+    [594,249],
+    [594,496],
+    [594,755],
+    [310,946]
+    ],
+  "othercardwidth":51,
+  "othercardheight":75,
+  "othercardposes":[
+    [216,1102,273,1102],
+    [22,768,78,768],
+    [22,509,78,509],
+    [22,261,78,261],
+    [194,99,250,99],
+    [419,99,475,99],
+    [590,261,646,261],
+    [590,509,646,509],
+    [590,768,646,768],
+    [306,957,362,957]
+    ],
+  "othercardflagwidth":31,
+  "othercardflagheight":31,
+  "othercardflagposes":[
+    [0,0],
+    [21,812],
+    [21,553],
+    [21,305],
+    [192,143],
+    [498,143],
+    [669,305],
+    [669,553],
+    [669,812],
+    [385,995]
+    ]
+  },
+"seat8":{
+  "namewidth":130,
+  "nameheight":26,
+  "nameposes":[
+    [219,1068],
+    [11,733],
+    [11,474],
+    [11,226],
+    [293,64],
+    [579,226],
+    [579,474],
+    [579,733],
+    [295,922]
+    ],
+  "boardcardwidth":73,
+  "boardcardheight":106,
+  "boardcards":[
+	[149,599],
+	[232,599],
+	[315,599],
+	[405,599],
+	[493,599]
+	],
+ 
+  "namecheckerwidth":30,
+  "namecheckerheight":25,
+  "namecheckerposes":[
+    [133,765],
+    [133,506],
+    [133,259],
+    [273,98],
+    [560,259],
+    [560,506],
+    [560,765],
+    [418,955]
+    ],
+  "moneywidth":89,
+  "moneyheight":22,
+  "moneyposes":[
+    [227,1194],
+    [31,860],
+    [31,601],
+    [31,353],
+    [315,191],
+    [599,353],
+    [599,601],
+    [599,860],
+    [315,1049]
+    ],
+  "betwidth":70,
+  "betheight":24,
+  "betposes":[
+    [334,1025],
+    [202,752],
+    [202,521],
+    [202,350],
+    [303,242],
+    [443,350],
+    [443,521],
+    [443,752],
+    [344,848]
+    ],
+  "betconfuse":[
+    [4,312,239,343,242]
+  ],
+  "buttonwidth":34,
+  "buttonheight":34,
+  "buttonposes":[
+    [258,1034],
+    [129,797],
+    [129,538],
+    [129,291],
+    [416,186],
+    [557,291],
+    [557,538],
+    [557,797],
+    [343,882]
+  ],
+  "seatwidth":100,
+  "seatheight":100,
+  "seatposes":[
+    [100,100],
+    [26,755],
+    [26,496],
+    [26,249],
+    [310,87],
+    [594,249],
+    [594,496],
+    [594,755],
+    [310,946]
+    ],
+  "othercardwidth":51,
+  "othercardheight":75,
+  "othercardposes":[
+    [216,1102,273,1102],
+    [22,768,78,768],
+    [22,509,78,509],
+    [22,261,78,261],
+    [306,99,362,99],
+    [590,261,646,261],
+    [590,509,646,509],
+    [590,768,646,768],
+    [306,957,362,957]
+    ],
+  "othercardflagwidth":31,
+  "othercardflagheight":31,
+  "othercardflagposes":[
+    [0,0],
+    [21,812],
+    [21,553],
+    [21,305],
+    [385,143],
+    [669,305],
+    [669,553],
+    [669,812],
+    [385,995]
+    ]
+  },
+
+"seat7":{
+  "namewidth":130,
+  "nameheight":26,
+  "nameposes":[
+    [204,1069],
+    [11,677],
+    [11,283],
+    [183,64],
+    [409,64],
+    [579,283],
+    [579,677],
+    [295,922]
+    ],
+  "boardcardwidth":73,
+  "boardcardheight":106,
+  "boardcards":[
+    [149,570],
+    [232,570],
+    [315,570],
+    [405,570],
+    [493,570]
+    ],
+ 
+  "namecheckerwidth":30,
+  "namecheckerheight":25,
+  "namecheckerposes":[
+    [133,710],
+    [133,315],
+    [160,98],
+    [528,98],
+    [560,315],
+    [560,710],
+    [418,955]
+    ],
+  "moneywidth":89,
+  "moneyheight":22,
+  "moneyposes":[
+    [227,1194],
+    [31,804],
+    [31,410],
+    [202,191],
+    [428,191],
+    [599,410],
+    [599,804],
+    [315,1049]
+    ],
+  "betwidth":70,
+  "betheight":24,
+  "betposes":[
+    [334,1019],
+    [202,730],
+    [202,341],
+    [190,242],
+    [456,242],
+    [443,341],
+    [443,730],
+    [344,848]
+    ],
+  "betconfuse":[
+    [4,200,239,230,242],
+    [5,486,239,416,242]
+  ],
+  "buttonwidth":34,
+  "buttonheight":34,
+  "buttonposes":[
+    [258,1034],
+    [129,741],
+    [129,347],
+    [298,186],
+    [388,186],
+    [557,347],
+    [557,741],
+    [343,882]
+    ],
+  "seatwidth":100,
+  "seatheight":100,
+  "seatposes":[
+    [100,100],
+    [26,700],
+    [26,306],
+    [197,87],
+    [422,87],
+    [592,306],
+    [592,700],
+    [310,970]
+    ],
+  "othercardwidth":51,
+  "othercardheight":75,
+  "othercardposes":[
+    [216,1097,273,1097],
+    [22,712,79,712],
+    [22,318,79,318],
+    [194,99,250,99],
+    [419,99,475,99],
+    [590,318,646,318],
+    [590,712,646,712],
+    [306,957,362,957]
+    ],
+  "othercardflagwidth":31,
+  "othercardflagheight":31,
+  "othercardflagposes":[
+    [0,0],
+    [21,755],
+    [21,361],
+    [192,143],
+    [498,143],
+    [669,361],
+    [669,755],
+    [385,995]
+    ]
+  },
+
+"seat6":{
+  "namewidth":130,
+  "nameheight":26,
+  "nameposes":[
+    [204,1069],
+    [11,677],
+    [11,283],
+    [293,64],
+    [579,283],
+    [579,677],
+    [295,922]
+    ],
+  "boardcardwidth":73,
+  "boardcardheight":106,
+  "boardcards":[
+    [149,570],
+    [232,570],
+    [315,570],
+    [405,570],
+    [493,570]
+    ],
+ 
+  "namecheckerwidth":30,
+  "namecheckerheight":25,
+  "namecheckerposes":[
+    [133,710],
+    [133,315],
+    [273,98],
+    [560,315],
+    [560,710],
+    [418,955]
+    ],
+  "moneywidth":89,
+  "moneyheight":22,
+  "moneyposes":[
+    [227,1194],
+    [31,804],
+    [31,410],
+    [315,191],
+    [599,410],
+    [599,804],
+    [315,1049]
+    ],
+  "betwidth":70,
+  "betheight":24,
+  "betposes":[
+    [334,1019],
+    [202,730],
+    [202,341],
+    [303,241],
+    [443,341],
+    [443,730],
+    [344,848]
+    ],
+  "betconfuse":[
+    [4,312,239,343,242]
+  ],
+  "buttonwidth":34,
+  "buttonheight":34,
+  "buttonposes":[
+    [258,1034],
+    [129,741],
+    [129,347],
+    [416,186],
+    [557,347],
+    [557,741],
+    [343,882]
+    ],
+  "seatwidth":100,
+  "seatheight":100,
+  "seatposes":[
+    [100,100],
+    [26,700],
+    [26,306],
+    [310,87],
+    [592,306],
+    [592,700],
+    [310,970]
+    ],
+  "othercardwidth":51,
+  "othercardheight":75,
+  "othercardposes":[
+    [216,1097,273,1097],
+    [22,712,79,712],
+    [22,318,79,318],
+    [306,94,362,94],
+    [590,318,646,318],
+    [590,712,646,712],
+    [306,957,362,957]
+    ],
+  "othercardflagwidth":31,
+  "othercardflagheight":31,
+  "othercardflagposes":[
+    [0,0],
+    [21,755],
+    [21,361],
+    [385,143],
+    [669,361],
+    [669,755],
+    [385,995]
+    ]
+  },
+"seat2":{
+  "namewidth":130,
+  "nameheight":26,
+  "nameposes":[
+    [204,1069],
+    [293,64],
+    [293,929]
+    ],
+  "boardcardwidth":73,
+  "boardcardheight":106,
+  "boardcards":[
+    [149,570],
+    [232,570],
+    [315,570],
+    [405,570],
+    [493,570]
+    ],
+  "namecheckerwidth":30,
+  "namecheckerheight":25,
+  "namecheckerposes":[
+    [273,98],
+    [418,955]
+    ],
+  "moneywidth":89,
+  "moneyheight":22,
+  "moneyposes":[
+    [227,1194],
+    [315,191],
+    [315,1049]
+    ],
+  "betwidth":70,
+  "betheight":24,
+  "betposes":[
+    [334,1024],
+    [303,241],
+    [344,848]
+    ],
+  "betconfuse":[
+    [4,312,239,343,242]
+  ],
+  "buttonwidth":34,
+  "buttonheight":34,
+  "buttonposes":[
+    [256,1034],
+    [416,186],
+    [343,882]
+    ],
+  "seatwidth":100,
+  "seatheight":100,
+  "seatposes":[
+    [100,100],
+    [310,88],
+    [310,946]
+    ],
+  "othercardwidth":51,
+  "othercardheight":75,
+  "othercardposes":[
+   [216,1102,273,1102],
+   [306,99,362,99],
+   [306,957,362,957]
+    ],
+  "othercardflagwidth":31,
+  "othercardflagheight":31,
+  "othercardflagposes":[
+    [0,0],
+    [385,143],
+    [385,995]
+    ]
+  }
+}

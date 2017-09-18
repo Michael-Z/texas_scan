@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CirclePercentView">
+        <attr name="radius" format="dimension" />
+        <attr name="stripeWidth" format="dimension" /><!--色带宽度-->
+        <attr name="percent" format="integer" /><!--百分比 最大值为100-->
+        <attr name="smallColor" format="color" /><!--色带宽度-->
+        <!--外圈颜色-->
+        <attr name="bigColor" format="color" />
+
+        <!--中间字体颜色-->
+        <attr name="centerTextSize" format="dimension" />
+        <!--色带宽度-->
+    </declare-styleable>
+
+    <!-- Declare custom theme attributes that allow changing which styles are
+         used for button bars depending on the API level.
+         ?android:attr/buttonBarStyle is new as of API 11 so this is
+         necessary to support previous API levels. -->
+    <declare-styleable name="ButtonBarContainerTheme">
+        <attr name="metaButtonBarStyle" format="reference" />
+        <attr name="metaButtonBarButtonStyle" format="reference" />
+    </declare-styleable>
+</resources>

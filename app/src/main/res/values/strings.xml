@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">德扑数据大师</string>
+    <string name="question">\?</string>
+    <string name="title_activity_launch">texas_scan</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <array name="tab_main_title">
+        <item>对手</item>
+        <item>计划</item>
+        <item>我的</item>
+    </array>
+</resources>
