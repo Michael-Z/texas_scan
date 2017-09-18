@@ -154,6 +154,9 @@ public class LaunchActivity extends AppCompatActivity {
                         if(newVersionCode>versionCode){
                             msg.obj = versionName;
                             msg.arg1 = 2;
+                            SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+                            editor.putBoolean("isSave", false);
+                            editor.apply();
                             handler.sendMessage(msg);
                         }else{
                             msg.arg1 = 1;

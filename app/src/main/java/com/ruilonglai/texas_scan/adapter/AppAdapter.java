@@ -52,7 +52,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppHolder> {
         }else if("德友圈".equals(list[position])){
             holder.appName.setTextColor(context.getResources().getColor(R.color.red));
             holder.appIcon.setBackground(context.getResources().getDrawable(R.drawable.icon_dyq));
-        }else if("扑克部落".equals(list[position])){
+        }else if("扑克部落MTT".equals(list[position])){
             holder.appIcon.setBackground(context.getResources().getDrawable(R.drawable.icon_dpbl));
         }
         if(mOnItemClickListener!=null){
