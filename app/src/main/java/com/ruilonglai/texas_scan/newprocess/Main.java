@@ -18,14 +18,7 @@ import java.net.Socket;
  */
 
 public class Main {
-    static String host = "localhost";
-    static int port = 12345;
     public static boolean begin = true;
-    static Looper looper;
-    static Socket socket = null;
-    static int bLen = 0;
-    static int curCard1 = -1;
-    static int curCard2 = -1;
     static {
         System.load("/data/data/com.ruilonglai.texas_scan/lib/libleptonica.so");
         System.load("/data/data/com.ruilonglai.texas_scan/lib/liblibtesseract.so");
@@ -69,7 +62,7 @@ public class Main {
             ScanTool.ScanSeatCount(bitmap);
             if(bitmap!=null){
                 long beginTime2 = System.currentTimeMillis();
-                instance.analysisBitmap(bitmap, Constant.FLAG_SELF);
+                instance.analysisBitmap(bitmap, 0);
                 long time = System.currentTimeMillis() - beginTime;
                 Log.e("Main","解析时间 "+ time + "ms");
                 Log.e("Main","----------------------------------------------");
