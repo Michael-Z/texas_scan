@@ -29,7 +29,7 @@ import okhttp3.Response;
 import static com.ruilonglai.texas_scan.util.HttpUtil.networkConnected;
 
 public class RegActivity extends AppCompatActivity {
-    private EditText username, password, et_security, et_number;
+    private EditText password, et_security, et_number;
     private Button btreg, btsecurity,bteye;
     public static final String mob_APPKEY = "154edf2c734e2";
     public static final String mob_APPSECRET = "9dbe04e99b9c24f73f4a2c631031f852";
@@ -42,7 +42,6 @@ public class RegActivity extends AppCompatActivity {
         Register();
     }
     public void inti() {
-        username = (EditText) findViewById(R.id.etname);
         password = (EditText) findViewById(R.id.etpwd);
         btreg = (Button) findViewById(R.id.btreg);
         et_number = (EditText) findViewById(R.id.phone);
@@ -54,19 +53,14 @@ public class RegActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     number = et_number.getText().toString().trim();
-                    name = username.getText().toString().trim();
                     pwd = password.getText().toString().trim();
-                    if (name.isEmpty()) {
-                        Toast.makeText(RegActivity.this, "用户名不能为空", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
                     if (pwd.isEmpty()) {
                         Toast.makeText(RegActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     PokerUser pu = new PokerUser();
                     pu.id = number;
-                    pu.nick = name;
+                    pu.nick = "";
                     pu.passwd = pwd;
                     pu.license = 10;
                     Gson gson = new Gson();
@@ -92,7 +86,7 @@ public class RegActivity extends AppCompatActivity {
                             if (resp.equals("true")) {
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), jsonBean.msg, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), jsonBean.message, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                                 Intent intent = new Intent();
@@ -101,7 +95,7 @@ public class RegActivity extends AppCompatActivity {
                             } else {
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), jsonBean.msg, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), jsonBean.message, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }

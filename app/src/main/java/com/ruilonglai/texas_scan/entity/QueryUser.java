@@ -6,13 +6,13 @@ package com.ruilonglai.texas_scan.entity;
 
 public class QueryUser {
 
-    private String userName;
+    private String username;
 
     public String getUserName() {
-        return userName;
+        return username;
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.username = userName;
     }
 }

@@ -499,6 +499,8 @@ public class PokerAnalysisTool {
                     }else{
                         seatIdx = playSeats.valueAt(i%playSeats.size());
                     }
+                    if(seatIdx==-1)
+                        continue;
                     GameUser user = gamers.get(seatIdx);
                     if(user!=null && TextUtils.isEmpty(user.getSeatFlag()))
                     {

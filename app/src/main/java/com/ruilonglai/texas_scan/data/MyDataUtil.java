@@ -14,7 +14,8 @@ import java.util.List;
  */
 
 public class MyDataUtil {
-    
+
+
     public static List<MyData> getAllMyData(){
 
         return  DataSupport.findAll(MyData.class);
@@ -29,6 +30,7 @@ public class MyDataUtil {
         }
         return list;
     }
+
     public static List<MyData> getOneDayMyData(Date date){
 
         return DataSupport.where("date=?", TimeUtil.getCurrentDateToDay(date)).find(MyData.class);

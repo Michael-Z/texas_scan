@@ -1,11 +1,13 @@
 package com.ruilonglai.texas_scan.activity;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -13,15 +15,19 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
+import com.google.gson.Gson;
 import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.adapter.CardAdapter;
 import com.ruilonglai.texas_scan.data.MyDataUtil;
 import com.ruilonglai.texas_scan.entity.MyData;
+import com.ruilonglai.texas_scan.entity.QueryPokerData;
+import com.ruilonglai.texas_scan.util.HttpUtil;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 
 import org.angmarch.views.NiceSpinner;
 import org.litepal.crud.DataSupport;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -32,6 +38,9 @@ import java.util.List;
 import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class PokerDetailActivity extends AppCompatActivity implements View.OnClickListener,DatePickerDialog.OnDateSetListener,AdapterView.OnItemClickListener{
     @BindColor(R.color.nocolor)
@@ -256,7 +265,7 @@ public class PokerDetailActivity extends AppCompatActivity implements View.OnCli
         showOneDayData((int)dayCount);
         dayC = (int)dayCount;
     }
-    List<String> dates = new ArrayList<String>();//查询的日期范围
+    int[] times = new int[]{0,0,3,7,15,30,90};
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
          switch (position){
@@ -294,5 +303,26 @@ public class PokerDetailActivity extends AppCompatActivity implements View.OnCli
                  changeNewData();
                  break;
          }
+        QueryPokerData data = new QueryPokerData();
+        data.userid = getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name","");
+        if(TextUtils.isEmpty(data.userid))
+            return;
+        data.startdate = TimeUtil.getCurrentDateToDay(new Date(System.currentTimeMillis()-times[position]* 24 * 3600 * 1000));
+        data.enddate = TimeUtil.getCurrentDateToDay(new Date());
+        String json = new Gson().toJson(data);
+        HttpUtil.sendPostRequestData("querypokerdata", json, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("PokerDetialActivity","获取手牌记录失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.e("PokerDetialActivity",response.toString());
+                Log.e("PokerDetialActivity",response.body().string());
+            }
+        });
+
     }
+
 }

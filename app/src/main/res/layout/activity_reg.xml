@@ -39,16 +39,17 @@
         android:orientation="vertical">
 
         <EditText
+            android:id="@+id/phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="30dp"
-            android:drawableLeft="@drawable/username"
+            android:layout_marginTop="20dp"
+            android:drawableLeft="@drawable/phone"
             android:drawablePadding="10dp"
-            android:id="@+id/etname"
-            android:maxLength="12"
-            android:hint="用户名" />
+            android:hint="请输入手机"
+            android:maxLength="11" />
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,17 +61,6 @@
             android:id="@+id/etpwd"
             android:maxLength="10"
             android:hint="请输入密码" />
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:id="@+id/phone"
-            android:maxLength="11"
-            android:drawableLeft="@drawable/phone"
-            android:drawablePadding="10dp"
-            android:hint="请输入手机" />
         <!--<LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

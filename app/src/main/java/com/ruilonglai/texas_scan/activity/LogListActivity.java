@@ -45,7 +45,7 @@ public class LogListActivity extends AppCompatActivity {
         adapter.setOnItemListener(new HandLogAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                Intent intent = new Intent(LogListActivity.this,ShowLogActivity.class);
+                Intent intent = new Intent(LogListActivity.this,SerialActivity.class);
                 intent.putExtra("log",oneHandLogs.get(position).getLog());
                 startActivity(intent);
             }

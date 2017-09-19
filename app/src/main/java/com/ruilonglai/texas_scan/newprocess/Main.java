@@ -52,7 +52,7 @@ public class Main {
                     }
                 });
                 Package pkg = new Package();
-                pkg.setType(Constant.SOCKET_GET_TEMPLATE);
+                pkg.setType(Constant.SOCKET_GET_TEMPLATE);//获取平台
                 Connect.send(pkg);
                 isConnect = true;
             }
@@ -67,8 +67,8 @@ public class Main {
                 Log.e("Main","解析时间 "+ time + "ms");
                 Log.e("Main","----------------------------------------------");
                 try {
-                    if(1000-time>0)
-                        Thread.sleep(1000-time);
+                    if(500-time>0)
+                        Thread.sleep(500-time);
                 }catch (Exception e){
                     Log.e("Main","线程出错"+e.toString());
                 }

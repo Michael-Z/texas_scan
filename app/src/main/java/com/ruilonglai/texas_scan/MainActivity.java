@@ -23,19 +23,25 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.ruilonglai.texas_scan.activity.LoginActivity;
+import com.ruilonglai.texas_scan.activity.SerialActivity;
 import com.ruilonglai.texas_scan.activity.SettingActivity;
 import com.ruilonglai.texas_scan.adapter.TabFragmentAdapter;
+import com.ruilonglai.texas_scan.entity.JsonBean;
 import com.ruilonglai.texas_scan.entity.MyData;
 import com.ruilonglai.texas_scan.entity.OneHand;
 import com.ruilonglai.texas_scan.entity.OneHandLog;
 import com.ruilonglai.texas_scan.entity.PlayerData;
 import com.ruilonglai.texas_scan.entity.PokerUser;
+import com.ruilonglai.texas_scan.entity.QuerySerial;
+import com.ruilonglai.texas_scan.entity.SerialInfo;
 import com.ruilonglai.texas_scan.fragment.MineFragment;
 import com.ruilonglai.texas_scan.fragment.PlayerFragment;
 import com.ruilonglai.texas_scan.fragment.TargetFragment;
+import com.ruilonglai.texas_scan.newprocess.Main;
 import com.ruilonglai.texas_scan.util.ActionsTool;
 import com.ruilonglai.texas_scan.newprocess.JsonTool;
 import com.ruilonglai.texas_scan.newprocess.MainProcessUtil;
@@ -277,8 +283,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initViews() {
-        IWXAPI api = null;
-        api.registerApp("");
         percentList = new ArrayList<>();
         names = new SparseArray<>();
         TabFragmentAdapter mAdapter = new TabFragmentAdapter(getSupportFragmentManager(), fragments);
@@ -319,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         listView=(ListView) findViewById(R.id.listview);
-        str = new String[] { "清除玩家信息", "清除个人数据", "全部清除","卸载前保存本地数据","数据显示设置","退出登录"};
+        str = new String[] { "清除玩家信息", "清除个人数据", "全部清除","卸载前保存本地数据","数据显示设置","序列号信息","退出登录"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, str);
         listView.setAdapter(adapter);
@@ -412,6 +416,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intent,0);
                 break;
             case 5:
+                QuerySerial serial = new QuerySerial();
+                serial.setUserid(phone);
+                String json = new Gson().toJson(serial);
+                HttpUtil.sendPostRequestData("queryserial",json,new okhttp3.Callback(){
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String string = response.body().string();
+                        JsonBean jsonBean = GsonUtil.parseJsonWithGson(string, JsonBean.class);
+                        Log.e(TAG,string);
+                        if(jsonBean.code=="200"){
+                            string = "已登录终端数:"+jsonBean.logined+"#"+
+                                    "剩余可登陆终端数:"+jsonBean.remained+"#";
+                            if(jsonBean.serialInfos!=null){
+                                int size = jsonBean.serialInfos.size();
+                                for (int i = 0; i < size; i++) {
+                                    SerialInfo serialInfo = jsonBean.serialInfos.get(i);
+                                    string+= "serialno:"+serialInfo.serialno+"    "+"remaindays:"+serialInfo.remaindays+"#";
+                                }
+                            }
+                            Intent intent = new Intent(MainActivity.this, SerialActivity.class);
+                            intent.putExtra("log",string);
+                            startActivity(intent);
+                        }else{
+                            Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                break;
+            case 6:
                 PokerUser pu = new PokerUser();
                 pu.id = phone;
                 pu.nick = "";

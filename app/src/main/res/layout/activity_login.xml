@@ -48,7 +48,6 @@
             android:maxLength="11"
             android:hint="手机号:"
             android:inputType="textPersonName"
-            android:textColor="#ffffff"
             android:textColorHint="#918d8d"
           />
     </RelativeLayout>

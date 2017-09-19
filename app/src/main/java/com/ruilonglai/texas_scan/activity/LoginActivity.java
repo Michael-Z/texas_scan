@@ -196,7 +196,7 @@ public class LoginActivity extends AppCompatActivity {
                                 } else {
                                     runOnUiThread(new Runnable() {
                                         public void run() {
-                                            Toast.makeText(getApplicationContext(), jsonBean.msg, Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), jsonBean.message, Toast.LENGTH_SHORT).show();
                                         }
                                     });
                                 }
