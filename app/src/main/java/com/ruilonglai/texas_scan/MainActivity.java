@@ -49,6 +49,7 @@ import com.ruilonglai.texas_scan.util.HttpUtil;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 import com.ruilonglai.texas_scan.util.WindowTool;
 import com.ruilonglai.texas_scan.view.TabContainerView;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
@@ -276,6 +277,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initViews() {
+        IWXAPI api = null;
+        api.registerApp("");
         percentList = new ArrayList<>();
         names = new SparseArray<>();
         TabFragmentAdapter mAdapter = new TabFragmentAdapter(getSupportFragmentManager(), fragments);

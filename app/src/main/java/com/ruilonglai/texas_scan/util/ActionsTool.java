@@ -134,7 +134,7 @@ public class ActionsTool {
             }
             int addMoney = action.getAddMoney();
             int lastMoney = lastActionMoney.get(seatIdx);
-//            if(action.getAction()== -1){
+//            if(action.getAction()== -1){//action只有两种，一种弃牌==3，另外全部都是-1
                 curPlayerIfFaceFold(users,user,actions,i,button);
                 if(lastRoundIdx != action.getRound()){//换圈初始化每个位置的钱
                     for (int j = 0; j < lastActionMoney.size(); j++) {
@@ -171,6 +171,9 @@ public class ActionsTool {
                             if(pfrRaiseCount>=2){
                                 user.setFace3Bet(true);
                             }
+                            if(user.isStlPosition() && haveStealBlinds(users)==null){
+                                 user.setSTL(true);
+                            }
                             action.setAction(Constant.ACTION_RAISE);
                             lastRaiseSeatIdx = seatIdx;
                             changeMoney = addMoney+lastMoney;
@@ -185,6 +188,9 @@ public class ActionsTool {
                                 }
                                 if(pfrRaiseCount>=2){
                                     user.setFace3Bet(true);
+                                }
+                                if(user.isFaceSTL()){//fold偷盲
+                                    user.setFoldSTL(true);
                                 }
                             }
                         }
