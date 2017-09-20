@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int fragIdx = 2;
 
-    private int winIndex = 2;
+    private int winIndex = 1;
 
     private int playCount;
 
@@ -151,8 +151,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     percent = (String) msg.obj;
                     wt.init(MainActivity.this,winIndex,phone);
                     if(!haveCreateWindow){
+                        if(isWatch==0)
                         haveCreateWindow = wt.createWindow(percent);
                     }else{
+                        if(isWatch==0)
                         wt.updateWindow(percent);
                     }
                     break;
@@ -162,8 +164,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 case Constant.SOCKET_OPEN_WINDOW:
                     if(!haveCreateWindow){
-                        if(!TextUtils.isEmpty(percent) && "0.0%".equals(percent)){
+                        if(!TextUtils.isEmpty(percent) && !"0.0%".equals(percent)){
                             wt.init(MainActivity.this,winIndex,phone);
+                            if(isWatch==0)
                             haveCreateWindow = wt.createWindow(percent);
                         }
                     }
@@ -171,7 +174,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 case Constant.SOCKET_GET_TEMPLATE:
                     setTemplate(winIndex+8);
-                    Log.e(TAG,"设置德扑圈");
                     break;
                 case Constant.SOCKET_KNOW_NAME:
                     String json = (String) msg.obj;
@@ -341,6 +343,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case Constant.SOCKET_PLATFORM_POKERFISHS:
             case Constant.SOCKET_PLATFORM_TEXASPOKER:
             case Constant.SOCKET_PLATFORM_NUTSPOKER:
+            case Constant.SOCKET_PLATFORM_NUTSPOKER_SNG:
                 Package pkg = new Package();
                 pkg.setType(type);
                 if(mainServer!=null)
@@ -430,14 +433,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         String string = response.body().string();
                         JsonBean jsonBean = GsonUtil.parseJsonWithGson(string, JsonBean.class);
                         Log.e(TAG,string);
-                        if(jsonBean.code=="200"){
+                        if(jsonBean.result=="true"){
                             string = "已登录终端数:"+jsonBean.logined+"#"+
                                     "剩余可登陆终端数:"+jsonBean.remained+"#";
                             if(jsonBean.serialInfos!=null){
                                 int size = jsonBean.serialInfos.size();
                                 for (int i = 0; i < size; i++) {
                                     SerialInfo serialInfo = jsonBean.serialInfos.get(i);
-                                    string+= "serialno:"+serialInfo.serialno+"    "+"remaindays:"+serialInfo.remaindays+"#";
+                                    string+= "serialno:"+serialInfo.getSerialno()+"    "+"remaindays:"+serialInfo.getRemaindays()+"#";
                                 }
                             }
                             Intent intent = new Intent(MainActivity.this, SerialActivity.class);

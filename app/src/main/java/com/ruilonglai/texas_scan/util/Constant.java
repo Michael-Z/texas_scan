@@ -6,7 +6,7 @@ package com.ruilonglai.texas_scan.util;
 
 public final class Constant {
 
-    public final static String[] PLATFORM = new String[]{"dpq","pkbl-mtt","dyq"};
+    public final static String[] PLATFORM = new String[]{"dpq","dyq","pkbl-mtt","pkbl-sng"};
     //一手数据中的输赢平
     public final static int FLAG_SELF = 0;
     public final static int FLAG_WATCH = 1;
@@ -36,12 +36,13 @@ public final class Constant {
     public final static int SOCKET_CLOSE_WINDOW = 7;
 
     public final static int SOCKET_PLATFORM_TEXASPOKER = 8;//德扑圈
-    public final static int SOCKET_PLATFORM_NUTSPOKER = 9;//扑克部落
-    public final static int SOCKET_PLATFORM_POKERFISHS = 10;//德友圈
-    public final static int SOCKET_GET_TEMPLATE = 11;//获取重新初始化模板
+    public final static int SOCKET_PLATFORM_POKERFISHS = 9;//德友圈
+    public final static int SOCKET_PLATFORM_NUTSPOKER = 10;//扑克部落
+    public final static int SOCKET_PLATFORM_NUTSPOKER_SNG = 11;//扑克部落SNG
     public final static int SOCKET_KNOW_NAME = 12;//识别出名字
     public final static int SOCKET_SEATCOUNT = 13;//seatCount;
     public final static int SOCKET_IS_WATCH = 14;//是否是旁观者模式
+    public final static int SOCKET_GET_TEMPLATE = 15;//获取重新初始化模板
 
     public final static int TYPE_PERSON = 0;
     public final static int TYPE_OBSERVER = 1;
@@ -115,6 +116,65 @@ public final class Constant {
                             {50, 210, 80, 40},
                             {200, 730, 350, -2},
                             {100, 130, 100, 50},
+                            {32, 350, 100, 50},
+                            {32, 600, 100, 50},
+                            {32, 845, 100, 50},
+                            {100, 1120, 100, 50},
+                            {560, 1120, 100, 50},
+                            {600, 845, 100, 50},
+                            {600, 600, 100, 50},
+                            {600, 350, 100, 50},
+                            {100, 130, 100, 50}
+                    },
+                    {
+                            {50, 210, 80, 40},
+                            {200, 730, 350, -2},
+                            {100, 130, 100, 50},
+                            {32, 350, 100, 50},
+                            {32, 600, 100, 50},
+                            {32, 845, 100, 50},
+                            {420, 1150, 100, 50},
+                            {600, 845, 100, 50},
+                            {600, 600, 100, 50},
+                            {600, 350, 100, 50},
+                            {100, 130, 100, 50}
+                    },
+                    {
+                            {50, 210, 80, 40},
+                            {200, 730, 350, -2},
+                            {100, 130, 100, 50},
+                            {30,  400, 100, 50},
+                            {30,  790, 100, 50},
+                            {100, 1120, 100, 50},
+                            {560, 1120, 100, 50},
+                            {600, 790, 100, 50},
+                            {600, 400, 100, 50},
+                            {100, 130, 100, 50},
+                    },
+                    {
+                            {50, 210, 80, 40},
+                            {200, 730, 350, -2},
+                            {100, 130, 100, 50},
+                            {30,  400, 100, 50},
+                            {30,  790, 100, 50},
+                            {420, 1150, 100, 50},
+                            {600, 790, 100, 50},
+                            {600, 400, 100, 50},
+                            {100, 130, 100, 50},
+                    },
+                    {
+                            {50, 210, 80, 40},
+                            {200, 730, 350, -2},
+                            {100, 130, 100, 50},
+                            {420, 1150, 100, 50},
+                            {100, 130, 100, 50}
+                    },
+            },
+            {
+                    {
+                            {50, 210, 80, 40},
+                            {200, 730, 350, -2},
+                            {100, 130, 100, 50},
                             {20, 350, 100, 50},
                             {20, 580, 100, 50},
                             {20, 810, 100, 50},
@@ -155,13 +215,13 @@ public final class Constant {
                             {50, 210, 80, 40},
                             {200, 730, 350, -2},
                             {100, 130, 100, 50},
-                            {32, 350, 100, 50},
-                            {32, 600, 100, 50},
-                            {32, 845, 100, 50},
-                            {100, 1120, 100, 50},
-                            {560, 1120, 100, 50},
-                            {600, 845, 100, 50},
-                            {600, 600, 100, 50},
+                            {20, 350, 100, 50},
+                            {20, 580, 100, 50},
+                            {20, 810, 100, 50},
+                            {240, 1150, 100, 50},
+                            {380, 1150, 100, 50},
+                            {600, 810, 100, 50},
+                            {600, 580, 100, 50},
                             {600, 350, 100, 50},
                             {100, 130, 100, 50}
                     },
@@ -179,19 +239,7 @@ public final class Constant {
                             {100, 130, 100, 50}
                     },
                     {
-                            {50, 210, 80, 40},
-                            {200, 730, 350, -2},
-                            {100, 130, 100, 50},
-                            {30,  400, 100, 50},
-                            {30,  790, 100, 50},
-                            {100, 1120, 100, 50},
-                            {560, 1120, 100, 50},
-                            {600, 790, 100, 50},
-                            {600, 400, 100, 50},
-                            {100, 130, 100, 50},
-                    },
-                    {
-                            {50, 210, 80, 40},
+                            {50, 230, 80, 40},
                             {200, 730, 350, -2},
                             {100, 130, 100, 50},
                             {30,  400, 100, 50},
@@ -199,16 +247,9 @@ public final class Constant {
                             {420, 1150, 100, 50},
                             {600, 790, 100, 50},
                             {600, 400, 100, 50},
-                            {100, 130, 100, 50},
-                    },
-                    {
-                            {50, 210, 80, 40},
-                            {200, 730, 350, -2},
-                            {100, 130, 100, 50},
-                            {420, 1150, 100, 50},
                             {100, 130, 100, 50}
-                    },
-            }
+                    }
+    },
     };
     public final static int TYPE_HAND = 0;
     public final static int TYPE_VPIP = 1;

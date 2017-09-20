@@ -49,10 +49,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppHolder> {
         holder.appName.setText(list[position]);
         if("德扑圈".equals(list[position])){
             holder.appIcon.setBackground(context.getResources().getDrawable(R.drawable.icon_dpq));
-        }else if("德友圈".equals(list[position])){
             holder.appName.setTextColor(context.getResources().getColor(R.color.red));
+        }else if("德友圈".equals(list[position])){
             holder.appIcon.setBackground(context.getResources().getDrawable(R.drawable.icon_dyq));
         }else if("扑克部落MTT".equals(list[position])){
+            holder.appIcon.setBackground(context.getResources().getDrawable(R.drawable.icon_dpbl));
+        }else if("扑克部落SNG".equals(list[position])){
             holder.appIcon.setBackground(context.getResources().getDrawable(R.drawable.icon_dpbl));
         }
         if(mOnItemClickListener!=null){

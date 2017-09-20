@@ -1,20 +1,20 @@
 {
 "seatcheckvalue":500,
 
-"seat9flag1x":314,
-"seat9flag1y":52,
+"seat9flag1x":5,
+"seat9flag1y":47,
 "seat9flag1width":93,
 "seat9flag1height":93,
 
-"seat6flag1x":0,
-"seat6flag1y":0,
-"seat6flag1width":0,
-"seat6flag1height":0,
+"seat6flag1x":5,
+"seat6flag1y":47,
+"seat6flag1width":93,
+"seat6flag1height":93,
 
-"seat2flag1x":0,
-"seat2flag1y":0,
-"seat2flag1width":0,
-"seat2flag1height":0,
+"seat2flag1x":5,
+"seat2flag1y":47,
+"seat2flag1width":93,
+"seat2flag1height":93,
 
 "Watchflag1x":155,
 "Watchflag1y":1213,
@@ -79,14 +79,14 @@
   "nameheight":24,
   "nameposes":[
     [0,0],
-    [5,819],
+    [5,820],
     [5,589],
     [5,359],
     [125,154],
     [485,154],
-    [605,359],
+    [605,360],
     [605,589],
-    [605,820],
+    [605,819],
     [305,1174]
     ],
   "boardcardwidth":74,
@@ -239,15 +239,15 @@
   "moneywidth":89,
   "moneyheight":22,
   "moneyposes":[
-    [316,1084],
-    [10,853],
-    [10,616],
-    [10,383],
-    [318,173],
-    [623,383],
-    [623,616],
-    [623,853],
-    [315,1080]
+    [316,1084,22],
+    [10,853,22],
+    [10,616,22],
+    [10,383,22],
+    [318,173,22],
+    [623,383,22],
+    [623,616,22],
+    [623,853,22],
+    [315,1080,22]
     ],
   "betwidth":90,
   "betheight":24,
@@ -354,13 +354,13 @@
   "moneywidth":89,
   "moneyheight":22,
   "moneyposes":[
-    [316,1084],
-    [10,844],
-    [10,434],
-    [318,173],
-    [623,434],
-    [623,844],
-    [316,1077]
+    [316,1084,22],
+    [10,844,22],
+    [10,434,22],
+    [318,173,22],
+    [623,434,22],
+    [623,844,22],
+    [316,1077,22]
     ],
   "betwidth":90,
   "betheight":24,
@@ -449,9 +449,9 @@
   "moneywidth":89,
   "moneyheight":22,
   "moneyposes":[
-    [316,1084],
-    [318,173],
-    [316,1077]
+    [316,1084,22],
+    [318,173,22],
+    [316,1077,22]
     ],
   "betwidth":90,
   "betheight":24,

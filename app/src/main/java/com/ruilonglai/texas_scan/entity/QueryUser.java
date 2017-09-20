@@ -1,18 +1,20 @@
 package com.ruilonglai.texas_scan.entity;
 
+import java.util.List;
+
 /**
  * Created by Administrator on 2017/9/16.
  */
 
 public class QueryUser {
 
-    private String username;
+    private List<String> usernames;
 
-    public String getUserName() {
-        return username;
+    public List<String> getUsernames() {
+        return usernames;
     }
 
-    public void setUserName(String userName) {
-        this.username = userName;
+    public void setUsernames(List<String> usernames) {
+        this.usernames = usernames;
     }
 }

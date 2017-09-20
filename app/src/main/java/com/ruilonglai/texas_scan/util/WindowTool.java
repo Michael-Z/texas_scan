@@ -240,32 +240,34 @@ public class WindowTool {
         if(names==null || names.size()==0)
             return;
         Gson gson = new Gson();
+        ReqData data = new ReqData();
+        QueryUser user = new QueryUser();
+        List<String> usernames = new ArrayList<>();
         for (int i = isWatch; i < playCount+isWatch; i++) {
             String name = names.get(i);
             if(!TextUtils.isEmpty(name)){
-               seatContents.put(i,getPlayerMessage(name));
+                seatContents.put(i,getPlayerMessage(name));
                 if(name.contains("self")){
 
+                }else{
+                    usernames.add(name);
                 }
-                ReqData data = new ReqData();
-                QueryUser user = new QueryUser();
-                user.setUserName(name);
-                data.setParam(gson.toJson(user));
-                data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+ActionsTool.disposeNumber());
-                data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
-                HttpUtil.sendPostRequestData("queryuser", gson.toJson(data), new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Log.e("WindowTool","response:(error)"+e.toString());
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        Log.e("WindowTool","response:"+response.body().string());
-                    }
-                });
             }
         }
+        data.setParam(gson.toJson(user));
+        data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+ActionsTool.disposeNumber());
+        data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
+        HttpUtil.sendPostRequestData("queryuser", gson.toJson(data), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("WindowTool","response:(error)"+e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.e("WindowTool","response:"+response.body().string());
+            }
+        });
     }
     /*改变显示设置的时候重新获取显示列表*/
     public void clearPercents(){

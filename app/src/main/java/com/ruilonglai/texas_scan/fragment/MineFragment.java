@@ -81,7 +81,7 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     private TextView totalPfrCount;
     private TextView totalStlCount;
     private TextView totalFoldStlCount;
-    private String[] appNames = {"德扑圈","扑克部落MTT","德友圈"};
+    private String[] appNames = {"德扑圈","德友圈","扑克部落MTT","扑克部落SNG"};
 
     private String[] seatFlags = {"BTN", "SB", "BB", "UTG", "UTG+1", "MP", "MP+1", "HJ", "CO"};
     @Nullable

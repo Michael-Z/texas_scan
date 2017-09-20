@@ -34,7 +34,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Andcast Main Entry!");
         int initRet = ScanTool.InitScan("/mnt/sdcard/desk_scan");
-        ScanTool.SetTemplate("dyq");
+        ScanTool.SetTemplate("dpq");
         PokerAnalysisTool instance = PokerAnalysisTool.getInstance();
         boolean isConnect = false;
         while (begin){
@@ -67,8 +67,8 @@ public class Main {
                 Log.e("Main","解析时间 "+ time + "ms");
                 Log.e("Main","----------------------------------------------");
                 try {
-                    if(500-time>0)
-                        Thread.sleep(500-time);
+                    if(1000-time>0)
+                        Thread.sleep(1000-time);
                 }catch (Exception e){
                     Log.e("Main","线程出错"+e.toString());
                 }
