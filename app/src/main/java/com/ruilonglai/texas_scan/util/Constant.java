@@ -27,7 +27,7 @@ public final class Constant {
     public final static int MSG_FROM_CLIENT = 0;//客户端信息
     public final static int MSG_FROM_SERVER = 1;//服务器信息
 
-
+    public final static int SOCKET_RESTART_MAIN_PROCESS = 0;//重启Main进程
     public final static int SOCKET_ONE_HAND_LOG = 3;//saveParams
     public final static int SOCKET_BOARDS_AND_POKERS = 4;//boards,pokers
     public final static int SOCKET_EXIT = 5;//exit
@@ -242,14 +242,26 @@ public final class Constant {
                             {50, 230, 80, 40},
                             {200, 730, 350, -2},
                             {100, 130, 100, 50},
-                            {30,  400, 100, 50},
-                            {30,  790, 100, 50},
-                            {420, 1150, 100, 50},
-                            {600, 790, 100, 50},
-                            {600, 400, 100, 50},
+                            {15,  580, 100, 50},
+                            {15,  970, 100, 50},
+                            {80, 1120, 100, 50},
+                            {570, 1120, 100, 50},
+                            {600, 970, 100, 50},
+                            {600, 580, 100, 50},
+                            {200, 180, 100, 50},
+                    },
+                    {
+                            {50, 230, 80, 40},
+                            {200, 730, 350, -2},
+                            {100, 130, 100, 50},
+                            {30,  580, 100, 50},
+                            {30,  950, 100, 50},
+                            {450, 1150, 100, 50},
+                            {600, 950, 100, 50},
+                            {600, 580, 100, 50},
                             {100, 130, 100, 50}
                     }
-    },
+            }
     };
     public final static int TYPE_HAND = 0;
     public final static int TYPE_VPIP = 1;

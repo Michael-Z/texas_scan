@@ -219,6 +219,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Package pkg = gson.fromJson(json, Package.class);
                 Message msg  = new Message();
                 switch (pkg.getType()){
+                    case Constant.SOCKET_RESTART_MAIN_PROCESS:
+                        MainProcessUtil.getInstance().exit(MainActivity.this);
+                        MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(MainActivity.this));
+                        break;
                     case Constant.SOCKET_BOARDS_AND_POKERS://手牌和公共牌
                         msg.arg1 = Constant.SOCKET_BOARDS_AND_POKERS;
                         msg.obj = pkg.getContent();
@@ -280,7 +284,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             isOpen = !isOpen;
         }
         if (v.getId() == R.id.showLog) {
-            showDrawerLayout();
+           showDrawerLayout();
+//            for (int i = 0; i < 6; i++) {
+//                names.put(i,"name"+i);
+//            }
+//            wt.init(this,3,"18850547689");
+//            wt.createNinePointWindow(3,6,names,0);
         }
     }
 
@@ -431,24 +440,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String string = response.body().string();
-                        JsonBean jsonBean = GsonUtil.parseJsonWithGson(string, JsonBean.class);
-                        Log.e(TAG,string);
-                        if(jsonBean.result=="true"){
-                            string = "已登录终端数:"+jsonBean.logined+"#"+
-                                    "剩余可登陆终端数:"+jsonBean.remained+"#";
-                            if(jsonBean.serialInfos!=null){
-                                int size = jsonBean.serialInfos.size();
-                                for (int i = 0; i < size; i++) {
-                                    SerialInfo serialInfo = jsonBean.serialInfos.get(i);
-                                    string+= "serialno:"+serialInfo.getSerialno()+"    "+"remaindays:"+serialInfo.getRemaindays()+"#";
-                                }
-                            }
-                            Intent intent = new Intent(MainActivity.this, SerialActivity.class);
-                            intent.putExtra("log",string);
-                            startActivity(intent);
-                        }else{
-                            Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
-                        }
+//                        JsonBean jsonBean = GsonUtil.parseJsonWithGson(string, JsonBean.class);
+//                        Log.e(TAG,string);
+//                        if(jsonBean.result=="true"){
+//                            string = "已登录终端数:"+jsonBean.logined+"#"+
+//                                    "剩余可登陆终端数:"+jsonBean.remained+"#";
+//                            if(jsonBean.serialInfos!=null){
+//                                int size = jsonBean.serialInfos.size();
+//                                for (int i = 0; i < size; i++) {
+//                                    SerialInfo serialInfo = jsonBean.serialInfos.get(i);
+//                                    string+= "serialno:"+serialInfo.getSerialno()+"    "+"remaindays:"+serialInfo.getRemaindays()+"#";
+//                                }
+//                            }
+//                            Intent intent = new Intent(MainActivity.this, SerialActivity.class);
+//                            intent.putExtra("log",string);
+//                            startActivity(intent);
+//                        }else{
+//                            Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
+//                        }
                     }
                 });
                 break;

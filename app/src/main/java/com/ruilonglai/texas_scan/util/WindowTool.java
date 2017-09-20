@@ -23,6 +23,7 @@ import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.activity.LoginActivity;
 import com.ruilonglai.texas_scan.entity.PercentType;
 import com.ruilonglai.texas_scan.entity.PlayerData;
+import com.ruilonglai.texas_scan.entity.QuerySelf;
 import com.ruilonglai.texas_scan.entity.QueryUser;
 import com.ruilonglai.texas_scan.entity.ReqData;
 
@@ -135,13 +136,20 @@ public class WindowTool {
     }
 
     public boolean createNinePointWindow(int appCount, int playCount,SparseArray<String> seatNames,int isWatch) {
+        this.isWatch = isWatch;
+        if(playCount>0){
+            this.playCount = playCount;
+        }
         if(seatNames !=null){
             this.names = seatNames;
+            for (int i = 0; i <names.size(); i++) {
+                int seatidx = names.keyAt(i);
+                if(seatidx+isWatch>playCount){
+                    names.delete(seatidx);
+                }
+            }
             getSeatContents(names);
         }
-        this.isWatch = isWatch;
-        if(playCount>0)
-            this.playCount = playCount;
         int arr3Idx = 0;
         if (playCount == 9) {
             arr3Idx = 0;
@@ -248,7 +256,19 @@ public class WindowTool {
             if(!TextUtils.isEmpty(name)){
                 seatContents.put(i,getPlayerMessage(name));
                 if(name.contains("self")){
+                    QuerySelf queryself = new QuerySelf();
+                    queryself.setUserid(userId);
+                    HttpUtil.sendPostRequestData("queryself", gson.toJson(queryself), new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e("WindowTool","response:(error)"+e.toString());
+                        }
 
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            Log.e("WindowTool","response:"+response.body().string());
+                        }
+                    });
                 }else{
                     usernames.add(name);
                 }

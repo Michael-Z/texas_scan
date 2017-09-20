@@ -3,6 +3,7 @@ package com.ruilonglai.texas_scan.newprocess;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 
 import java.io.File;
@@ -84,6 +85,7 @@ public class MainServer {
         @Override
         public void run() {
             try {
+                long beginTime = System.currentTimeMillis();
                 while (isAcceptClient){
                     if(inStr.read(head)>-1){
                         String lenStr = new String(head);
@@ -96,6 +98,7 @@ public class MainServer {
                             String s = new String(bytes);
                             if("heart!".equals(s)){
                                 Log.e(TAG,"收到心跳！！！！！！！");
+                                beginTime=System.currentTimeMillis();
                             }else{
                                 callBack.recMsg(s);
                             }
@@ -106,6 +109,11 @@ public class MainServer {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                    }
+                    if(System.currentTimeMillis()-beginTime>10000){//超过10s重新开启Main进程
+                        Package pkg = new Package();
+                        pkg.setType(Constant.SOCKET_RESTART_MAIN_PROCESS);
+                       callBack.recMsg(new Gson().toJson(pkg));
                     }
                 }
             } catch (IOException e) {
