@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private boolean isOpen = false;
 
-    private boolean ninePointWindow;
+    private boolean hideWP;
 
     private ImageButton open_server;
 
@@ -150,12 +150,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case Constant.SOCKET_BOARDS_AND_POKERS:
                     percent = (String) msg.obj;
                     wt.init(MainActivity.this,winIndex,phone);
-                    if(!haveCreateWindow){
-                        if(isWatch==0)
-                        haveCreateWindow = wt.createWindow(percent);
-                    }else{
-                        if(isWatch==0)
-                        wt.updateWindow(percent);
+                    if(!hideWP){
+                        if(!haveCreateWindow){
+                            if(isWatch==0)
+                                haveCreateWindow = wt.createWindow(percent);
+                        }else{
+                            if(isWatch==0)
+                                wt.updateWindow(percent);
+                        }
                     }
                     break;
                 case Constant.SOCKET_CLOSE_WINDOW:
@@ -163,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     haveCreateWindow = false;
                     break;
                 case Constant.SOCKET_OPEN_WINDOW:
-                    if(!haveCreateWindow){
+                    if(!haveCreateWindow && !hideWP){
                         if(!TextUtils.isEmpty(percent) && !"0.0%".equals(percent)){
                             wt.init(MainActivity.this,winIndex,phone);
                             if(isWatch==0)
@@ -183,6 +185,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         names.put(seatIdx,(String)array.get(seatIdx));
                     }
                     wt.createNinePointWindow(winIndex, playCount, names,isWatch);
+                    break;
+                case Constant.SOCKET_SEATCOUNT_CHANGE:
+
                     break;
             }
         }
@@ -210,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             editor.putBoolean("isUpdateDB",isUpdate);
             editor.apply();
         }
+        hideWP = getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).getBoolean("hidewinpercent", false);
         mainServer = MainServer.newInstance();
         mainServer.setCallBack(new MainServer.CallBack() {
             @Override
@@ -237,6 +243,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         msg.arg1 = Constant.SOCKET_SEATCOUNT;
                         playCount = JsonTool.getJsonMes(pkg.getContent(),"seatcount");
                         isWatch = JsonTool.getJsonMes(pkg.getContent(),"iswatch");
+                        break;
+                    case Constant.SOCKET_SEATCOUNT_CHANGE://几人桌
+                        msg.arg1 = Constant.SOCKET_SEATCOUNT_CHANGE;
+                        playCount = JsonTool.getJsonMes(pkg.getContent(),"seatcount");
+                        isWatch = JsonTool.getJsonMes(pkg.getContent(),"iswatch");
+                        names.clear();
                         break;
                     case Constant.SOCKET_CLOSE_WINDOW://关闭悬浮窗
                         msg.arg1 = Constant.SOCKET_CLOSE_WINDOW;
@@ -285,11 +297,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (v.getId() == R.id.showLog) {
            showDrawerLayout();
-//            for (int i = 0; i < 6; i++) {
-//                names.put(i,"name"+i);
-//            }
-//            wt.init(this,3,"18850547689");
-//            wt.createNinePointWindow(3,6,names,0);
         }
     }
 
@@ -498,6 +505,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(wt!=null)
             wt.clearPercents();
         }
+        hideWP = getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).getBoolean("hidewinpercent", false);
     }
 
     @Override

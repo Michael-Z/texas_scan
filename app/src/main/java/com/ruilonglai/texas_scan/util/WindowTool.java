@@ -268,6 +268,7 @@ public class WindowTool {
                 }
             }
         }
+        user.setUsernames(usernames);
         data.setParam(gson.toJson(user));
         data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+ActionsTool.disposeNumber());
         data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
