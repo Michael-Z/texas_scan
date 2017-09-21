@@ -8,7 +8,7 @@ public class SerialInfo {
 	int remaindays;		//剩余有效期
 	
 	public String getSerialno() {
-		return serialno;
+		return serialno; 
 	}
 	public void setSerialno(String serialno) {
 		this.serialno = serialno;
