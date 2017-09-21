@@ -6,8 +6,6 @@ public class SerialInfo {
 	int validdays;		//有效期
 	String regday;		//注册日
 	int remaindays;		//剩余有效期
-
-	String testcode="TestCommit";
 	
 	public String getSerialno() {
 		return serialno;
