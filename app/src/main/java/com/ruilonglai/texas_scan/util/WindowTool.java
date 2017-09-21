@@ -245,6 +245,7 @@ public class WindowTool {
         ReqData data = new ReqData();
         QueryUser user = new QueryUser();
         List<String> usernames = new ArrayList<>();
+        user.setUsernames(usernames);
         for (int i = isWatch; i < playCount+isWatch; i++) {
             String name = names.get(i);
             if(!TextUtils.isEmpty(name)){
@@ -268,6 +269,7 @@ public class WindowTool {
                 }
             }
         }
+
         data.setParam(gson.toJson(user));
         data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+ActionsTool.disposeNumber());
         data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
