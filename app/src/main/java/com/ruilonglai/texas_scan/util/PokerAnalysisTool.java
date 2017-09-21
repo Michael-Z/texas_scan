@@ -239,6 +239,7 @@ public class PokerAnalysisTool {
                 if(seatCount != count)
                 {
                     btnIdx = -1;
+                    seatNames.clear();
                     initView();
                     return;
                 }
