@@ -151,11 +151,14 @@ public class Connect {
                         switch (aPackage.getType()){
                             case Constant.SOCKET_EXIT:
                                 disconnect();
+                                if(callback!=null)
                                 callback.exit();
                                 break;
                             case Constant.SOCKET_PLATFORM_NUTSPOKER:
                             case Constant.SOCKET_PLATFORM_POKERFISHS:
                             case Constant.SOCKET_PLATFORM_TEXASPOKER:
+                            case Constant.SOCKET_PLATFORM_NUTSPOKER_SNG:
+                                if(callback!=null)
                                 callback.action(aPackage.getType());
                                 break;
                         }

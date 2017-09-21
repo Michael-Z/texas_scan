@@ -110,11 +110,11 @@ public class MainServer {
                             e.printStackTrace();
                         }
                     }
-                    if(System.currentTimeMillis()-beginTime>10000){//超过10s重新开启Main进程
+                   /* if(System.currentTimeMillis()-beginTime>10000){//超过10s重新开启Main进程
                         Package pkg = new Package();
                         pkg.setType(Constant.SOCKET_RESTART_MAIN_PROCESS);
                        callBack.recMsg(new Gson().toJson(pkg));
-                    }
+                    }*/
                 }
             } catch (IOException e) {
                 e.printStackTrace();

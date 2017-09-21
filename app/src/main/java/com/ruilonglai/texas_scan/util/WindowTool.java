@@ -142,12 +142,6 @@ public class WindowTool {
         }
         if(seatNames !=null){
             this.names = seatNames;
-            for (int i = 0; i <names.size(); i++) {
-                int seatidx = names.keyAt(i);
-                if(seatidx+isWatch>playCount){
-                    names.delete(seatidx);
-                }
-            }
             getSeatContents(names);
         }
         int arr3Idx = 0;

@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int fragIdx = 2;
 
-    private int winIndex = 1;
+    private int winIndex = 0;
 
     private int playCount;
 
@@ -220,8 +220,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Message msg  = new Message();
                 switch (pkg.getType()){
                     case Constant.SOCKET_RESTART_MAIN_PROCESS:
-                        MainProcessUtil.getInstance().exit(MainActivity.this);
-                        MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(MainActivity.this));
+//                        MainProcessUtil.getInstance().exit(MainActivity.this);
+//                        MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(MainActivity.this));
                         break;
                     case Constant.SOCKET_BOARDS_AND_POKERS://手牌和公共牌
                         msg.arg1 = Constant.SOCKET_BOARDS_AND_POKERS;
