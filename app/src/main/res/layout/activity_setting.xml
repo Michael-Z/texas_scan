@@ -29,7 +29,21 @@
             android:text="确定"
             android:textColor="#41b652" />
     </RelativeLayout>
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="取消显示随机胜率"/>
+        <CheckBox
+            android:id="@+id/hideWinPercent"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"/>
+    </LinearLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/selects"
         android:layout_width="match_parent"

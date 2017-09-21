@@ -159,7 +159,11 @@ public class PokerAnalysisTool {
             disposeMoney();//记录钱的变化
             if(newBtnIdx)
             {//解析名字
-                bitmaps.add(bitmap);
+                try {
+                    bitmaps.add(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             else
             {
@@ -239,6 +243,11 @@ public class PokerAnalysisTool {
                 if(seatCount != count)
                 {
                     btnIdx = -1;
+                    seatNames.clear();
+                    Package pkg = new Package();
+                    pkg.setType(Constant.SOCKET_SEATCOUNT_CHANGE);
+                    pkg.setContent(json);
+                    Connect.send(pkg);
                     initView();
                     return;
                 }

@@ -43,6 +43,7 @@ public final class Constant {
     public final static int SOCKET_SEATCOUNT = 13;//seatCount;
     public final static int SOCKET_IS_WATCH = 14;//是否是旁观者模式
     public final static int SOCKET_GET_TEMPLATE = 15;//获取重新初始化模板
+    public final static int SOCKET_SEATCOUNT_CHANGE = 16;//座位数变化
 
     public final static int TYPE_PERSON = 0;
     public final static int TYPE_OBSERVER = 1;
@@ -97,9 +98,9 @@ public final class Constant {
                             {200, 730, 350, -2},
                             {100, 130, 100, 50},
                             {30,  350, 100, 50},
-                            {30,  970, 100, 50},
-                            {430, 1150, 100, 50},
-                            {600, 970, 100, 50},
+                            {30,  980, 100, 50},
+                            {450, 1150, 100, 50},
+                            {600, 980, 100, 50},
                             {600, 350, 100, 50},
                             {200, 180, 100, 50},
                     },
