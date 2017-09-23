@@ -24,11 +24,11 @@ public class Main {
         System.load("/data/data/com.ruilonglai.texas_scan/lib/liblibtesseract.so");
         System.load("/data/data/com.ruilonglai.texas_scan/lib/libopencv_info.so");
         System.load("/data/data/com.ruilonglai.texas_scan/lib/libnative-lib.so");
-//        华为
-//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm64/libleptonica.so");
-//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm64/liblibtesseract.so");
-//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm64/libopencv_info.so");
-//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm64/libnative-lib.so");
+//        //华为
+//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm/libleptonica.so");
+//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm/liblibtesseract.so");
+//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm/libopencv_info.so");
+//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm/libnative-lib.so");
     }
 
     public static void main(String[] args) {
@@ -59,7 +59,6 @@ public class Main {
             long beginTime = System.currentTimeMillis();
             Bitmap bitmap = ScreentShotUtil.screenShot(720, 1280);
             Log.e("Main","获取bitmap时间 "+(System.currentTimeMillis()-beginTime) + "ms");
-            ScanTool.ScanSeatCount(bitmap);
             if(bitmap!=null){
                 long beginTime2 = System.currentTimeMillis();
                 instance.analysisBitmap(bitmap, 0);

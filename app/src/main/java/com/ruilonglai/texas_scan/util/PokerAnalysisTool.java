@@ -393,6 +393,7 @@ public class PokerAnalysisTool {
                  path = "/sdcard/desk_scan/" + i + ".png";
                  break;
          }
+         i++;
          try {
              byte[] bytes = Main.getBitmapData(bitmap);
              FileOutputStream os = new FileOutputStream(new File(path));
