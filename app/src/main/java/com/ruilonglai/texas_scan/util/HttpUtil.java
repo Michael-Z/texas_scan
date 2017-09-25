@@ -16,8 +16,8 @@ import okhttp3.RequestBody;
  */
 
 public class HttpUtil {
-    public final static String url = "http://ruilonglai.com:40001/console/";
-    //public final static String url = "http://192.168.2.102:40001/console/";
+//    public final static String url = "http://ruilonglai.com:40001/console/";
+    public final static String url = "http://192.168.2.103:40001/console/";
     public static void sendPostRequestData(String action ,final String reqData, Callback callback){//发送数据到服务器
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder().add("param",reqData).build();

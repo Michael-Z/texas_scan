@@ -252,7 +252,11 @@ public class WindowTool {
                 if(name.contains("self")){
                     QuerySelf queryself = new QuerySelf();
                     queryself.setUserid(userId);
-                    HttpUtil.sendPostRequestData("queryself", gson.toJson(queryself), new Callback() {
+                    String param = gson.toJson(queryself);
+                    data.setParam(param);
+                    data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+ActionsTool.disposeNumber());
+                    data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
+                    HttpUtil.sendPostRequestData("queryself", gson.toJson(data), new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             Log.e("WindowTool","response:(error)"+e.toString());

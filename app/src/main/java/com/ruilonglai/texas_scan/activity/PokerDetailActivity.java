@@ -21,6 +21,8 @@ import com.ruilonglai.texas_scan.adapter.CardAdapter;
 import com.ruilonglai.texas_scan.data.MyDataUtil;
 import com.ruilonglai.texas_scan.entity.MyData;
 import com.ruilonglai.texas_scan.entity.QueryPokerData;
+import com.ruilonglai.texas_scan.entity.ReqData;
+import com.ruilonglai.texas_scan.util.ActionsTool;
 import com.ruilonglai.texas_scan.util.HttpUtil;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 
@@ -303,14 +305,19 @@ public class PokerDetailActivity extends AppCompatActivity implements View.OnCli
                  changeNewData();
                  break;
          }
+        ReqData reqData = new ReqData();
         QueryPokerData data = new QueryPokerData();
         data.userid = getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name","");
         if(TextUtils.isEmpty(data.userid))
             return;
         data.startdate = TimeUtil.getCurrentDateToDay(new Date(System.currentTimeMillis()-times[position]* 24 * 3600 * 1000));
         data.enddate = TimeUtil.getCurrentDateToDay(new Date());
-        String json = new Gson().toJson(data);
-        HttpUtil.sendPostRequestData("querypokerdata", json, new Callback() {
+        Gson gson = new Gson();
+        String json = gson.toJson(data);
+        reqData.setParam(json);
+        reqData.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+ ActionsTool.disposeNumber());
+        reqData.setReqid(getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
+        HttpUtil.sendPostRequestData("querypokerdata", gson.toJson(reqData), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e("PokerDetialActivity","获取手牌记录失败");
@@ -322,7 +329,5 @@ public class PokerDetailActivity extends AppCompatActivity implements View.OnCli
                 Log.e("PokerDetialActivity",response.body().string());
             }
         });
-
     }
-
 }

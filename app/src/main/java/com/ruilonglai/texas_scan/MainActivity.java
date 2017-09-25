@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -271,6 +272,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                .detectDiskReads().detectDiskWrites().detectNetwork()
+                .penaltyLog().build());
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectLeakedSqlLiteObjects().detectLeakedClosableObjects()
+                .penaltyLog().penaltyDeath().build());
     }
 
     @Override
@@ -441,30 +448,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 HttpUtil.sendPostRequestData("queryserial",json,new okhttp3.Callback(){
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String string = response.body().string();
-//                        JsonBean jsonBean = GsonUtil.parseJsonWithGson(string, JsonBean.class);
-//                        Log.e(TAG,string);
-//                        if(jsonBean.result=="true"){
-//                            string = "已登录终端数:"+jsonBean.logined+"#"+
-//                                    "剩余可登陆终端数:"+jsonBean.remained+"#";
-//                            if(jsonBean.serialInfos!=null){
-//                                int size = jsonBean.serialInfos.size();
-//                                for (int i = 0; i < size; i++) {
-//                                    SerialInfo serialInfo = jsonBean.serialInfos.get(i);
-//                                    string+= "serialno:"+serialInfo.getSerialno()+"    "+"remaindays:"+serialInfo.getRemaindays()+"#";
-//                                }
-//                            }
-//                            Intent intent = new Intent(MainActivity.this, SerialActivity.class);
-//                            intent.putExtra("log",string);
-//                            startActivity(intent);
-//                        }else{
-//                            Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
-//                        }
+                        JsonBean jsonBean = GsonUtil.parseJsonWithGson(string, JsonBean.class);
+                        Log.e(TAG,string);
+                        if(jsonBean.result.equals("true")){
+                            if(jsonBean.serialInfos!=null){
+                                int size = jsonBean.serialInfos.size();
+                                for (int i = 0; i < size; i++) {
+                                    SerialInfo serialInfo = jsonBean.serialInfos.get(i);
+                                    string+= "serialno:"+serialInfo.getSerialno()+"    "+"remaindays:"+serialInfo.getRemaindays()+"#";
+                                }
+                            }
+                            Intent intent = new Intent(MainActivity.this, SerialActivity.class);
+                            intent.putExtra("log",string);
+                            startActivity(intent);
+                        }else{
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
                     }
                 });
                 break;

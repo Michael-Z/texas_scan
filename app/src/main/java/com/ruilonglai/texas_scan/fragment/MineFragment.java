@@ -133,11 +133,14 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                 Toast.makeText(activity,"开启"+appNames[position], Toast.LENGTH_SHORT).show();
                 int count = appAdapter.getItemCount();
                 for (int i = 0; i < count; i++) {
-                    TextView item = (TextView) appList.getChildAt(i).findViewById(R.id.appName);
-                    if(i==position){
-                        item.setTextColor(activity.getResources().getColor(R.color.red));
-                    }else{
-                        item.setTextColor(activity.getResources().getColor(R.color.black_overlay));
+                    View child = appList.getChildAt(i);
+                    if(child!=null){
+                        TextView item = (TextView) child.findViewById(R.id.appName);
+                        if(i==position){
+                            item.setTextColor(activity.getResources().getColor(R.color.red));
+                        }else{
+                            item.setTextColor(activity.getResources().getColor(R.color.black_overlay));
+                        }
                     }
                 }
                 activity.setTemplate(position+8);

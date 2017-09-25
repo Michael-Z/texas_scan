@@ -31,6 +31,4 @@ public class SerialInfo {
 	public void setRegday(String regday) {
 		this.regday = regday;
 	}
-
-	
 }

@@ -209,7 +209,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             File dir = new File(path);
             if (!dir.exists())
                 dir.mkdirs();
-
+            Log.e(TAG,"奔溃日志:"+sb);
             FileOutputStream fos = new FileOutputStream(path + fileName, true);
             fos.write(sb.getBytes());
             fos.flush();

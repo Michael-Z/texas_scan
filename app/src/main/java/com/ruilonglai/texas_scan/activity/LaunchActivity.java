@@ -30,6 +30,9 @@ import com.tendcloud.tenddata.TCAgent;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
@@ -209,6 +212,17 @@ public class LaunchActivity extends AppCompatActivity {
                     builder.create().show();
                     break;
                 case 1:
+                    try {
+                        File file = new File("/mnt/sdcard/desk_scan/update.txt");
+                        if(!file.exists()){
+                            SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+                            editor.putBoolean("isSave", false);
+                            editor.apply();
+                            file.createNewFile();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     applyPermission();
                     break;
                 case 0:
