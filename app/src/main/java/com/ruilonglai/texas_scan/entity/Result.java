@@ -9,7 +9,6 @@ public class Result {
 	public String code;
 	public String msg;
 	public HashMap<String,String> rets=new HashMap<String, String>();
-	public List<String> listuser;
 
 	public boolean isSuc() {
 		return suc;
