@@ -6,6 +6,8 @@ package com.ruilonglai.texas_scan.entity;
 
 public class GameUser {
     private int seatIdx;
+    private int card1 = -1;
+    private int card2 = -1;
     private String seatFlag;    //玩家位置  如BTN、BB，CO等
     private String userName;      //玩家名字
     private int beginMoney;    //起始筹码  盲注为单位
@@ -31,6 +33,22 @@ public class GameUser {
 
     public void setSeatIdx(int seatIdx) {
         this.seatIdx = seatIdx;
+    }
+
+    public int getCard1() {
+        return card1;
+    }
+
+    public void setCard1(int card1) {
+        this.card1 = card1;
+    }
+
+    public int getCard2() {
+        return card2;
+    }
+
+    public void setCard2(int card2) {
+        this.card2 = card2;
     }
 
     public boolean is3Bet() {

@@ -7,10 +7,11 @@ import java.util.List;
  * 解析json数据
  */
 public class JsonBean {
-    public String message;
+    public String msg;
     public String result;
     public String code;
     public int logined;
     public int remained;
     public List<SerialInfo> serialInfos;
+    public List<PlayerData> listuser;
 }

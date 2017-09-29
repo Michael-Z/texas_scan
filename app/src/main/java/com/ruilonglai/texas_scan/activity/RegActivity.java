@@ -85,16 +85,17 @@ public class RegActivity extends AppCompatActivity {
                             if (resp.equals("true")) {
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), jsonBean.message, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), jsonBean.msg, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                                 Intent intent = new Intent();
                                 intent.setClass(RegActivity.this, LoginActivity.class);
                                 startActivity(intent);
+                                finish();
                             } else {
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), jsonBean.message, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), jsonBean.msg, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }

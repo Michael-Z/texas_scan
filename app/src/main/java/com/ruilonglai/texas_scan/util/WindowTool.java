@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +21,13 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.activity.LoginActivity;
+import com.ruilonglai.texas_scan.entity.JsonBean;
 import com.ruilonglai.texas_scan.entity.PercentType;
 import com.ruilonglai.texas_scan.entity.PlayerData;
 import com.ruilonglai.texas_scan.entity.QuerySelf;
 import com.ruilonglai.texas_scan.entity.QueryUser;
 import com.ruilonglai.texas_scan.entity.ReqData;
+import com.ruilonglai.texas_scan.entity.Result;
 
 import org.litepal.crud.DataSupport;
 
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +44,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 import static com.ruilonglai.texas_scan.util.Constant.winPos;
+import static com.ruilonglai.texas_scan.util.Constant.winPos_1080;
 import static org.litepal.crud.DataSupport.where;
 
 /**
@@ -68,9 +72,19 @@ public class WindowTool {
     private SparseArray<String> seatContents;
     private List<Integer> percents;
     private String userId;
+    private int widthIdx;
 
     private volatile static WindowTool instance = null;
 
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            String json = (String)msg.obj;
+            JsonBean jsonBean = GsonUtil.parseJsonWithGson(json, JsonBean.class);
+            List<PlayerData> listuser = jsonBean.listuser;
+
+        }
+    };
     private WindowTool(){
         seats = new ArrayList<>();
         seatContents = new SparseArray<>();
@@ -106,6 +120,12 @@ public class WindowTool {
             if(textView == null)
             textView = new TextView(context);
             isInit = true;
+            int width = context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getInt("width", 720);
+            if(width==720){
+                widthIdx = 0;
+            }else if(width==1080){
+                widthIdx = 1;
+            }
         }
     }
     public boolean createWindow(String percent) {
@@ -117,13 +137,20 @@ public class WindowTool {
         textView.setGravity(Gravity.CENTER);
         textView.setBackgroundColor(Color.WHITE);
         textView.setText(percent);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
         textView.setTextColor(Color.RED);
-
-        params.width = winPos[winIndex][0][0][2];
-        params.height = winPos[winIndex][0][0][3];
-        params.x = winPos[winIndex][0][0][0];
-        params.y = winPos[winIndex][0][0][1];
+        if(widthIdx==0){
+            params.width = winPos[winIndex][0][0][2];
+            params.height = winPos[winIndex][0][0][3];
+            params.x = winPos[winIndex][0][0][0];
+            params.y = winPos[winIndex][0][0][1];
+            textView.setTextSize(16);
+        }else if(widthIdx==1){
+            params.width = winPos_1080[winIndex][0][0][2];
+            params.height = winPos_1080[winIndex][0][0][3];
+            params.x = winPos_1080[winIndex][0][0][0];
+            params.y = winPos_1080[winIndex][0][0][1];
+            textView.setTextSize(8);
+        }
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,10 +196,20 @@ public class WindowTool {
             btn.setTag(j - 2);
             if(names!=null && !TextUtils.isEmpty(names.get(j-2))){
                 btn.setText(seatContents.get(j-2));
-                params.width = winPos[appCount][arr3Idx][j][2];
-                params.height = winPos[appCount][arr3Idx][j][3];
-                params.x = winPos[appCount][arr3Idx][j][0];
-                params.y = winPos[appCount][arr3Idx][j][1];
+                if(widthIdx==0){
+                    params.width = WindowManager.LayoutParams.WRAP_CONTENT;
+                    params.height = winPos[appCount][arr3Idx][j][3];
+                    params.x = winPos[appCount][arr3Idx][j][0];
+                    params.y = winPos[appCount][arr3Idx][j][1];
+                    btn.setTextSize(16);
+                }else if(widthIdx==1){
+                    btn.setTextSize(8);
+                    params.width = WindowManager.LayoutParams.WRAP_CONTENT;
+                    params.height = winPos_1080[appCount][arr3Idx][j][3];
+                    params.x = winPos_1080[appCount][arr3Idx][j][0];
+                    params.y = winPos_1080[appCount][arr3Idx][j][1];
+                }
+
             }else{
                 btn.setText("");
                 params.width = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -182,7 +219,6 @@ public class WindowTool {
             }
             btn.setGravity(Gravity.CENTER);
             btn.setTextColor(Color.WHITE);
-
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -284,7 +320,10 @@ public class WindowTool {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.e("WindowTool","response:"+response.body().string());
+                String json = response.body().string();
+                Log.e("WindowTool","response:"+ json);
+                Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+                Map<String,String> map =  result.getRets();
             }
         });
     }
@@ -473,7 +512,12 @@ public class WindowTool {
             view = LayoutInflater.from(context).inflate(R.layout.layout_window, null, false);
             view.setBackgroundColor(context.getResources().getColor(R.color.blue));
         }
-        params.width = winPos[winIndex][0][1][2];
+        if(widthIdx==1){
+            params.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        }else if(widthIdx==0){
+            params.width = winPos[winIndex][0][1][2];
+        }
+
         params.height = winPos[winIndex][0][1][3];
         params.x = winPos[winIndex][0][1][0];
         params.y = winPos[winIndex][0][1][1];

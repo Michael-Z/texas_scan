@@ -1,11 +1,14 @@
 package com.ruilonglai.texas_scan.newprocess;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.ruilonglai.texas_scan.ScanTool;
 import com.ruilonglai.texas_scan.ScreenShotUtil.ScreentShotUtil;
+import com.ruilonglai.texas_scan.util.AssetsCopyUtil;
 import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.PokerAnalysisTool;
 
@@ -18,25 +21,31 @@ import java.net.Socket;
  */
 
 public class Main {
-    public static boolean begin = true;
-    static {
-        System.load("/data/data/com.ruilonglai.texas_scan/lib/libleptonica.so");
-        System.load("/data/data/com.ruilonglai.texas_scan/lib/liblibtesseract.so");
-        System.load("/data/data/com.ruilonglai.texas_scan/lib/libopencv_info.so");
-        System.load("/data/data/com.ruilonglai.texas_scan/lib/libnative-lib.so");
-//        //华为
-//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm/libleptonica.so");
-//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm/liblibtesseract.so");
-//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm/libopencv_info.so");
-//        System.load("/data/app/com.ruilonglai.texas_scan-1/lib/arm/libnative-lib.so");
-    }
 
+    public static boolean begin = true;
+    public static int flag;
     public static void main(String[] args) {
         System.out.println("Andcast Main Entry!");
+        String str =  args[0];
+        String[] split = str.split("#");
+        String packagename = split[0];
+        if(!TextUtils.isEmpty(packagename)&& Boolean.valueOf(split[1])){
+            Log.e("main",packagename);
+            System.load(packagename+"/lib/arm/libleptonica.so");
+            System.load(packagename+"/lib/arm/liblibtesseract.so");
+            System.load(packagename+"/lib/arm/libopencv_info.so");
+            System.load(packagename+"/lib/arm/libnative-lib.so");
+        }else{
+            System.load("/data/data/com.ruilonglai.texas_scan/lib/libleptonica.so");
+            System.load("/data/data/com.ruilonglai.texas_scan/lib/liblibtesseract.so");
+            System.load("/data/data/com.ruilonglai.texas_scan/lib/libopencv_info.so");
+            System.load("/data/data/com.ruilonglai.texas_scan/lib/libnative-lib.so");
+        }
         int initRet = ScanTool.InitScan("/mnt/sdcard/desk_scan");
         ScanTool.SetTemplate("dpq");
         PokerAnalysisTool instance = PokerAnalysisTool.getInstance();
         boolean isConnect = false;
+        BitmapFactory.Options opts = new BitmapFactory.Options();
         while (begin){
             if(!isConnect){
                 Connect.getInstance().connect(28838);
@@ -45,6 +54,7 @@ public class Main {
                     public void action(int type) {
                         Log.e("Main","设置的模板"+type);
                         ScanTool.SetTemplate(Constant.PLATFORM[type-8]);
+                        flag = type-8;
                     }
                     @Override
                     public void exit() {
@@ -58,10 +68,28 @@ public class Main {
             }
             long beginTime = System.currentTimeMillis();
             Bitmap bitmap = ScreentShotUtil.screenShot(720, 1280);
-            Log.e("Main","获取bitmap时间 "+(System.currentTimeMillis()-beginTime) + "ms");
+            if(Boolean.valueOf(split[1])){//手机上运
+
+            }
+//            byte[] bytes = getBitmapData(bitmap);
+//            if(bitmap!=null){
+//                bitmap.recycle();
+//                bitmap = null;
+//                System.gc();
+//            }
+//            Log.e("Main","获取bitmap时间 "+(System.currentTimeMillis()-beginTime) + "ms"+"bitmap字节数:"+bytes.length);
+//            try {
+//                bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length, opts);
+//            } catch (OutOfMemoryError e) {
+//                if(bitmap!=null){
+//                    bitmap.recycle();
+//                    bitmap = null;
+//                    System.gc();
+//                }
+//            }
             if(bitmap!=null){
                 long beginTime2 = System.currentTimeMillis();
-                instance.analysisBitmap(bitmap, 0);
+                instance.analysisBitmap(bitmap, flag);
                 long time = System.currentTimeMillis() - beginTime;
                 Log.e("Main","解析时间 "+ time + "ms");
                 Log.e("Main","----------------------------------------------");
@@ -79,9 +107,9 @@ public class Main {
         System.exit(0);
     }
 
-    public static byte[] getBitmapData(Bitmap photo) {
+    public static byte[] getBitmapData(Bitmap bmp) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        photo.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, baos);
         return baos.toByteArray();
     }
 }

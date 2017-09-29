@@ -34,6 +34,8 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.ruilonglai.texas_scan.newprocess.JsonTool.getJsonMes;
 import static com.ruilonglai.texas_scan.newprocess.JsonTool.getJsonName;
@@ -66,6 +68,7 @@ public class PokerAnalysisTool {
     private boolean needSendBoards;
     private boolean sendCloseWindow;
     private int isWatch;
+    private int flag;
     private boolean allOnline;
     private boolean havePoker;
     private SparseArray<Seat> seats;//每个位置的信息
@@ -102,6 +105,7 @@ public class PokerAnalysisTool {
 
     public void analysisBitmap(Bitmap bitmap,int flag)
     {
+        this.flag = flag;
         if(bitmap==null){
             return;
         }
@@ -169,6 +173,7 @@ public class PokerAnalysisTool {
             {
                 bitmap.recycle();
                 bitmap = null;
+                System.gc();
             }
         }
         else
@@ -182,7 +187,21 @@ public class PokerAnalysisTool {
             }
         }
     }
-
+    private void saveOtherPlayerCards(){
+        for (int j = 0; j < playSeats.size(); j++) {
+            int seatIdx = playSeats.keyAt(j);
+            Seat seat = seats.get(seatIdx);
+            int card1 = seat.getCard1();
+            int card2 = seat.getCard2();
+            if(card1!=-1 && card2!=-1){
+                GameUser gameUser = gamers.get(seatIdx);
+                if(gameUser!=null){
+                    gameUser.setCard1(card1);
+                    gameUser.setCard2(card2);
+                }
+            }
+        }
+    }
     /*从图片获取位置名字*/
     private void getSeatNames(Bitmap bitmap)
     {
@@ -197,9 +216,13 @@ public class PokerAnalysisTool {
                 int seatIdx = gamers.keyAt(i);
                 String name = getJsonName(ScanTool.ScanSeatName(bitmap, seatIdx, 0), "name");
 
+//                String name = "位置"+seatIdx;
                 Log.e("name",seatIdx+"  "+name);
                 String userName = FileIOUtil.replaceBlank(name);
                 userName.replace("\\n","");
+//                if(flag==2 || flag == 3)
+//                userName = removeDigital(userName);
+//                Log.e("name","flag:"+flag+ " " +seatIdx+" 去除数字 "+userName);
                 if(!TextUtils.isEmpty(userName))
                 seatNames.put(seatIdx,userName);
                 GameUser user = gamers.get(seatIdx);
@@ -222,6 +245,12 @@ public class PokerAnalysisTool {
             pkg.setContent(json);
             Connect.send(pkg);
         }
+    }
+    public static String removeDigital(String value){
+        Pattern p = Pattern.compile("[\\d]");
+        Matcher matcher = p.matcher(value);
+        String result = matcher.replaceAll("");
+       return result;
     }
     /*一手只需识别一次的数据*/
     private void getBaseMessage(Bitmap bitmap)
@@ -379,9 +408,8 @@ public class PokerAnalysisTool {
          }
          return false;
      }
-     static int i = 0;
      /*保存图片到SD卡中*/
-     public void saveImgToSDCard(Bitmap bitmap,int testType)
+     public void saveImgToSDCard(Bitmap bitmap,int testType,int i)
      {
          String path = "";
          switch (testType)
@@ -395,9 +423,8 @@ public class PokerAnalysisTool {
          }
          i++;
          try {
-             byte[] bytes = Main.getBitmapData(bitmap);
              FileOutputStream os = new FileOutputStream(new File(path));
-             os.write(bytes);
+             bitmap.compress(Bitmap.CompressFormat.PNG,100,os);
              os.flush();
              os.close();
          } catch (IOException e) {
@@ -651,7 +678,7 @@ public class PokerAnalysisTool {
                     try {
                         bitmap = bitmaps.take();
                         getSeatNames(bitmap);
-                        saveImgToSDCard(bitmap,Constant.TEST_NAME);
+//                        saveImgToSDCard(bitmap,Constant.TEST_NAME);
                     } catch (InterruptedException e) {
                         Log.e(TAG,"线程获取任务失败");
                     }

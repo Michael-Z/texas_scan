@@ -1,6 +1,7 @@
 package com.ruilonglai.texas_scan;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -53,6 +54,7 @@ import com.ruilonglai.texas_scan.util.AssetsCopyUtil;
 import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.GsonUtil;
 import com.ruilonglai.texas_scan.util.HttpUtil;
+import com.ruilonglai.texas_scan.util.SystemInfoUtil;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 import com.ruilonglai.texas_scan.util.WindowTool;
 import com.ruilonglai.texas_scan.view.TabContainerView;
@@ -65,6 +67,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import okhttp3.Call;
@@ -286,7 +289,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(!isOpen){
                 open_server.setImageDrawable(MainActivity.this.getResources().getDrawable(R.drawable.stop));
                 MainProcessUtil.getInstance().exit(MainActivity.this);
-                MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(MainActivity.this));
+                boolean isphone = getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getBoolean("isPhone",false);
+                MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(MainActivity.this),isphone);
             }else{
                 open_server.setImageDrawable(this.getResources().getDrawable(play));
                 try {

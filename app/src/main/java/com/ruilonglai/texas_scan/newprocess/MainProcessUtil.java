@@ -40,13 +40,14 @@ public class MainProcessUtil {
         return  instance;
     }
     /*adb shell 启动一个java类*/
-    public void createMainProcess(String packageName){
+    public void createMainProcess(String packageName,boolean isPhone){
         shell.Init(true);
        if(!isExistMainProcess){
            Log.e("command","启动main进程");
            shell.execCommand("adb shell");
-           shell.execCommand("export CLASSPATH="+packageName);
-           shell.execCommand("exec app_process32 /system/bin com.ruilonglai.texas_scan.newprocess.Main '$@'");
+           shell.execCommand("export CLASSPATH="+packageName+"/base.apk");
+           packageName += "#"+isPhone;
+           shell.execCommand("exec app_process32 /system/bin com.ruilonglai.texas_scan.newprocess.Main '"+packageName+"'");
        }
     }
 

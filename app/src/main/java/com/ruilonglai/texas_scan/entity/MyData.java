@@ -7,6 +7,7 @@ import org.litepal.crud.DataSupport;
  */
 
 public class MyData extends DataSupport {
+
     private String date;
     private int money;
     private double bbCount;

@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import com.ruilonglai.texas_scan.config.SystemParams;
 import com.ruilonglai.texas_scan.download.DownLoadUtils;
 import com.ruilonglai.texas_scan.download.DownloadApk;
 import com.ruilonglai.texas_scan.util.AssetsCopyUtil;
+import com.ruilonglai.texas_scan.util.SystemInfoUtil;
 import com.ruilonglai.texas_scan.view.CustomDialog;
 import com.tendcloud.tenddata.TCAgent;
 
@@ -32,6 +34,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,6 +52,11 @@ public class LaunchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+        Map<String,String> map = SystemInfoUtil.collectDeviceInfo(this);
+        String cpu_abi = map.get("CPU_ABI");
+        if(cpu_abi.contains("arm")){
+            getSharedPreferences(LoginActivity.PREF_FILE,MODE_PRIVATE).edit().putBoolean("isPhone",true).apply();
+        }
         //1.注册下载广播接收器
         DownloadApk.registerBroadcast(this);
         //2.删除已存在的Apk
@@ -63,6 +71,7 @@ public class LaunchActivity extends AppCompatActivity {
         }
         initAppAnalytics();
         checkVersion(this);
+        saveScreenWidthAndHeight();
     }
 
     public void applyPermission() {
@@ -244,5 +253,19 @@ public class LaunchActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         DownloadApk.unregisterBroadcast(LaunchActivity.this);
+    }
+
+
+    public void saveScreenWidthAndHeight(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        SharedPreferences spf = getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE);
+             spf.edit()
+                     .putFloat("density",metrics.density)
+                     .putInt("width",metrics.widthPixels)
+                     .putInt("height",metrics.heightPixels)
+                     .putFloat("xdpi",metrics.xdpi)
+                     .putFloat("ydpi",metrics.ydpi)
+                     .apply();
     }
 }

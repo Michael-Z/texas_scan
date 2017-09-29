@@ -196,8 +196,9 @@ public class AssetsCopyUtil {
     }
     /*获取解析的包名*/
     public static String getPackageName(Context context){
-        String packageResourcePath = context.getApplicationContext().getPackageResourcePath();
+        String packageResourcePath = context.getApplicationContext().getPackageCodePath();
+        int end = packageResourcePath.lastIndexOf("/");
         Log.e(TAG,"包名:"+packageResourcePath);
-        return packageResourcePath;
+        return packageResourcePath.substring(0,end);
     }
 }
