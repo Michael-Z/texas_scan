@@ -11,7 +11,7 @@
         android:gravity="center_vertical">
         <TextView
             android:layout_marginLeft="5dp"
-            android:id="@+id/totalPlayCount"
+            android:id="@+id/pos1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -19,14 +19,14 @@
             android:textSize="14sp"/>
 
         <TextView
-            android:id="@+id/vpipPercent"
+            android:id="@+id/pos2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="VPIP(-%)" />
 
         <TextView
-            android:id="@+id/pfrPercent"
+            android:id="@+id/pos3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -41,21 +41,21 @@
         android:gravity="center_vertical">
 
         <TextView
-            android:id="@+id/bet3Percent"
+            android:id="@+id/pos4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="3BET(-%)" />
 
         <TextView
-            android:id="@+id/cbPercent"
+            android:id="@+id/pos5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="CB(-%)" />
 
         <TextView
-            android:id="@+id/afPercent"
+            android:id="@+id/pos6"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -70,24 +70,81 @@
         android:layout_marginTop="5dp">
 
         <TextView
-            android:id="@+id/foldBet3Percent"
+            android:id="@+id/pos7"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="F3BET(-%)" />
 
         <TextView
-            android:id="@+id/stlPercent"
+            android:id="@+id/pos8"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="STL(-%)" />
 
         <TextView
-            android:id="@+id/foldStlPercent"
+            android:id="@+id/pos9"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="FSTL(-%)"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/pos10"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="FCB(-%)" />
+
+        <TextView
+            android:id="@+id/pos11"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="FFLOP(-%)" />
+
+        <TextView
+            android:id="@+id/pos12"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="FTURN(-%)" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/pos13"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="FRIVER(-%)" />
+
+        <TextView
+            android:id="@+id/pos14"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/pos15"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="" />
     </LinearLayout>
 </LinearLayout>

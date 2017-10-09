@@ -26,6 +26,9 @@ public class GameUser {
     private int raiseCount;  //加注次数
     private boolean isPreFlopLastRaise;  //翻牌前最后一个加注
     private boolean isCB;  //是否是翻牌圈再加注
+    private boolean isFoldCB; //面对翻牌再加注弃牌
+    private boolean isFaceCB; //是否面对翻牌再加注
+    private int lastActionRound;//最后一个动作的圈数
 
     public int getSeatIdx() {
         return seatIdx;
@@ -193,5 +196,29 @@ public class GameUser {
 
     public void setStlPosition(boolean stlPosition) {
         isStlPosition = stlPosition;
+    }
+
+    public boolean isFoldCB() {
+        return isFoldCB;
+    }
+
+    public void setFoldCB(boolean foldCB) {
+        isFoldCB = foldCB;
+    }
+
+    public boolean isFaceCB() {
+        return isFaceCB;
+    }
+
+    public void setFaceCB(boolean faceCB) {
+        isFaceCB = faceCB;
+    }
+
+    public int getLastActionRound() {
+        return lastActionRound;
+    }
+
+    public void setLastActionRound(int lastActionRound) {
+        this.lastActionRound = lastActionRound;
     }
 }

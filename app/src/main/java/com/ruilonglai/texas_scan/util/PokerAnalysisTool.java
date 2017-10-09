@@ -281,6 +281,14 @@ public class PokerAnalysisTool {
                     return;
                 }
             }
+//            json = ScanTool.ScanCurDichi(bitmap);
+//            curDichi = getJsonMes(json,"curdichi ");
+//            json = ScanTool.ScanDichi(bitmap);
+//            Log.e(TAG,json);
+//            dichi = getJsonMes(json,"dichi");
+//            json = ScanTool.ScanAnte(bitmap);
+//            Log.e(TAG,json);
+//            ante = getJsonMes(json,"ante");
             if(blinds == -1 || blinds == 0)
             {
                 json = ScanTool.ScanBlinds(bitmap);
@@ -562,12 +570,12 @@ public class PokerAnalysisTool {
                             action.setBet(seat.getBet());
                             action.setAddMoney(addMoney);
                             Log.e(TAG,"roundIdx--"+boards.size()+" seatIdx--"+seatIdx + "  blinds-->"+blinds+"  lastMoney--"+lastMoney +"  money--"+money+"  bet--"
-                                    +seat.getBet()+"  addMoney-->"+addMoney );
+                                    +seat.getBet()+"  addMoney-->"+addMoney);
                             actions.add(action);
                             lastSeats.put(seatIdx,money);
                         }else if(money==0)
-                        {//判断ALLIN
-                            if((seatIdx==0 && seat.getHidecard()==1) || (seatIdx!=0 && seat.getHidecard() ==1))
+                        {//判断ALLIN 还有手牌，而且下的bet是上一条记录的钱
+                            if(seat.getHidecard()==1 && seat.getBet()==lastMoney)
                             {
                                 Log.e(TAG,"roundIdx--"+boards.size()+" seatIdx--"+seatIdx+"  lastMoney--"+lastMoney +"  money--"+money+"---changeMoney-->"+(lastMoney-money));
                                 GameAction action = new  GameAction();

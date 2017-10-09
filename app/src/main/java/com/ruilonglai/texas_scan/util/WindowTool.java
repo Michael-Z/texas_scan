@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.activity.LoginActivity;
 import com.ruilonglai.texas_scan.entity.JsonBean;
@@ -32,6 +33,7 @@ import com.ruilonglai.texas_scan.entity.Result;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -76,24 +78,25 @@ public class WindowTool {
 
     private volatile static WindowTool instance = null;
 
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            String json = (String)msg.obj;
+            String json = (String) msg.obj;
             JsonBean jsonBean = GsonUtil.parseJsonWithGson(json, JsonBean.class);
             List<PlayerData> listuser = jsonBean.listuser;
 
         }
     };
-    private WindowTool(){
+
+    private WindowTool() {
         seats = new ArrayList<>();
         seatContents = new SparseArray<>();
     }
 
-    public static WindowTool getInstance(){
-        if(instance == null){
-            synchronized (WindowTool.class){
-                if(instance == null){
+    public static WindowTool getInstance() {
+        if (instance == null) {
+            synchronized (WindowTool.class) {
+                if (instance == null) {
                     instance = new WindowTool();
                 }
             }
@@ -101,50 +104,51 @@ public class WindowTool {
         return instance;
     }
 
-    public void init(Activity context,int winIndex,String userId){
+    public void init(Activity context, int winIndex, String userId) {
         this.userId = userId;
-        Log.e("isInit",isInit+"");
+        Log.e("isInit", isInit + "");
         this.winIndex = winIndex;
-        if(!isInit){
+        if (!isInit) {
             this.context = context;
-            if(windowManager==null){
+            if (windowManager == null) {
                 windowManager = (WindowManager) context.getApplication().getSystemService(context.getApplication().WINDOW_SERVICE);
             }
             //类型是TYPE_TOAST，像一个普通的Android Toast一样。这样就不需要申请悬浮窗权限了。
-            if(params==null)
-            params = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_TOAST);
+            if (params == null)
+                params = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_TOAST);
             //初始化后不首先获得窗口焦点。不妨碍设备上其他部件的点击、触摸事件。
             params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
             params.format = PixelFormat.RGBA_8888;
             params.gravity = Gravity.BOTTOM | Gravity.LEFT;
-            if(textView == null)
-            textView = new TextView(context);
+            if (textView == null)
+                textView = new TextView(context);
             isInit = true;
             int width = context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getInt("width", 720);
-            if(width==720){
+            if (width == 720) {
                 widthIdx = 0;
-            }else if(width==1080){
+            } else if (width == 1080) {
                 widthIdx = 1;
             }
         }
     }
+
     public boolean createWindow(String percent) {
         if (TextUtils.isEmpty(percent)) {
             return false;
         }
-        if(textView == null)
-        textView = new TextView(context);
+        if (textView == null)
+            textView = new TextView(context);
         textView.setGravity(Gravity.CENTER);
         textView.setBackgroundColor(Color.WHITE);
         textView.setText(percent);
         textView.setTextColor(Color.RED);
-        if(widthIdx==0){
+        if (widthIdx == 0) {
             params.width = winPos[winIndex][0][0][2];
             params.height = winPos[winIndex][0][0][3];
             params.x = winPos[winIndex][0][0][0];
             params.y = winPos[winIndex][0][0][1];
             textView.setTextSize(16);
-        }else if(widthIdx==1){
+        } else if (widthIdx == 1) {
             params.width = winPos_1080[winIndex][0][0][2];
             params.height = winPos_1080[winIndex][0][0][3];
             params.x = winPos_1080[winIndex][0][0][0];
@@ -162,12 +166,12 @@ public class WindowTool {
         return true;
     }
 
-    public boolean createNinePointWindow(int appCount, int playCount,SparseArray<String> seatNames,int isWatch) {
+    public boolean createNinePointWindow(int appCount, int playCount, SparseArray<String> seatNames, int isWatch) {
         this.isWatch = isWatch;
-        if(playCount>0){
+        if (playCount > 0) {
             this.playCount = playCount;
         }
-        if(seatNames !=null){
+        if (seatNames != null) {
             this.names = seatNames;
             getSeatContents(names);
         }
@@ -178,9 +182,9 @@ public class WindowTool {
             arr3Idx = 1;
         } else if (playCount == 7) {
             arr3Idx = 2;
-        }else if(playCount == 6){
+        } else if (playCount == 6) {
             arr3Idx = 3;
-        }else if(playCount == 2){
+        } else if (playCount == 2) {
             arr3Idx = 4;
         }
         if (haveSeatsWindow && windowManager != null) {
@@ -191,18 +195,18 @@ public class WindowTool {
             haveSeatsWindow = false;
         }
         seats.clear();
-        for (int j = 2+isWatch; j < playCount + 2+isWatch; j++) {
+        for (int j = 2 + isWatch; j < playCount + 2 + isWatch; j++) {
             TextView btn = new TextView(context);
             btn.setTag(j - 2);
-            if(names!=null && !TextUtils.isEmpty(names.get(j-2))){
-                btn.setText(seatContents.get(j-2));
-                if(widthIdx==0){
+            if (names != null && !TextUtils.isEmpty(names.get(j - 2))) {
+                btn.setText(seatContents.get(j - 2));
+                if (widthIdx == 0) {
                     params.width = WindowManager.LayoutParams.WRAP_CONTENT;
                     params.height = winPos[appCount][arr3Idx][j][3];
                     params.x = winPos[appCount][arr3Idx][j][0];
                     params.y = winPos[appCount][arr3Idx][j][1];
                     btn.setTextSize(16);
-                }else if(widthIdx==1){
+                } else if (widthIdx == 1) {
                     btn.setTextSize(8);
                     params.width = WindowManager.LayoutParams.WRAP_CONTENT;
                     params.height = winPos_1080[appCount][arr3Idx][j][3];
@@ -210,12 +214,12 @@ public class WindowTool {
                     params.y = winPos_1080[appCount][arr3Idx][j][1];
                 }
 
-            }else{
+            } else {
                 btn.setText("");
                 params.width = WindowManager.LayoutParams.WRAP_CONTENT;
-                params.height =  WindowManager.LayoutParams.WRAP_CONTENT;
-                params.x =  WindowManager.LayoutParams.WRAP_CONTENT;
-                params.y =  WindowManager.LayoutParams.WRAP_CONTENT;
+                params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                params.x = WindowManager.LayoutParams.WRAP_CONTENT;
+                params.y = WindowManager.LayoutParams.WRAP_CONTENT;
             }
             btn.setGravity(Gravity.CENTER);
             btn.setTextColor(Color.WHITE);
@@ -232,143 +236,181 @@ public class WindowTool {
         haveSeatsWindow = true;
         return true;
     }
-    public void updateNineWindow(int appCount, int playCount,SparseArray<String> seatNames){
-         if(names==null)
-             return;
-        if(seats.size()==0){
-            createNinePointWindow(appCount,playCount,seatNames,isWatch);
-        }else{
+
+    public void updateNineWindow(int appCount, int playCount, SparseArray<String> seatNames) {
+        if (names == null)
+            return;
+        if (seats.size() == 0) {
+            createNinePointWindow(appCount, playCount, seatNames, isWatch);
+        } else {
             int arr3Idx = 0;
             if (playCount == 9) {
                 arr3Idx = 0;
             } else if (playCount == 8) {
                 arr3Idx = 1;
-            }else if(playCount == 6){
+            } else if (playCount == 6) {
                 arr3Idx = 2;
             }
             getSeatContents(names);
-            for (int i = 2; i < playCount+2; i++) {
-                String name = names.get(i-2);
-                if(i-2==seats.size()){
+            for (int i = 2; i < playCount + 2; i++) {
+                String name = names.get(i - 2);
+                if (i - 2 == seats.size()) {
                     continue;
                 }
-                TextView tv = seats.get(i-2);
+                TextView tv = seats.get(i - 2);
                 tv.setGravity(Gravity.CENTER);
-                if(!TextUtils.isEmpty(name)){
+                if (!TextUtils.isEmpty(name)) {
                     params.width = winPos[appCount][arr3Idx][i][2];
                     params.height = winPos[appCount][arr3Idx][i][3];
                     params.x = winPos[appCount][arr3Idx][i][0];
                     params.y = winPos[appCount][arr3Idx][i][1];
                     String text = seatContents.get(i - 2);
-                    Log.e("WindowTool","nineupdate "+text);
+                    Log.e("WindowTool", "nineupdate " + text);
                     tv.setText(text);
-                }else{
+                } else {
                     params.width = WindowManager.LayoutParams.WRAP_CONTENT;
-                    params.height =  WindowManager.LayoutParams.WRAP_CONTENT;
-                    params.x =  WindowManager.LayoutParams.WRAP_CONTENT;
-                    params.y =  WindowManager.LayoutParams.WRAP_CONTENT;
+                    params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                    params.x = WindowManager.LayoutParams.WRAP_CONTENT;
+                    params.y = WindowManager.LayoutParams.WRAP_CONTENT;
                     tv.setText("");
                 }
-                windowManager.updateViewLayout(tv,params);
+                windowManager.updateViewLayout(tv, params);
             }
         }
     }
 
-    public void getSeatContents(SparseArray<String> names){
-        if(names==null || names.size()==0)
+    public void getSeatContents(SparseArray<String> names) {
+        if (names == null || names.size() == 0)
             return;
         Gson gson = new Gson();
         ReqData data = new ReqData();
         QueryUser user = new QueryUser();
         List<String> usernames = new ArrayList<>();
-        for (int i = isWatch; i < playCount+isWatch; i++) {
+        for (int i = isWatch; i < playCount + isWatch; i++) {
             String name = names.get(i);
-            if(!TextUtils.isEmpty(name)){
-                seatContents.put(i,getPlayerMessage(name));
-                if(name.contains("self")){
+            if (!TextUtils.isEmpty(name)) {
+                seatContents.put(i, getPlayerMessage(name));
+                if (name.contains("self")) {
                     QuerySelf queryself = new QuerySelf();
                     queryself.setUserid(userId);
                     String param = gson.toJson(queryself);
                     data.setParam(param);
-                    data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+ActionsTool.disposeNumber());
+                    data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
                     data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
                     HttpUtil.sendPostRequestData("queryself", gson.toJson(data), new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
-                            Log.e("WindowTool","response:(error)"+e.toString());
+                            Log.e("WindowTool", "response:(error)" + e.toString());
                         }
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            Log.e("WindowTool","response:"+response.body().string());
+                            String json = response.body().string();
+                            Log.e("WindowTool", "response:" + json);
+                            Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+                            Map<String, String> map = result.getRets();
+                            String players = map.get("listuser");
+                            List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+                            Type listType = new TypeToken<List<PlayerData>>() {
+                            }.getType();
+                            playerDatas = new Gson().fromJson(players, listType);
+                            if (playerDatas != null) {
+                                for (int i = 0; i < playerDatas.size(); i++) {
+                                    PlayerData playerData = playerDatas.get(i);
+                                    List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
+                                    if (datas.size() > 0) {
+                                        playerData.updateAll("name=?", playerData.getName());
+                                    } else {
+                                        playerData.save();
+                                    }
+                                }
+                            }
                         }
                     });
-                }else{
+                } else {
                     usernames.add(name);
                 }
             }
         }
         user.setUsernames(usernames);
         data.setParam(gson.toJson(user));
-        data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+ActionsTool.disposeNumber());
+        data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
         data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
         HttpUtil.sendPostRequestData("queryuser", gson.toJson(data), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("WindowTool","response:(error)"+e.toString());
+                Log.e("WindowTool", "response:(error)" + e.toString());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String json = response.body().string();
-                Log.e("WindowTool","response:"+ json);
+                Log.e("WindowTool", "response:" + json);
                 Result result = GsonUtil.parseJsonWithGson(json, Result.class);
-                Map<String,String> map =  result.getRets();
+                Map<String, String> map = result.getRets();
+                String players = map.get("listuser");
+                List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+                Type listType = new TypeToken<List<PlayerData>>() {
+                }.getType();
+                playerDatas = new Gson().fromJson(players, listType);
+                if(playerDatas!=null){
+                    for (int i = 0; i < playerDatas.size(); i++) {
+                        PlayerData playerData = playerDatas.get(i);
+                        List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
+                        if (datas.size() > 0) {
+                            playerData.updateAll("name=?", playerData.getName());
+                        } else {
+                            playerData.save();
+                        }
+                    }
+                }
             }
         });
     }
+
     /*改变显示设置的时候重新获取显示列表*/
-    public void clearPercents(){
+    public void clearPercents() {
         percents = null;
     }
-    public String getPlayerMessage(String name){
-        if(TextUtils.isEmpty(name))
+
+    public String getPlayerMessage(String name) {
+        if (TextUtils.isEmpty(name))
             return "";
         StringBuilder sb = new StringBuilder();
-        if(name.equals("self")){
+        if (name.equals("self")) {
             name = "_self";
         }
-        if(percents==null){
+        if (percents == null) {
             String json = context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("percentTypeArray", "");
-            if(TextUtils.isEmpty(json)){
+            if (TextUtils.isEmpty(json)) {
                 percents = new ArrayList<>();
                 for (int i = 0; i < 6; i++) {
                     percents.add(i);
                 }
-            }else{
+            } else {
                 percents = GsonUtil.parseJsonWithGson(json, PercentType.class).getPercents();
             }
         }
-        List<PlayerData> playerDatas = DataSupport.where("name=?",name).find(PlayerData.class);
-        if(playerDatas.size()==0){
+        List<PlayerData> playerDatas = DataSupport.where("name=?", name).find(PlayerData.class);
+        if (playerDatas.size() == 0) {
             sb.append("－|－|－\n－|－|－");
-        }else{
+        } else {
             PlayerData playerData = null;
-            if(name.contains("self")){
+            if (name.contains("self")) {
                 playerData = getSelfPlayerData();
-            }else{
+            } else {
                 playerData = playerDatas.get(0);
             }
             int playCount = playerData.getPlayCount();
-            if(playCount == 0){
+            if (playCount == 0) {
                 sb.append("－|－|－\n－|－|－");
-            }else{
+            } else {
                 for (int i = 0; i < percents.size(); i++) {
                     int value = percents.get(i).intValue();
-                    sb.append(getPercent(playerData,value));
-                    if(i==2){
+                    sb.append(getPercent(playerData, value));
+                    if (i == 2) {
                         sb.append("\n");
-                    }else if(i<5){
+                    } else if (i < 5) {
                         sb.append("|");
                     }
                 }
@@ -376,115 +418,113 @@ public class WindowTool {
         }
         return sb.toString();
     }
+
     /*获取相应类型的概率*/
-    public String getPercent(PlayerData player,int type){
+    public String getPercent(PlayerData player, int type) {
         String percent = "－";
         int playCount = player.getPlayCount();
-        switch (type){
+        switch (type) {
             case Constant.TYPE_HAND:
-                if(playCount>=1000){
-                    percent = playCount/1000+"K+";
-                }else{
-                    percent = "("+ playCount +")";
+                if (playCount >= 1000) {
+                    percent = playCount / 1000 + "K+";
+                } else {
+                    percent = "(" + playCount + ")";
                 }
                 break;
             case Constant.TYPE_VPIP:
-                if(playCount!=0)
-                    percent = player.getJoinCount()*100/playCount+"";
+                if (playCount != 0)
+                    percent = player.getJoinCount() * 100 / playCount + "";
                 break;
             case Constant.TYPE_PFR:
-                if(playCount!=0)
-                    percent = player.getPfrCount()*100/playCount+"";
+                if (playCount != 0)
+                    percent = player.getPfrCount() * 100 / playCount + "";
                 break;
             case Constant.TYPE_3BET:
-                if(player.getFaceOpenCount()!=0)
-                    percent = player.getBet3Count()*100/player.getFaceOpenCount()+"";
+                if (player.getFaceOpenCount() != 0)
+                    percent = player.getBet3Count() * 100 / player.getFaceOpenCount() + "";
                 break;
             case Constant.TYPE_CB:
-                if(player.getLastRaiseCount()!=0)
-                    percent = player.getCbCount()*100/player.getLastRaiseCount()+"";
+                if (player.getLastRaiseCount() != 0)
+                    percent = player.getCbCount() * 100 / player.getLastRaiseCount() + "";
                 break;
             case Constant.TYPE_AF:
-                if(player.getCallCount()!=0)
-                    percent = String.format("%.1f",player.getRaiseCount()/Double.valueOf(player.getCallCount()));
+                if (player.getCallCount() != 0) {
+                    double af = player.getRaiseCount() / Double.valueOf(player.getCallCount());
+                    if (af > 10) {
+                        af = af / 2;
+                    }
+                    percent = String.format("%.1f", af);
+                }
+
                 break;
             case Constant.TYPE_F3BET:
-                if(player.getFace3BetCount()!=0)
-                    percent = player.getFold3BetCount()*100/player.getFace3BetCount()+"";
+                if (player.getFace3BetCount() != 0)
+                    percent = player.getFold3BetCount() * 100 / player.getFace3BetCount() + "";
                 break;
             case Constant.TYPE_STL:
-                if(player.getStlPosCount()!=0)
-                    percent = player.getStlCount()*100/player.getStlPosCount()+"";
+                if (player.getStlPosCount() != 0)
+                    percent = player.getStlCount() * 100 / player.getStlPosCount() + "";
                 break;
             case Constant.TYPE_FSTL:
-                if(player.getFaceStlCount()!=0)
-                    percent = player.getFaceStlCount()*100/player.getFaceStlCount()+"";
+                if (player.getFaceStlCount() != 0)
+                    percent = player.getFaceStlCount() * 100 / player.getFaceStlCount() + "";
+                break;
+            case Constant.TYPE_FCB:
+                if (player.getFaceCbCount() != 0)
+                    percent = player.getFoldCbCount() * 100 / player.getFaceCbCount() + "";
+                break;
+            case Constant.TYPE_FFLOP:
+                if (player.getFlopCount() != 0)
+                    percent = player.getFoldFlopCount() * 100 / player.getFlopCount() + "";
+                break;
+            case Constant.TYPE_FTURN:
+                if (player.getTurnCount() != 0)
+                    percent = player.getFoldTurnCount() * 100 / player.getTurnCount() + "";
+                break;
+            case Constant.TYPE_FRIVER:
+                if (player.getRiverCount() != 0)
+                    percent = player.getFoldRiverCount() * 100 / player.getRiverCount() + "";
                 break;
         }
         return percent;
     }
+
     //个人的总类
-    public PlayerData getSelfPlayerData(){
-        double selfTotalBBCount = 0;
-        int selfTotalWinCount = 0;
-        int selfTotalLoseCount = 0;
-        int selfTotalPlayCount = 0;
-        int selfTotalJoinCount = 0;
-        int selfTotalBet3Count = 0;
-        int selfTotalPfrCount = 0;
-        int selfTotalStlCount = 0;
-        int selfTotalFoldStlCount = 0;
-        int selfTotalFold3BetCount = 0;
-        int selfTotalFace3BetCount = 0;
-        int selfTotalFaceOpenCount = 0;
-        int selfTotalCallCount = 0;
-        int selfTotalRaiseCount = 0;
-        int selfTotalCbCount = 0;
-        int selfLastRaiseCount = 0;
-        int selfTotalSTLPositionCount = 0;
-        int selfTotalFaceSTLCount = 0;
+    public PlayerData getSelfPlayerData() {
         List<PlayerData> dataList = where("name=?", "_self").find(PlayerData.class);
+        PlayerData player = new PlayerData();
         for (int i = 0; i < dataList.size(); i++) {
             PlayerData playerData = dataList.get(i);
-            selfTotalBBCount += playerData.getBbCount();
-            selfTotalWinCount += playerData.getWinCount();
-            selfTotalLoseCount += playerData.getLoseCount();
-            selfTotalPlayCount += playerData.getPlayCount();
-            selfTotalJoinCount += playerData.getJoinCount();
-            selfTotalBet3Count += playerData.getBet3Count();
-            selfTotalPfrCount += playerData.getPfrCount();
-            selfTotalStlCount += playerData.getStlCount();
-            selfTotalFoldStlCount += playerData.getFoldStlCount();
-            selfTotalFold3BetCount += playerData.getFold3BetCount();
-            selfTotalFace3BetCount += playerData.getFace3BetCount();
-            selfTotalFaceOpenCount += playerData.getFaceOpenCount();
-            selfTotalCallCount += playerData.getCallCount();
-            selfTotalRaiseCount += playerData.getRaiseCount();
-            selfLastRaiseCount += playerData.getLastRaiseCount();
-            selfTotalCbCount += playerData.getCbCount();
-            selfTotalSTLPositionCount += playerData.getStlPosCount();
-            selfTotalFaceSTLCount += playerData.getFaceStlCount();
+            player.setBbCount(player.getBbCount() + playerData.getBbCount());
+            player.setBet3Count(player.getBet3Count() + playerData.getBet3Count());
+            player.setCallCount(playerData.getCallCount() + player.getCallCount());
+            player.setCbCount(playerData.getPlayCount() + player.getPlayCount());
+            player.setFace3BetCount(playerData.getFace3BetCount() + player.getFace3BetCount());
+            player.setFaceOpenCount(playerData.getFaceOpenCount() + player.getFaceOpenCount());
+            player.setWinCount(playerData.getWinCount() + player.getWinCount());
+            player.setLoseCount(playerData.getLoseCount() + player.getLoseCount());
+            player.setFold3BetCount(playerData.getFold3BetCount() + player.getFold3BetCount());
+            player.setFoldStlCount(playerData.getFoldStlCount() + player.getFoldStlCount());
+            player.setJoinCount(playerData.getJoinCount() + player.getJoinCount());
+            player.setRaiseCount(playerData.getRaiseCount() + player.getRaiseCount());
+            player.setLastRaiseCount(playerData.getLastRaiseCount() + player.getLastRaiseCount());
+            player.setPlayCount(playerData.getCbCount() + player.getCbCount());
+            player.setPfrCount(playerData.getPfrCount() + player.getPfrCount());
+            player.setStlPosCount(playerData.getStlPosCount() + player.getStlPosCount());
+            player.setFaceStlCount(playerData.getFaceStlCount() + player.getFaceStlCount());
+            player.setStlCount(playerData.getStlCount() + player.getStlCount());
+            player.setFaceCbCount(playerData.getFaceCbCount() + player.getFaceCbCount());
+            player.setFoldCbCount(playerData.getFoldCbCount() + player.getFoldCbCount());
+            player.setFlopCount(playerData.getFlopCount() + player.getFlopCount());
+            player.setFoldFlopCount(playerData.getFoldFlopCount() + player.getFoldFlopCount());
+            player.setTurnCount(playerData.getTurnCount() + player.getTurnCount());
+            player.setFoldTurnCount(playerData.getFoldTurnCount() + player.getFoldTurnCount());
+            player.setRiverCount(playerData.getRiverCount() + player.getRiverCount());
+            player.setFoldRiverCount(playerData.getFoldRiverCount() + player.getFoldRiverCount());
         }
-        PlayerData player = new PlayerData();
-        player.setBbCount(selfTotalBBCount);
-        player.setBet3Count(selfTotalBet3Count);
-        player.setCallCount(selfTotalCallCount);
-        player.setCbCount(selfTotalCbCount);
-        player.setFace3BetCount(selfTotalFace3BetCount);
-        player.setFaceOpenCount(selfTotalFaceOpenCount);
-        player.setWinCount(selfTotalWinCount);
-        player.setLoseCount(selfTotalLoseCount);
-        player.setFold3BetCount(selfTotalFold3BetCount);
-        player.setFoldStlCount(selfTotalFoldStlCount);
-        player.setJoinCount(selfTotalJoinCount);
-        player.setRaiseCount(selfTotalRaiseCount);
-        player.setLastRaiseCount(selfLastRaiseCount);
-        player.setPlayCount(selfTotalPlayCount);
-        player.setPfrCount(selfTotalPfrCount);
-        player.setStlPosCount(selfTotalSTLPositionCount);
-        player.setFaceStlCount(selfTotalFaceSTLCount);
         return player;
     }
+
     Handler handlerClose = new Handler();
     Runnable callBack = new Runnable() {
         @Override
@@ -495,6 +535,8 @@ public class WindowTool {
             canSelect = true;
         }
     };
+
+    /*玩家得详细信息*/
     public void createPlayerMessage(int seatIdx) {
         if (!canSelect) {
             windowManager.removeViewImmediate(view);
@@ -503,170 +545,79 @@ public class WindowTool {
             return;
         }
         canSelect = false;
-        PlayerData player = null;
         String playerName = "";
-        if(names!=null && !TextUtils.isEmpty(names.get(seatIdx))){
+        if (names != null && !TextUtils.isEmpty(names.get(seatIdx))) {
             playerName = names.get(seatIdx);
         }
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.layout_window, null, false);
             view.setBackgroundColor(context.getResources().getColor(R.color.blue));
         }
-        if(widthIdx==1){
+        if (widthIdx == 1) {
             params.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        }else if(widthIdx==0){
+            params.height = winPos_1080[winIndex][0][1][3];
+            params.x = winPos_1080[winIndex][0][1][0];
+            params.y = winPos_1080[winIndex][0][1][1];
+        } else if (widthIdx == 0) {
             params.width = winPos[winIndex][0][1][2];
+            params.height = winPos[winIndex][0][1][3];
+            params.x = winPos[winIndex][0][1][0];
+            params.y = winPos[winIndex][0][1][1];
         }
-
-        params.height = winPos[winIndex][0][1][3];
-        params.x = winPos[winIndex][0][1][0];
-        params.y = winPos[winIndex][0][1][1];
+        PlayerData player = null;
         ViewHolder vh = new ViewHolder(view);
         if (!TextUtils.isEmpty(playerName) || seatIdx == 0) {
             if (playerName.equals("_self") || seatIdx == 0) {
-                double selfTotalBBCount = 0;
-                int selfTotalWinCount = 0;
-                int selfTotalLoseCount = 0;
-                int selfTotalPlayCount = 0;
-                int selfTotalJoinCount = 0;
-                int selfTotalBet3Count = 0;
-                int selfTotalPfrCount = 0;
-                int selfTotalStlCount = 0;
-                int selfTotalFoldStlCount = 0;
-                int selfTotalFold3BetCount = 0;
-                int selfTotalFace3BetCount = 0;
-                int selfTotalFaceOpenCount = 0;
-                int selfTotalCallCount = 0;
-                int selfTotalRaiseCount = 0;
-                int selfTotalCbCount = 0;
-                int selfLastRaiseCount = 0;
-                int selfTotalSTLPositionCount = 0;
-                int selfTotalFaceSTLCount = 0;
-                List<PlayerData> dataList = where("name=?", "_self").find(PlayerData.class);
-                for (int i = 0; i < dataList.size(); i++) {
-                    PlayerData playerData = dataList.get(i);
-                    selfTotalBBCount += playerData.getBbCount();
-                    selfTotalWinCount += playerData.getWinCount();
-                    selfTotalLoseCount += playerData.getLoseCount();
-                    selfTotalPlayCount += playerData.getPlayCount();
-                    selfTotalJoinCount += playerData.getJoinCount();
-                    selfTotalBet3Count += playerData.getBet3Count();
-                    selfTotalPfrCount += playerData.getPfrCount();
-                    selfTotalStlCount += playerData.getStlCount();
-                    selfTotalFoldStlCount += playerData.getFoldStlCount();
-                    selfTotalFold3BetCount += playerData.getFold3BetCount();
-                    selfTotalFace3BetCount += playerData.getFace3BetCount();
-                    selfTotalFaceOpenCount += playerData.getFaceOpenCount();
-                    selfTotalCallCount += playerData.getCallCount();
-                    selfTotalRaiseCount += playerData.getRaiseCount();
-                    selfLastRaiseCount += playerData.getLastRaiseCount();
-                    selfTotalCbCount += playerData.getCbCount();
-                    selfTotalSTLPositionCount += playerData.getStlPosCount();
-                    selfTotalFaceSTLCount += playerData.getFaceStlCount();
-                }
-                vh.totalPlayCount.setText("自己(" + selfTotalPlayCount + ")");
-                if (selfTotalPlayCount != 0) {
-                    if (selfTotalFaceOpenCount > 0) {
-                        vh.bet3Percent.setText("3Bet(" + selfTotalBet3Count * 100 / selfTotalFaceOpenCount + "%)");
-                    } else {
-                        vh.bet3Percent.setText("3Bet(0%)");
-                    }
-                    vh.vpipPercent.setText("VPIP(" + selfTotalJoinCount * 100 / selfTotalPlayCount + "%)");
-                    vh.pfrPercent.setText("PFR(" + selfTotalPfrCount * 100 / selfTotalPlayCount + "%)");
-                    if(selfTotalSTLPositionCount>0) {
-                        vh.stlPercent.setText("STL(" + selfTotalStlCount * 100 / selfTotalSTLPositionCount + "%)");
-                    }else{
-                        vh.stlPercent.setText("STL(-%)");
-                    }
-                    if(selfTotalFaceSTLCount>0){
-                        vh.foldStlPercent.setText("FSTL(" + selfTotalFoldStlCount * 100 / selfTotalFaceSTLCount + "%)");
-                    }else{
-                        vh.foldStlPercent.setText("FSTL(-%)");
-                    }
-                    if (selfTotalFace3BetCount > 0) {
-                        vh.fold3BetPercent.setText("F3Bet(" + selfTotalFold3BetCount * 100 / selfTotalFace3BetCount + "%)");
-                    }else{
-                        vh.fold3BetPercent.setText("F3Bet(-%)");
-                    }
-                    if (selfTotalCallCount > 0) {
-                        double d = selfTotalRaiseCount / Double.valueOf(selfTotalCallCount);
-                        vh.afPercent.setText("AF(" + String.format("%.1f",d) + ")");
-                    }else{
-                        vh.afPercent.setText("AF(-)");
-                    }
-                    if (selfLastRaiseCount > 0) {
-                        vh.cbPercent.setText("CB(" + selfTotalCbCount * 100 / selfLastRaiseCount + "%)");
-                    }else{
-                        vh.cbPercent.setText("CB(-%)");
-                    }
-                }
+                List<PlayerData> playerDatas = where("name=?", "_self").find(PlayerData.class);
+                player = getSelfPlayerData();
             } else {
                 List<PlayerData> playerDatas = where("name=?", playerName).find(PlayerData.class);
                 if (playerDatas.size() > 0) {
                     player = playerDatas.get(0);
-                }
-                if (player != null) {
-                    int playCount = player.getPlayCount();
-                    vh.totalPlayCount.setText(player.getName() + "(" + playCount + ")");
-                    if (playCount != 0) {
-                        if (player.getFaceOpenCount() > 0) {
-                            vh.bet3Percent.setText("3Bet(" + player.getBet3Count() * 100 / player.getFaceOpenCount() + "%)");
-                        } else {
-                            vh.bet3Percent.setText("3Bet(-%)");
-                        }
-                        vh.vpipPercent.setText("VPIP(" + player.getJoinCount() * 100 / playCount + "%)");
-                        vh.pfrPercent.setText("PFR(" + player.getPfrCount() * 100 / playCount + "%)");
-                        if(player.getStlPosCount()>0){
-                            vh.stlPercent.setText("STL(" + player.getStlCount() * 100 / player.getStlPosCount() + "%)");
-                        }else{
-                            vh.stlPercent.setText("STL(-%)");
-                        }
-                        if(player.getFaceStlCount()>0){
-                            vh.foldStlPercent.setText("FSTL(" + player.getFoldStlCount() * 100 / player.getFaceStlCount() + "%)");
-                        }else{
-                            vh.foldStlPercent.setText("FSTL(-%)");
-                        }
-                        if (player.getFace3BetCount() > 0) {
-                            vh.fold3BetPercent.setText("F3Bet(" + player.getFold3BetCount() * 100 / player.getFace3BetCount() + "%)");
-                        }else{
-                            vh.fold3BetPercent.setText("F3Bet(-%)");
-                        }
-                        if (player.getCallCount() > 0) {
-                            double i = player.getRaiseCount() / Double.valueOf(player.getCallCount());
-                            vh.afPercent.setText("AF(" + String.format("%.1f",i) + ")");
-                        }else{
-                            vh.afPercent.setText("AF(-)");
-                        }
-                        if (player.getLastRaiseCount() > 0) {
-                            vh.cbPercent.setText("CB(" + player.getCbCount() * 100 / player.getLastRaiseCount() + "%)");
-                        }else{
-                            vh.cbPercent.setText("CB(-%)");
-                        }
-                    }
-                }else{
-                    vh.totalPlayCount.setText("(-)");
-                    vh.bet3Percent.setText("3Bet(-%)");
-                    vh.vpipPercent.setText("VPIP(-%)");
-                    vh.pfrPercent.setText("PFR(-%)");
-                    vh.stlPercent.setText("STL(-%)");
-                    vh.foldStlPercent.setText("FSTL(-%)");
-                    vh.fold3BetPercent.setText("F3Bet(-%)");
-                    vh.afPercent.setText("AF(-)");
-                    vh.cbPercent.setText("CB(-%)");
                 }
             }
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.layout_window, null, false);
             view.setBackgroundColor(context.getResources().getColor(R.color.blue));
         }
+        if (widthIdx == 1) {
+            vh.pos1.setTextSize(8);
+            vh.pos2.setTextSize(8);
+            vh.pos3.setTextSize(8);
+            vh.pos4.setTextSize(8);
+            vh.pos5.setTextSize(8);
+            vh.pos6.setTextSize(8);
+            vh.pos7.setTextSize(8);
+            vh.pos8.setTextSize(8);
+            vh.pos9.setTextSize(8);
+            vh.pos10.setTextSize(8);
+            vh.pos11.setTextSize(8);
+            vh.pos12.setTextSize(8);
+            vh.pos13.setTextSize(8);
+        }
+        if (player != null) {
+            vh.pos1.setText(playerName + getPercent(player, Constant.TYPE_HAND));
+            vh.pos2.setText(Constant.percentTypes[1] + "(" + getPercent(player, Constant.TYPE_VPIP) + "%)");
+            vh.pos3.setText(Constant.percentTypes[2] + "(" + getPercent(player, Constant.TYPE_PFR) + "%)");
+            vh.pos4.setText(Constant.percentTypes[3] + "(" + getPercent(player, Constant.TYPE_3BET) + "%)");
+            vh.pos5.setText(Constant.percentTypes[4] + "(" + getPercent(player, Constant.TYPE_CB) + "%)");
+            vh.pos6.setText(Constant.percentTypes[5] + "(" + getPercent(player, Constant.TYPE_AF) + ")");
+            vh.pos7.setText(Constant.percentTypes[6] + "(" + getPercent(player, Constant.TYPE_F3BET) + "%)");
+            vh.pos8.setText(Constant.percentTypes[7] + "(" + getPercent(player, Constant.TYPE_STL) + "%)");
+            vh.pos9.setText(Constant.percentTypes[8] + "(" + getPercent(player, Constant.TYPE_FSTL) + "%)");
+            vh.pos10.setText(Constant.percentTypes[9] + "(" + getPercent(player, Constant.TYPE_FCB) + "%)");
+            vh.pos11.setText(Constant.percentTypes[10] + "(" + getPercent(player, Constant.TYPE_FFLOP) + "%)");
+            vh.pos12.setText(Constant.percentTypes[11] + "(" + getPercent(player, Constant.TYPE_FTURN) + "%)");
+            vh.pos13.setText(Constant.percentTypes[12] + "(" + getPercent(player, Constant.TYPE_FRIVER) + "%)");
+        }
         windowManager.addView(view, params);
         handlerClose.postDelayed(callBack, 5000);
     }
 
     public void updateWindow(String percent) {
-        if(textView==null){
-             createWindow(percent);
-        }else{
+        if (textView == null) {
+            createWindow(percent);
+        } else {
             params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
             params.format = PixelFormat.RGBA_8888;
             params.width = winPos[winIndex][0][0][2];
@@ -680,7 +631,7 @@ public class WindowTool {
     }
 
     public void deleteWindow() {
-        if (havePercentWindow && windowManager != null && textView!=null) {
+        if (havePercentWindow && windowManager != null && textView != null) {
             windowManager.removeViewImmediate(textView);//删除手牌胜率悬浮框
             havePercentWindow = false;
             textView = null;
@@ -694,26 +645,37 @@ public class WindowTool {
             haveSeatsWindow = false;
         }
     }
-
-    static class ViewHolder {
-        @BindView(R.id.totalPlayCount)
-        TextView totalPlayCount;
-        @BindView(R.id.vpipPercent)
-        TextView vpipPercent;
-        @BindView(R.id.pfrPercent)
-        TextView pfrPercent;
-        @BindView(R.id.bet3Percent)
-        TextView bet3Percent;
-        @BindView(R.id.foldBet3Percent)
-        TextView fold3BetPercent;
-        @BindView(R.id.cbPercent)
-        TextView cbPercent;
-        @BindView(R.id.afPercent)
-        TextView afPercent;
-        @BindView(R.id.stlPercent)
-        TextView stlPercent;
-        @BindView(R.id.foldStlPercent)
-        TextView foldStlPercent;
+    class ViewHolder {
+        @BindView(R.id.pos1)
+        TextView pos1;
+        @BindView(R.id.pos2)
+        TextView pos2;
+        @BindView(R.id.pos3)
+        TextView pos3;
+        @BindView(R.id.pos4)
+        TextView pos4;
+        @BindView(R.id.pos5)
+        TextView pos5;
+        @BindView(R.id.pos6)
+        TextView pos6;
+        @BindView(R.id.pos7)
+        TextView pos7;
+        @BindView(R.id.pos8)
+        TextView pos8;
+        @BindView(R.id.pos9)
+        TextView pos9;
+        @BindView(R.id.pos10)
+        TextView pos10;
+        @BindView(R.id.pos11)
+        TextView pos11;
+        @BindView(R.id.pos12)
+        TextView pos12;
+        @BindView(R.id.pos13)
+        TextView pos13;
+        @BindView(R.id.pos14)
+        TextView pos14;
+        @BindView(R.id.pos15)
+        TextView pos15;
         @BindView(R.id.item)
         LinearLayout item;
 

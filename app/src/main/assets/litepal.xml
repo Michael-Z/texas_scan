@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value="playersData"></dbname>
-    <version value="21"></version>
+    <version value="22"></version>
     <list>
         <mapping class = "com.ruilonglai.texas_scan.entity.PlayerData"></mapping>
         <mapping class="com.ruilonglai.texas_scan.entity.OneHand"></mapping>

@@ -31,6 +31,14 @@ public class PlayerData extends DataSupport {
     private int cbCount;
     private int stlPosCount;
     private int faceStlCount;
+    private int flopCount;
+    private int foldFlopCount;
+    private int turnCount;
+    private int foldTurnCount;
+    private int riverCount;
+    private int FoldRiverCount;
+    private int foldCbCount;
+    private int faceCbCount;
 
     public String getSeatFlag() {
         return seatFlag;
@@ -214,5 +222,69 @@ public class PlayerData extends DataSupport {
 
     public void setFaceStlCount(int faceStlCount) {
         this.faceStlCount = faceStlCount;
+    }
+
+    public int getFlopCount() {
+        return flopCount;
+    }
+
+    public void setFlopCount(int flopCount) {
+        this.flopCount = flopCount;
+    }
+
+    public int getTurnCount() {
+        return turnCount;
+    }
+
+    public void setTurnCount(int turnCount) {
+        this.turnCount = turnCount;
+    }
+
+    public int getRiverCount() {
+        return riverCount;
+    }
+
+    public void setRiverCount(int riverCount) {
+        this.riverCount = riverCount;
+    }
+
+    public int getFoldCbCount() {
+        return foldCbCount;
+    }
+
+    public void setFoldCbCount(int foldCbCount) {
+        this.foldCbCount = foldCbCount;
+    }
+
+    public int getFaceCbCount() {
+        return faceCbCount;
+    }
+
+    public void setFaceCbCount(int faceCbCount) {
+        this.faceCbCount = faceCbCount;
+    }
+
+    public int getFoldFlopCount() {
+        return foldFlopCount;
+    }
+
+    public void setFoldFlopCount(int foldFlopCount) {
+        this.foldFlopCount = foldFlopCount;
+    }
+
+    public int getFoldTurnCount() {
+        return foldTurnCount;
+    }
+
+    public void setFoldTurnCount(int foldTurnCount) {
+        this.foldTurnCount = foldTurnCount;
+    }
+
+    public int getFoldRiverCount() {
+        return FoldRiverCount;
+    }
+
+    public void setFoldRiverCount(int foldRiverCount) {
+        FoldRiverCount = foldRiverCount;
     }
 }

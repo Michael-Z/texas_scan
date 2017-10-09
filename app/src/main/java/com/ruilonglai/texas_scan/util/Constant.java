@@ -268,7 +268,7 @@ public final class Constant {
             {
                     {
                             {20, 110, 80, 40},
-                            {200, 730, 350, -2},
+                            {190, 500, 350, -2},
                             {100, 110, 100, 50},
                             {60, 555, 100, 50},
                             {60, 795, 100, 50},
@@ -282,7 +282,7 @@ public final class Constant {
                     },
                     {
                             {50, 230, 80, 40},
-                            {200, 730, 350, -2},
+                            {190, 500, 350, -2},
                             {100, 130, 100, 50},
                             {60, 555, 100, 50},
                             {60, 795, 100, 50},
@@ -295,7 +295,7 @@ public final class Constant {
                     },
                     {
                             {50, 230, 80, 40},
-                            {200, 730, 350, -2},
+                            {190, 500, 350, -2},
                             {100, 130, 100, 50},
                             {15,  580, 100, 50},
                             {15,  970, 100, 50},
@@ -307,7 +307,7 @@ public final class Constant {
                     },
                     {
                             {50, 230, 80, 40},
-                            {200, 730, 350, -2},
+                            {190, 500, 350, -2},
                             {100, 130, 100, 50},
                             {30,  350, 100, 50},
                             {30,  980, 100, 50},
@@ -318,7 +318,7 @@ public final class Constant {
                     },
                     {
                             {20, 110, 80, 40},
-                            {200, 730, 350, -2},
+                            {190, 500, 350, -2},
                             {100, 110, 100, 50},
                             {420, 1150, 100, 50},
                             {200, 180, 100, 50},
@@ -476,6 +476,7 @@ public final class Constant {
                     }
             }
     };
+    /*概率类型*/
     public final static int TYPE_HAND = 0;
     public final static int TYPE_VPIP = 1;
     public final static int TYPE_PFR = 2;
@@ -485,6 +486,11 @@ public final class Constant {
     public final static int TYPE_F3BET= 6;
     public final static int TYPE_STL = 7;
     public final static int TYPE_FSTL = 8;
+    public final static int TYPE_FCB = 9;
+    public final static int TYPE_FFLOP = 10;
+    public final static int TYPE_FTURN = 11;
+    public final static int TYPE_FRIVER = 12;
+
 
     public static String[] percentTypes = {
             "手数",
@@ -495,7 +501,11 @@ public final class Constant {
             "AF",
             "F3Bet",
             "STL",
-            "FSTL"
+            "FSTL",
+            "FCB",
+            "FFlop",
+            "FTurn",
+            "FRiver"
     };
     public static String[] percentContents = {
             "记录的总手数",
@@ -506,7 +516,11 @@ public final class Constant {
             "翻牌圈,转牌圈和河牌圈总的加注次数/总的跟注次数",
             "面对有人做3Bet动作后弃牌的频率",
             "在未加注过的底池，玩家在CO，按钮或者小盲注位置加注，称为偷盲",
-            "玩家在面对偷盲企图时，弃牌的频率"
+            "玩家在面对偷盲企图时，弃牌的频率",
+            "翻牌前的加注者在翻拍圈接着下注后跟进来的人弃牌",
+            "在翻牌圈,弃牌的频率",
+            "在转牌圈,弃牌的频率",
+            "在河牌圈,弃牌的频率"
     };
 
 }

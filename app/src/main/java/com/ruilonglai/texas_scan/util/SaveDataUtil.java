@@ -104,6 +104,10 @@ public class SaveDataUtil {
                 if(user!=null){
                     if(user.getFoldRound()>-1){
                         playerData.setFoldCount(playerData.getFoldCount()+1);
+                        setFlopTurnRiverFoldPercent(user.getFoldRound(),playerData);
+                    }
+                    if(user.getLastActionRound()>1){
+                        setFaceFlopTurnRiverFoldPercent(user.getLastActionRound(),playerData);
                     }
                     if(user.isJoin()){
                         playerData.setJoinCount(playerData.getJoinCount()+1);
@@ -147,6 +151,12 @@ public class SaveDataUtil {
                     if(user.isStlPosition()){
                         playerData.setStlPosCount(playerData.getStlPosCount()+1);
                     }
+                    if(user.isFaceCB()){
+                        playerData.setFaceCbCount(playerData.getFaceCbCount()+1);
+                    }
+                    if(user.isFoldCB()){
+                        playerData.setFoldCbCount(playerData.getFoldCbCount()+1);
+                    }
                     if(playerDatas.size()>0){
                         playerData.updateAll("seatflag=? and name=?", seatFlag, "_self");
                     }else{
@@ -186,6 +196,10 @@ public class SaveDataUtil {
                 }
                 if(gamer.getFoldRound()>-1){
                     playerData.setFoldCount(playerData.getFoldCount()+1);
+                    setFlopTurnRiverFoldPercent(gamer.getFoldRound(),playerData);
+                }
+                if(gamer.getLastActionRound()>1){
+                    setFaceFlopTurnRiverFoldPercent(gamer.getLastActionRound(),playerData);
                 }
                 if(gamer.isJoin()){
                     playerData.setJoinCount(playerData.getJoinCount()+1);
@@ -229,6 +243,12 @@ public class SaveDataUtil {
                 if(gamer.isStlPosition()){
                     playerData.setStlPosCount(playerData.getStlPosCount()+1);
                 }
+                if(gamer.isFaceCB()){
+                    playerData.setFaceCbCount(playerData.getFaceCbCount()+1);
+                }
+                if(gamer.isFoldCB()){
+                    playerData.setFoldCbCount(playerData.getFoldCbCount()+1);
+                }
                 if(datas.size()>0){
                     playerData.updateAll("name=?",name);
                 }else{
@@ -252,5 +272,28 @@ public class SaveDataUtil {
             }
         }
         return null;
+    }
+    /*设置各条街的弃牌率*/
+    public void setFlopTurnRiverFoldPercent(int foldCount,PlayerData player){
+        if(foldCount==3){
+            player.setFoldFlopCount(player.getFoldFlopCount()+1);
+        }else if(foldCount==4){
+            player.setFoldTurnCount(player.getFoldTurnCount()+1);
+        }else if(foldCount==5){
+            player.setFoldRiverCount(player.getFoldTurnCount()+1);
+        }
+    }
+    /*设置各条街的次数*/
+    public void setFaceFlopTurnRiverFoldPercent(int lastCount,PlayerData player){
+        if(lastCount==3){
+            player.setFlopCount(player.getFlopCount()+1);
+        }else if(lastCount==4){
+            player.setFlopCount(player.getFlopCount()+1);
+            player.setTurnCount(player.getTurnCount()+1);
+        }else if(lastCount==5){
+            player.setFlopCount(player.getFlopCount()+1);
+            player.setTurnCount(player.getTurnCount()+1);
+            player.setRiverCount(player.getRiverCount()+1);
+        }
     }
 }

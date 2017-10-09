@@ -5,17 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Result {
-	public boolean suc;
+	public boolean result;
 	public String code;
 	public String msg;
 	public HashMap<String,String> rets=new HashMap<String, String>();
 
-	public boolean isSuc() {
-		return suc;
+	public boolean isResult() {
+		return result;
 	}
-	public void setSuc(boolean suc) {
-		this.suc = suc;
+
+	public void setResult(boolean result) {
+		this.result = result;
 	}
+
 	public String getMsg() {
 		return msg;
 	}
@@ -35,7 +37,4 @@ public class Result {
 	public void setRets(HashMap<String, String> rets) {
 		this.rets = rets;
 	}
-
-
-
 }

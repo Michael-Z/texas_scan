@@ -122,6 +122,7 @@ public class ActionsTool {
         int pfrRaiseCount = 0;
         int lastRaiseSeatIdx = -1;
         boolean haveKnowTheLastRaiseSeatIdx = false;
+        boolean haveCB = false;
         int lastRoundIdx = 0;
         for (int i = 0; i < actions.size(); i++) {
             GameAction action = actions.get(i);
@@ -129,8 +130,8 @@ public class ActionsTool {
             GameUser user = users.get(seatIdx);
             if(user==null)
                 continue;
-            if(action.getRound()<lastRoundIdx){
-                continue;
+            if(action.getRound()<lastRoundIdx){//当前都做所在街数小于上一个动作的街数，则后续动作都不记录
+                break;
             }
             int addMoney = action.getAddMoney();
             int lastMoney = lastActionMoney.get(seatIdx);
@@ -149,6 +150,7 @@ public class ActionsTool {
                         haveKnowTheLastRaiseSeatIdx = true;
                     }
                 }
+                user.setLastActionRound(action.getRound());
                 switch (action.getRound()){
                     case 0:
                         if((addMoney+lastMoney)==changeMoney){
@@ -196,6 +198,9 @@ public class ActionsTool {
                         }
                         break;
                     case 3 :
+                        if(haveCB){
+                            user.setFaceCB(true);
+                        }
                         if((addMoney+lastMoney)==changeMoney){
                             user.setCallCount(user.getCallCount()+1);
                             action.setAction(Constant.ACTION_CALL);
@@ -206,12 +211,16 @@ public class ActionsTool {
                             action.setAction(Constant.ACTION_RAISE);
                             if(user.isPreFlopLastRaise()){//翻拍后再加注
                                 user.setCB(true);
+                                haveCB = true;
                             }
                             changeMoney = addMoney + lastMoney;
                             lastActionMoney.put(seatIdx,addMoney+lastMoney);
                         }else{
                             if(action.getAction() == Constant.ACTION_FOLD){
                                 user.setFoldRound(action.getRound());
+                                if(haveCB){
+                                    user.setFoldCB(true);
+                                }
                             }
                         }
                         break;
