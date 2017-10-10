@@ -509,7 +509,7 @@ public final class Constant {
     };
     public static String[] percentContents = {
             "记录的总手数",
-            "主动往彩池里投钱的频率,大小盲不计，除非在这两个位置再跟注或者加注",
+            "主动进池的频率（大盲或straddle位过牌入池不计）",
             "翻牌前主动下注的频率",
             "面对有人加注,再次加注的频率,4bet,5bet等都算3bet",
             "翻牌前最后一个加注,在翻牌圈再加注的频率",
@@ -522,5 +522,4 @@ public final class Constant {
             "在转牌圈,弃牌的频率",
             "在河牌圈,弃牌的频率"
     };
-
 }

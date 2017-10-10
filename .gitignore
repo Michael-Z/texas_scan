@@ -1,8 +1,7 @@
 *.iml
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
+/.idea
 .DS_Store
 /build
 /captures
@@ -11,3 +10,4 @@
 /id_rsa
 /id_rsa.pub
 /spinner_lib/build
+/.idea

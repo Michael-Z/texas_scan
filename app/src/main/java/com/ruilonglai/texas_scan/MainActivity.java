@@ -436,7 +436,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 DataSupport.deleteAll(MyData.class);
                 DataSupport.deleteAll(OneHand.class);
                 DataSupport.deleteAll(OneHandLog.class);
-                mineFragment.getSelfSeatsData();
+                if(fragIdx==0){
+                    messageFragment.notifyDataSetChaged();
+                }else if(fragIdx==2){
+                    mineFragment.getSelfSeatsData();
+                }
                 break;
             case 3:
                 AssetsCopyUtil.copyDataBaseToSD(MainActivity.this);

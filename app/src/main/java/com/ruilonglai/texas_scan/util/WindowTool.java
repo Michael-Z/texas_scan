@@ -297,36 +297,36 @@ public class WindowTool {
                     data.setParam(param);
                     data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
                     data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
-                    HttpUtil.sendPostRequestData("queryself", gson.toJson(data), new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            Log.e("WindowTool", "response:(error)" + e.toString());
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String json = response.body().string();
-                            Log.e("WindowTool", "response:" + json);
-                            Result result = GsonUtil.parseJsonWithGson(json, Result.class);
-                            Map<String, String> map = result.getRets();
-                            String players = map.get("listuser");
-                            List<PlayerData> playerDatas = new ArrayList<PlayerData>();
-                            Type listType = new TypeToken<List<PlayerData>>() {
-                            }.getType();
-                            playerDatas = new Gson().fromJson(players, listType);
-                            if (playerDatas != null) {
-                                for (int i = 0; i < playerDatas.size(); i++) {
-                                    PlayerData playerData = playerDatas.get(i);
-                                    List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
-                                    if (datas.size() > 0) {
-                                        playerData.updateAll("name=?", playerData.getName());
-                                    } else {
-                                        playerData.save();
-                                    }
-                                }
-                            }
-                        }
-                    });
+//                    HttpUtil.sendPostRequestData("queryself", gson.toJson(data), new Callback() {
+//                        @Override
+//                        public void onFailure(Call call, IOException e) {
+//                            Log.e("WindowTool", "response:(error)" + e.toString());
+//                        }
+//
+//                        @Override
+//                        public void onResponse(Call call, Response response) throws IOException {
+//                            String json = response.body().string();
+//                            Log.e("WindowTool", "response:" + json);
+//                            Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+//                            Map<String, String> map = result.getRets();
+//                            String players = map.get("listuser");
+//                            List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+//                            Type listType = new TypeToken<List<PlayerData>>() {
+//                            }.getType();
+//                            playerDatas = new Gson().fromJson(players, listType);
+//                            if (playerDatas != null) {
+//                                for (int i = 0; i < playerDatas.size(); i++) {
+//                                    PlayerData playerData = playerDatas.get(i);
+//                                    List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
+//                                    if (datas.size() > 0) {
+//                                        playerData.updateAll("name=?", playerData.getName());
+//                                    } else {
+//                                        playerData.save();
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    });
                 } else {
                     usernames.add(name);
                 }
@@ -336,36 +336,36 @@ public class WindowTool {
         data.setParam(gson.toJson(user));
         data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
         data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
-        HttpUtil.sendPostRequestData("queryuser", gson.toJson(data), new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("WindowTool", "response:(error)" + e.toString());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String json = response.body().string();
-                Log.e("WindowTool", "response:" + json);
-                Result result = GsonUtil.parseJsonWithGson(json, Result.class);
-                Map<String, String> map = result.getRets();
-                String players = map.get("listuser");
-                List<PlayerData> playerDatas = new ArrayList<PlayerData>();
-                Type listType = new TypeToken<List<PlayerData>>() {
-                }.getType();
-                playerDatas = new Gson().fromJson(players, listType);
-                if(playerDatas!=null){
-                    for (int i = 0; i < playerDatas.size(); i++) {
-                        PlayerData playerData = playerDatas.get(i);
-                        List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
-                        if (datas.size() > 0) {
-                            playerData.updateAll("name=?", playerData.getName());
-                        } else {
-                            playerData.save();
-                        }
-                    }
-                }
-            }
-        });
+//        HttpUtil.sendPostRequestData("queryuser", gson.toJson(data), new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.e("WindowTool", "response:(error)" + e.toString());
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                String json = response.body().string();
+//                Log.e("WindowTool", "response:" + json);
+//                Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+//                Map<String, String> map = result.getRets();
+//                String players = map.get("listuser");
+//                List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+//                Type listType = new TypeToken<List<PlayerData>>() {
+//                }.getType();
+//                playerDatas = new Gson().fromJson(players, listType);
+//                if(playerDatas!=null){
+//                    for (int i = 0; i < playerDatas.size(); i++) {
+//                        PlayerData playerData = playerDatas.get(i);
+//                        List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
+//                        if (datas.size() > 0) {
+//                            playerData.updateAll("name=?", playerData.getName());
+//                        } else {
+//                            playerData.save();
+//                        }
+//                    }
+//                }
+//            }
+//        });
     }
 
     /*改变显示设置的时候重新获取显示列表*/
@@ -498,7 +498,7 @@ public class WindowTool {
             player.setBbCount(player.getBbCount() + playerData.getBbCount());
             player.setBet3Count(player.getBet3Count() + playerData.getBet3Count());
             player.setCallCount(playerData.getCallCount() + player.getCallCount());
-            player.setCbCount(playerData.getPlayCount() + player.getPlayCount());
+            player.setPlayCount(playerData.getPlayCount() + player.getPlayCount());
             player.setFace3BetCount(playerData.getFace3BetCount() + player.getFace3BetCount());
             player.setFaceOpenCount(playerData.getFaceOpenCount() + player.getFaceOpenCount());
             player.setWinCount(playerData.getWinCount() + player.getWinCount());
@@ -508,7 +508,7 @@ public class WindowTool {
             player.setJoinCount(playerData.getJoinCount() + player.getJoinCount());
             player.setRaiseCount(playerData.getRaiseCount() + player.getRaiseCount());
             player.setLastRaiseCount(playerData.getLastRaiseCount() + player.getLastRaiseCount());
-            player.setPlayCount(playerData.getCbCount() + player.getCbCount());
+            player.setCbCount(playerData.getCbCount() + player.getCbCount());
             player.setPfrCount(playerData.getPfrCount() + player.getPfrCount());
             player.setStlPosCount(playerData.getStlPosCount() + player.getStlPosCount());
             player.setFaceStlCount(playerData.getFaceStlCount() + player.getFaceStlCount());

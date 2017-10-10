@@ -40,8 +40,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.LoginActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.JihuoActivity"
             android:screenOrientation="portrait" />

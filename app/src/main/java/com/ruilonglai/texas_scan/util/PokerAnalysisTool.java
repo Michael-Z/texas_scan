@@ -281,14 +281,14 @@ public class PokerAnalysisTool {
                     return;
                 }
             }
-//            json = ScanTool.ScanCurDichi(bitmap);
-//            curDichi = getJsonMes(json,"curdichi ");
-//            json = ScanTool.ScanDichi(bitmap);
-//            Log.e(TAG,json);
-//            dichi = getJsonMes(json,"dichi");
-//            json = ScanTool.ScanAnte(bitmap);
-//            Log.e(TAG,json);
-//            ante = getJsonMes(json,"ante");
+            json = ScanTool.ScanCurDichi(bitmap);
+            curDichi = getJsonMes(json,"curdichi ");
+            json = ScanTool.ScanDichi(bitmap);
+            Log.e(TAG,json);
+            dichi = getJsonMes(json,"dichi");
+            json = ScanTool.ScanAnte(bitmap);
+            Log.e(TAG,json);
+            ante = getJsonMes(json,"ante");
             if(blinds == -1 || blinds == 0)
             {
                 json = ScanTool.ScanBlinds(bitmap);
