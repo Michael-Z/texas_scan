@@ -1,8 +1,10 @@
 package com.ruilonglai.texas_scan.newprocess;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.ruilonglai.texas_scan.MainActivity;
 import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 
@@ -68,7 +70,7 @@ public class MainServer {
         accept.close();
         ss.close();
     }
-    public void send(Package pkg){
+    public void send(Package pkg, Context context){
         try {
             String msg = new Gson().toJson(pkg,Package.class);
             byte[] bytes = msg.getBytes();
@@ -78,7 +80,8 @@ public class MainServer {
             outStr.write(s.getBytes());
             outStr.write(bytes);
         } catch (IOException e) {
-            Log.e(TAG,"发送数据失败");
+            Log.e(TAG,"Main发送数据失败");
+            MainProcessUtil.getInstance().exit(context);
         }
     }
     class RecvServer implements Runnable{

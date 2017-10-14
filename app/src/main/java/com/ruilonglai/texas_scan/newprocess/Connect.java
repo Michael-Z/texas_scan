@@ -105,7 +105,7 @@ public class Connect {
             outStr.write(s.getBytes());
             outStr.write(bytes);
         } catch (IOException e) {
-            Log.e(TAG,"发送数据失败");
+            Log.e(TAG,"bytes发送数据失败");
         }
     }
     public void setCallback(CallBack callback){

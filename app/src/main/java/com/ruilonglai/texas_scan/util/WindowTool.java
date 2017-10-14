@@ -297,36 +297,36 @@ public class WindowTool {
                     data.setParam(param);
                     data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
                     data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
-//                    HttpUtil.sendPostRequestData("queryself", gson.toJson(data), new Callback() {
-//                        @Override
-//                        public void onFailure(Call call, IOException e) {
-//                            Log.e("WindowTool", "response:(error)" + e.toString());
-//                        }
-//
-//                        @Override
-//                        public void onResponse(Call call, Response response) throws IOException {
-//                            String json = response.body().string();
-//                            Log.e("WindowTool", "response:" + json);
-//                            Result result = GsonUtil.parseJsonWithGson(json, Result.class);
-//                            Map<String, String> map = result.getRets();
-//                            String players = map.get("listuser");
-//                            List<PlayerData> playerDatas = new ArrayList<PlayerData>();
-//                            Type listType = new TypeToken<List<PlayerData>>() {
-//                            }.getType();
-//                            playerDatas = new Gson().fromJson(players, listType);
-//                            if (playerDatas != null) {
-//                                for (int i = 0; i < playerDatas.size(); i++) {
-//                                    PlayerData playerData = playerDatas.get(i);
-//                                    List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
-//                                    if (datas.size() > 0) {
-//                                        playerData.updateAll("name=?", playerData.getName());
-//                                    } else {
-//                                        playerData.save();
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    });
+                    HttpUtil.sendPostRequestData("queryself", gson.toJson(data), new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e("WindowTool", "response:(error)" + e.toString());
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String json = response.body().string();
+                            Log.e("WindowTool", "response:" + json);
+                            Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+                            Map<String, String> map = result.getRets();
+                            String players = map.get("listuser");
+                            List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+                            Type listType = new TypeToken<List<PlayerData>>() {
+                            }.getType();
+                            playerDatas = new Gson().fromJson(players, listType);
+                            if (playerDatas != null) {
+                                for (int i = 0; i < playerDatas.size(); i++) {
+                                    PlayerData playerData = playerDatas.get(i);
+                                    List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
+                                    if (datas.size() > 0) {
+                                        playerData.updateAll("name=?", playerData.getName());
+                                    } else {
+                                        playerData.save();
+                                    }
+                                }
+                            }
+                        }
+                    });
                 } else {
                     usernames.add(name);
                 }
@@ -336,36 +336,36 @@ public class WindowTool {
         data.setParam(gson.toJson(user));
         data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
         data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
-//        HttpUtil.sendPostRequestData("queryuser", gson.toJson(data), new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                Log.e("WindowTool", "response:(error)" + e.toString());
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                String json = response.body().string();
-//                Log.e("WindowTool", "response:" + json);
-//                Result result = GsonUtil.parseJsonWithGson(json, Result.class);
-//                Map<String, String> map = result.getRets();
-//                String players = map.get("listuser");
-//                List<PlayerData> playerDatas = new ArrayList<PlayerData>();
-//                Type listType = new TypeToken<List<PlayerData>>() {
-//                }.getType();
-//                playerDatas = new Gson().fromJson(players, listType);
-//                if(playerDatas!=null){
-//                    for (int i = 0; i < playerDatas.size(); i++) {
-//                        PlayerData playerData = playerDatas.get(i);
-//                        List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
-//                        if (datas.size() > 0) {
-//                            playerData.updateAll("name=?", playerData.getName());
-//                        } else {
-//                            playerData.save();
-//                        }
-//                    }
-//                }
-//            }
-//        });
+        HttpUtil.sendPostRequestData("queryuser", gson.toJson(data), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("WindowTool", "response:(error)" + e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                Log.e("WindowTool", "response:" + json);
+                Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+                Map<String, String> map = result.getRets();
+                String players = map.get("listuser");
+                List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+                Type listType = new TypeToken<List<PlayerData>>() {
+                }.getType();
+                playerDatas = new Gson().fromJson(players, listType);
+                if(playerDatas!=null){
+                    for (int i = 0; i < playerDatas.size(); i++) {
+                        PlayerData playerData = playerDatas.get(i);
+                        List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
+                        if (datas.size() > 0) {
+                            playerData.updateAll("name=?", playerData.getName());
+                        } else {
+                            playerData.save();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /*改变显示设置的时候重新获取显示列表*/
@@ -392,7 +392,8 @@ public class WindowTool {
             }
         }
         List<PlayerData> playerDatas = DataSupport.where("name=?", name).find(PlayerData.class);
-        if (playerDatas.size() == 0) {
+        if (playerDatas.size() == 0 || "E".equals(name) || "玲".equals(name)|| "纹".equals(name) || "C".equals(name) || "c".equals(name)
+                || "5".equals(name) || "2".equals(name)) {
             sb.append("－|－|－\n－|－|－");
         } else {
             PlayerData playerData = null;
@@ -571,9 +572,14 @@ public class WindowTool {
                 List<PlayerData> playerDatas = where("name=?", "_self").find(PlayerData.class);
                 player = getSelfPlayerData();
             } else {
-                List<PlayerData> playerDatas = where("name=?", playerName).find(PlayerData.class);
-                if (playerDatas.size() > 0) {
-                    player = playerDatas.get(0);
+                if("E".equals(playerName) || "玲".equals(playerName)|| "纹".equals(playerName) || "C".equals(playerName) || "c".equals(playerName)
+                        || "5".equals(playerName) || "2".equals(playerName)){
+                    player = new PlayerData();
+                }else{
+                    List<PlayerData> playerDatas = where("name=?", playerName).find(PlayerData.class);
+                    if (playerDatas.size() > 0) {
+                        player = playerDatas.get(0);
+                    }
                 }
             }
         } else {
@@ -609,6 +615,20 @@ public class WindowTool {
             vh.pos11.setText(Constant.percentTypes[10] + "(" + getPercent(player, Constant.TYPE_FFLOP) + "%)");
             vh.pos12.setText(Constant.percentTypes[11] + "(" + getPercent(player, Constant.TYPE_FTURN) + "%)");
             vh.pos13.setText(Constant.percentTypes[12] + "(" + getPercent(player, Constant.TYPE_FRIVER) + "%)");
+        }else{
+            vh.pos1.setText(playerName+"(-)");
+            vh.pos2.setText(Constant.percentTypes[1] + "(-%)");
+            vh.pos3.setText(Constant.percentTypes[2] + "(-%)");
+            vh.pos4.setText(Constant.percentTypes[3] + "(-%)");
+            vh.pos5.setText(Constant.percentTypes[4] + "(-%)");
+            vh.pos6.setText(Constant.percentTypes[5] + "(-)");
+            vh.pos7.setText(Constant.percentTypes[6] + "(-%)");
+            vh.pos8.setText(Constant.percentTypes[7] + "(-%)");
+            vh.pos9.setText(Constant.percentTypes[8] + "(-%)");
+            vh.pos10.setText(Constant.percentTypes[9] + "(-%)");
+            vh.pos11.setText(Constant.percentTypes[10] + "(-%)");
+            vh.pos12.setText(Constant.percentTypes[11] + "(-%)");
+            vh.pos13.setText(Constant.percentTypes[12] + "(-%)");
         }
         windowManager.addView(view, params);
         handlerClose.postDelayed(callBack, 5000);

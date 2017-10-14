@@ -283,18 +283,26 @@ public class PokerAnalysisTool {
             }
             json = ScanTool.ScanCurDichi(bitmap);
             curDichi = getJsonMes(json,"curdichi ");
-            json = ScanTool.ScanDichi(bitmap);
-            Log.e(TAG,json);
-            dichi = getJsonMes(json,"dichi");
+//            json = ScanTool.ScanDichi(bitmap);
+//            Log.e(TAG,json);
+//            dichi = getJsonMes(json,"dichi");
             json = ScanTool.ScanAnte(bitmap);
             Log.e(TAG,json);
             ante = getJsonMes(json,"ante");
-            if(blinds == -1 || blinds == 0)
+            if(blinds < 0)
             {
                 json = ScanTool.ScanBlinds(bitmap);
                 Log.e("blindsjson",json);
-                blinds =  getJsonMes(json,"blinds");
                 straddle = getJsonMes(json,"straddle");
+                if(flag!=1){
+                    blinds =  getJsonMes(json,"half-blinds")*2;
+                    if(straddle==0 && flag==0){
+                        blinds = getJsonMes(json,"blinds");
+                    }
+                }else{
+                    blinds =  getJsonMes(json,"blinds");
+                }
+
                 if(straddle>0){
                     straddle = blinds*2;
                 }
@@ -325,7 +333,7 @@ public class PokerAnalysisTool {
                 String json = ScanTool.ScanSeat(bitmap, i);
                 Seat seat = gson.fromJson(json, Seat.class);
                 Log.e(TAG,i+"号位"+seat.toString());
-                if(seat.getMoney() > 0 || i == btnIdx || seat.getHidecard()==1)
+                if((seat.getMoney() > 0 && seat.getMoney()<300000) || i == btnIdx || seat.getHidecard()==1)
                 {
                     playSeats.put(i,i);
                 }
@@ -550,6 +558,8 @@ public class PokerAnalysisTool {
                     if(user!=null && TextUtils.isEmpty(user.getSeatFlag()))
                     {
                         user.setSeatFlag(CardUtil.getSeatFlag(playSeats.size(),i-indexOfValue));
+                    }else{
+                        continue;
                     }
                     int lastMoney = lastSeats.get(seatIdx);
                     Seat seat = seats.get(seatIdx);
@@ -557,6 +567,9 @@ public class PokerAnalysisTool {
                     Log.e(TAG,"seatIdx--"+seatIdx+"  money-->"+money+"  lastMoney-->"+lastMoney);
                     if(seat.getBet()>lastMoney)
                     {
+                        break;
+                    }
+                    if(money>300000){//钱识别错误
                         break;
                     }
                     if(money<lastMoney)
@@ -571,13 +584,24 @@ public class PokerAnalysisTool {
                             action.setAddMoney(addMoney);
                             Log.e(TAG,"roundIdx--"+boards.size()+" seatIdx--"+seatIdx + "  blinds-->"+blinds+"  lastMoney--"+lastMoney +"  money--"+money+"  bet--"
                                     +seat.getBet()+"  addMoney-->"+addMoney);
+                            if(seat.getBet()!=0 && addMoney>seat.getBet()){
+                                action.setAddMoney(seat.getBet());
+                                Log.e(TAG,"roundIdx--"+boards.size()+" seatIdx--"+seatIdx + "  blinds-->"+blinds+"  lastMoney--"+lastMoney +"  money--"+money+"  bet--"
+                                        +seat.getBet()+"  addMoney（使用bet作为addMoney）-->"+seat.getBet());
+                            }
                             actions.add(action);
                             lastSeats.put(seatIdx,money);
+                            if(seat.getHidecard()==0){
+                                actions.remove(actions.size()-1);  //排除ante动作
+                                Log.e(TAG,"addMoney--->删除前一个位置"+seatIdx + " 动作");
+                                continue;
+                            }
+                            deleteBeforeFoldAction(seatIdx);
                         }else if(money==0)
                         {//判断ALLIN 还有手牌，而且下的bet是上一条记录的钱
                             if(seat.getHidecard()==1 && seat.getBet()==lastMoney)
                             {
-                                Log.e(TAG,"roundIdx--"+boards.size()+" seatIdx--"+seatIdx+"  lastMoney--"+lastMoney +"  money--"+money+"---changeMoney-->"+(lastMoney-money));
+                                Log.e(TAG,"roundIdx（allIn addMoney）--"+boards.size()+" seatIdx--"+seatIdx+"  lastMoney--"+lastMoney +"  money--"+money+"---changeMoney-->"+(lastMoney-money));
                                 GameAction action = new  GameAction();
                                 action.setSeatIdx(seatIdx);
                                 action.setRound(boards.size());
@@ -585,6 +609,9 @@ public class PokerAnalysisTool {
                                 action.setAddMoney(addMoney);
                                 action.setAction(Constant.ACTION_ALLIN);
                                 actions.add(action);
+                                if((actions.size()!=0 && boards.size()<actions.get(actions.size()-1).getRound())){
+                                    actions.remove(actions.size()-1);  //当前所在街不会小于上一条动作的街
+                                }
                                 lastSeats.put(seatIdx,money);
                             }
                         }
@@ -598,13 +625,24 @@ public class PokerAnalysisTool {
                                 {
                                     if(playerCount>1)
                                     {
+                                        if(actions.size()!=0){
+                                            GameAction lastAction = actions.get(actions.size() - 1);
+                                            if((lastAction.getRound()==boards.size()) && lastAction.getSeatIdx()==seatIdx){
+                                                //跟最后记录的动作同一个位置不记录fold牌
+                                                continue;
+                                            }
+                                        }
                                         playerCount--;
-                                        Log.e(TAG,"seatIdx（changeMoney）-->"+seatIdx + "号位  弃牌");
+                                        Log.e(TAG,"addMoney seatIdx（changeMoney）-->"+seatIdx + "号位  弃牌");
                                         GameAction action = new  GameAction();
                                         action.setSeatIdx(seatIdx);
                                         action.setRound(boards.size());
                                         action.setAction(Constant.ACTION_FOLD);
                                         actions.add(action);
+                                        if(actions.size()!=0 && boards.size()<actions.get(actions.size()-1).getRound()){
+                                            actions.remove(actions.size()-1);  //当前所在街不会小于上一条动作的街
+                                            continue;
+                                        }
                                         user.setFoldRound(boards.size());
                                     }
                                 }
@@ -612,6 +650,17 @@ public class PokerAnalysisTool {
                         }
                     }
                 }
+            }
+        }
+    }
+    public void deleteBeforeFoldAction(int seatIdx){
+        for (int i = actions.size()-1; i >= 0; i--) {
+            GameAction action = actions.get(i);
+            if(action.getAction()==Constant.ACTION_FOLD && action.getSeatIdx()==seatIdx){
+                actions.remove(i);
+                playerCount++;
+                gamers.get(seatIdx).setFoldRound(-1);
+                break;
             }
         }
     }
@@ -686,6 +735,7 @@ public class PokerAnalysisTool {
                     try {
                         bitmap = bitmaps.take();
                         getSeatNames(bitmap);
+                        Log.e(TAG,"识别名字name");
 //                        saveImgToSDCard(bitmap,Constant.TEST_NAME);
                     } catch (InterruptedException e) {
                         Log.e(TAG,"线程获取任务失败");

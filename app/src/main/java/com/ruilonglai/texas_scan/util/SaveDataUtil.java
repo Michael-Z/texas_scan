@@ -102,12 +102,12 @@ public class SaveDataUtil {
                     playerData.setLoseCount(playerData.getLoseCount()+1);
                 }
                 if(user!=null){
+                    if(user.getLastActionRound()>1){
+                        setFaceFlopTurnRiverFoldPercent(user.getLastActionRound(),playerData);
+                    }
                     if(user.getFoldRound()>-1){
                         playerData.setFoldCount(playerData.getFoldCount()+1);
                         setFlopTurnRiverFoldPercent(user.getFoldRound(),playerData);
-                    }
-                    if(user.getLastActionRound()>1){
-                        setFaceFlopTurnRiverFoldPercent(user.getLastActionRound(),playerData);
                     }
                     if(user.isJoin()){
                         playerData.setJoinCount(playerData.getJoinCount()+1);
@@ -168,7 +168,9 @@ public class SaveDataUtil {
         /*保存玩家数据*/
         for (int i = 0; i < users.size(); i++) {
             GameUser gamer = users.get(i);
-            if("self".equals(gamer.getUserName())){
+            if("self".equals(gamer.getUserName()) || "E".equals(gamer.getUserName()) || "玲".equals(gamer.getUserName())
+                    || "纹".equals(gamer.getUserName()) || "C".equals(gamer.getUserName()) || "c".equals(gamer.getUserName())
+                    || "5".equals(gamer.getUserName()) || "2".equals(gamer.getUserName())){
                 continue;
             }
             int gamerBeginMoney = gamer.getBeginMoney();
@@ -277,10 +279,16 @@ public class SaveDataUtil {
     public void setFlopTurnRiverFoldPercent(int foldCount,PlayerData player){
         if(foldCount==3){
             player.setFoldFlopCount(player.getFoldFlopCount()+1);
+            player.setFlopCount(player.getFlopCount()+1);
         }else if(foldCount==4){
             player.setFoldTurnCount(player.getFoldTurnCount()+1);
+            player.setFlopCount(player.getFlopCount()+1);
+            player.setTurnCount(player.getTurnCount()+1);
         }else if(foldCount==5){
             player.setFoldRiverCount(player.getFoldTurnCount()+1);
+            player.setFlopCount(player.getFlopCount()+1);
+            player.setTurnCount(player.getTurnCount()+1);
+            player.setRiverCount(player.getRiverCount()+1);
         }
     }
     /*设置各条街的次数*/

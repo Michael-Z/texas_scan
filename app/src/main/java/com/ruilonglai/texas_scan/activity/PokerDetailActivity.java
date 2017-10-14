@@ -23,6 +23,7 @@ import com.ruilonglai.texas_scan.entity.MyData;
 import com.ruilonglai.texas_scan.entity.QueryPokerData;
 import com.ruilonglai.texas_scan.entity.ReqData;
 import com.ruilonglai.texas_scan.util.ActionsTool;
+import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.HttpUtil;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 
@@ -126,10 +127,10 @@ public class PokerDetailActivity extends AppCompatActivity implements View.OnCli
                     minBBCount = myData.getMinBbCount();
                 }
                 StringBuffer sb = new StringBuffer();
-                sb.append("总战绩:").append(bbCount).append("bb#")
+                sb.append("总战绩:").append(Constant.getDoubleString(1,bbCount)).append("bb#")
                         .append("总局数:").append(playCount).append("#")
-                        .append("最大盈利:").append(maxBBCount).append("bb#")
-                        .append("最大损失:").append(minBBCount).append("bb");
+                        .append("最大盈利:").append(Constant.getDoubleString(1,maxBBCount)).append("bb#")
+                        .append("最大损失:").append(Constant.getDoubleString(1,minBBCount)).append("bb");
                 String[] split = sb.toString().split("#");
                 new AlertDialog.Builder(PokerDetailActivity.this)
                         .setItems(split,null)
@@ -250,7 +251,6 @@ public class PokerDetailActivity extends AppCompatActivity implements View.OnCli
                 PokerDetailActivity.this.finish();
                 break;
         }
-
     }
     public void showOneDayData(int dayCount){
         Date date = new Date(System.currentTimeMillis()+dayCount * 24 * 3600 * 1000);

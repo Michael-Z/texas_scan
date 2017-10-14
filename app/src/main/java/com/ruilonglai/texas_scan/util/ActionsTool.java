@@ -35,6 +35,7 @@ public class ActionsTool {
 
     private final static String TAG = "ActionTool";
     private static int seq = 0;
+
     public static void disposeAction(String json,SparseArray<String> names,String userId){
         if(TextUtils.isEmpty(json)){
             return;
@@ -62,6 +63,15 @@ public class ActionsTool {
         List<GameAction> actions = pokerRecord.getActions();
         if(button == -1){
           return;
+        }
+        int aSize = actions.size();
+        if(aSize >2){
+            GameAction lastAction = actions.get(aSize - 1);
+            GameAction lastTwoAction = actions.get(aSize - 2);
+            if(lastAction.getSeatIdx() == lastTwoAction.getSeatIdx() && lastAction.getAction() == Constant.ACTION_FOLD){
+                //删除最后一个错误的fold动作
+                actions.remove(aSize-1);
+            }
         }
         SparseIntArray lastActionMoney = new SparseIntArray();
         if(users.size()==2){

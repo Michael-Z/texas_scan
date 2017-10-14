@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     pkg.setType( Constant.SOCKET_EXIT);
                     pkg.setContent("exit");
                     if(mainServer!=null)
-                    mainServer.send(pkg);
+                    mainServer.send(pkg,this);
                 } catch (Exception e) {
                     Log.e("error","异常退出");
                     MainProcessUtil.getInstance().exit(MainActivity.this);
@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Package pkg = new Package();
                 pkg.setType(type);
                 if(mainServer!=null)
-                mainServer.send(pkg);
+                mainServer.send(pkg,this);
                 break;
             default:
                 break;
@@ -439,6 +439,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(fragIdx==0){
                     messageFragment.notifyDataSetChaged();
                 }else if(fragIdx==2){
+                    for (int i = 0; i < 9; i++) {
+                        PlayerData player = new PlayerData();
+                        player.setSeatFlag(seatFlags[i]);
+                        player.setName("_self");
+                        List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "_self", seatFlags[i]).find(PlayerData.class);
+                        if (self.size() == 0) {//不存在则创建一个
+                            player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                            player.save();
+                        }
+                    }
                     mineFragment.getSelfSeatsData();
                 }
                 break;

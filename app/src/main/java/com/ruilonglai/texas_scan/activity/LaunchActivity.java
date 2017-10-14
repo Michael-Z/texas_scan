@@ -21,10 +21,12 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ruilonglai.texas_scan.MainActivity;
 import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.config.SystemParams;
 import com.ruilonglai.texas_scan.download.DownLoadUtils;
 import com.ruilonglai.texas_scan.download.DownloadApk;
+import com.ruilonglai.texas_scan.newprocess.MainProcessUtil;
 import com.ruilonglai.texas_scan.util.AssetsCopyUtil;
 import com.ruilonglai.texas_scan.util.SystemInfoUtil;
 import com.ruilonglai.texas_scan.view.CustomDialog;
@@ -52,6 +54,7 @@ public class LaunchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+        MainProcessUtil.getInstance().exit(LaunchActivity.this);
         Map<String,String> map = SystemInfoUtil.collectDeviceInfo(this);
         String cpu_abi = map.get("CPU_ABI");
         if(cpu_abi.contains("arm")){

@@ -62,6 +62,7 @@ public class RegActivity extends AppCompatActivity {
                     pu.id = number;
                     pu.nick = "";
                     pu.passwd = pwd;
+                    pu.license = 10;
                     Gson gson = new Gson();
                     String jsonstr = gson.toJson(pu);
                     HttpUtil.sendPostRequestData("register", jsonstr, new okhttp3.Callback() {
