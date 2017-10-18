@@ -84,14 +84,14 @@ public class SaveDataUtil {
             //保存个人位置盈利
             String seatFlag = user.getSeatFlag();
             if(!TextUtils.isEmpty(seatFlag)){
-                List<PlayerData> playerDatas = DataSupport.where("seatflag=? and name=?", seatFlag, "_self").find(PlayerData.class);
+                List<PlayerData> playerDatas = DataSupport.where("seatflag=? and name=?", seatFlag, "self").find(PlayerData.class);
                 PlayerData playerData = null;
                 if(playerDatas.size()>0){
                     playerData = playerDatas.get(0);
                 }else{
                     playerData = new PlayerData();
                 }
-                playerData.setName("_self");
+                playerData.setName("self");
                 playerData.setSeatFlag(seatFlag);
                 playerData.setBbCount(playerData.getBbCount()+bbCount);
                 playerData.setPlayCount(playerData.getPlayCount()+1);
@@ -158,7 +158,7 @@ public class SaveDataUtil {
                         playerData.setFoldCbCount(playerData.getFoldCbCount()+1);
                     }
                     if(playerDatas.size()>0){
-                        playerData.updateAll("seatflag=? and name=?", seatFlag, "_self");
+                        playerData.updateAll("seatflag=? and name=?", seatFlag, "self");
                     }else{
                         playerData.save();
                     }
@@ -169,8 +169,9 @@ public class SaveDataUtil {
         for (int i = 0; i < users.size(); i++) {
             GameUser gamer = users.get(i);
             if("self".equals(gamer.getUserName()) || "E".equals(gamer.getUserName()) || "玲".equals(gamer.getUserName())
-                    || "纹".equals(gamer.getUserName()) || "C".equals(gamer.getUserName()) || "c".equals(gamer.getUserName())
-                    || "5".equals(gamer.getUserName()) || "2".equals(gamer.getUserName())){
+                    || "玟".equals(gamer.getUserName()) || "C".equals(gamer.getUserName()) || "c".equals(gamer.getUserName())
+                    || "5".equals(gamer.getUserName()) || "2".equals(gamer.getUserName()) ||"河".equals(gamer.getUserName())
+                    ||"招".equals(gamer.getUserName())||"[".equals(gamer.getUserName())){
                 continue;
             }
             int gamerBeginMoney = gamer.getBeginMoney();

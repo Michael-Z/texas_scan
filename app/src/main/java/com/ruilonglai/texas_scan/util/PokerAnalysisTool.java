@@ -558,8 +558,6 @@ public class PokerAnalysisTool {
                     if(user!=null && TextUtils.isEmpty(user.getSeatFlag()))
                     {
                         user.setSeatFlag(CardUtil.getSeatFlag(playSeats.size(),i-indexOfValue));
-                    }else{
-                        continue;
                     }
                     int lastMoney = lastSeats.get(seatIdx);
                     Seat seat = seats.get(seatIdx);
@@ -621,7 +619,7 @@ public class PokerAnalysisTool {
                         {
                             if((seat.getHidecard()==0 && seatIdx!=0) || (seat.getHidecard()== 0 && seatIdx ==0))
                             {
-                                if(user.getFoldRound()==-1)
+                                if(user!=null && user.getFoldRound()==-1)
                                 {
                                     if(playerCount>1)
                                     {

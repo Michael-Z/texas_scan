@@ -126,9 +126,9 @@ public class AssetsCopyUtil {
         return true;
     }
     /*拷贝数据库文件到sd卡中*/
-    public static void copyDataBaseToSD(Context context){
+    public static boolean copyDataBaseToSD(Context context){
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            return ;
+            return false;
         }
         File dbFile = new File(context.getDatabasePath("playersData")+".db");
         File file  = new File(Environment.getExternalStorageDirectory()+File.separator+"desk_scan", "playersData.db");
@@ -145,6 +145,7 @@ public class AssetsCopyUtil {
             inChannel.transferTo(0, inChannel.size(), outChannel);
         } catch (Exception e) {
             FileIOUtil.saveToFile("保存本地数据失败!");
+            return false;
         }finally{
             try {
                 if (inChannel != null) {
@@ -159,6 +160,7 @@ public class AssetsCopyUtil {
                 FileIOUtil.saveToFile("保存本地数据失败!");
             }
         }
+        return true;
     }
     public static void copyDataBaseToSD(Context context,String path,String fileName){
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {

@@ -106,9 +106,9 @@ public class PlayerFragment extends Fragment {
         }else{
             list.clear();
         }
-        List<PlayerData> playerDatas = DataSupport.where("not name=?","_self").find(PlayerData.class);
+        List<PlayerData> playerDatas = DataSupport.where("not name=?","self").find(PlayerData.class);
         for (PlayerData player : playerDatas) {
-            if (!"_self".equals(player.getName())) {
+            if (!"self".contains(player.getName())) {
                 list.add(player);
             }
         }
@@ -130,7 +130,7 @@ public class PlayerFragment extends Fragment {
                             DataSupport.deleteAll(PlayerData.class,"name=?",playerData.getName());
                             list.remove(position);
                             adapter.notifyDataSetChanged();
-                            AssetsCopyUtil.copyDataBaseToSD(getActivity());
+//                            AssetsCopyUtil.copyDataBaseToSD(getActivity());
                             Toast.makeText(getActivity(),"删除成功",Toast.LENGTH_LONG).show();
                         }
                     });

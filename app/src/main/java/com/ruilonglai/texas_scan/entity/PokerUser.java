@@ -13,6 +13,7 @@ public class PokerUser {
 	public String serialno;
 	public int logined;
 	public String curmachine;
+	public String sendtime;
 	public List<String> machines=new ArrayList<String>();
 	public String getId() {
 		return id;
@@ -63,6 +64,11 @@ public class PokerUser {
 		this.serialno = serialno;
 	}
 
+	public String getSendtime() {
+		return sendtime;
+	}
 
-
+	public void setSendtime(String sendtime) {
+		this.sendtime = sendtime;
+	}
 }

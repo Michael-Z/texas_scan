@@ -63,7 +63,8 @@
             android:name="TD_CHANNEL_ID"
             android:value=" E0493A651AFC116CD24E3B5955E297ED" /> <!-- value值为texas_scan加密生成的MD5 -->
 
-        <activity android:name=".activity.SettingActivity"></activity>
+        <activity android:name=".activity.SettingActivity" />
+        <activity android:name=".activity.UseActivity"></activity>
     </application>
 
 </manifest>

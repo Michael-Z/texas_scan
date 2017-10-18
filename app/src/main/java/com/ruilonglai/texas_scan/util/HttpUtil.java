@@ -2,6 +2,7 @@ package com.ruilonglai.texas_scan.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.icu.util.TimeUnit;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 

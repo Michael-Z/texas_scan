@@ -23,9 +23,11 @@ import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.entity.JsonBean;
 import com.ruilonglai.texas_scan.entity.PokerUser;
 import com.ruilonglai.texas_scan.util.HttpUtil;
+import com.ruilonglai.texas_scan.util.TimeUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Date;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -144,6 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                         pu.id = phone;
                         pu.passwd = password;
                         pu.curmachine = szImei;
+                        pu.setSendtime(TimeUtil.getCurrentDateToSecond(new Date()));
                         Gson gson = new Gson();
                         String jsonstr = gson.toJson(pu);
                         HttpUtil.sendPostRequestData("login", jsonstr, new okhttp3.Callback() {

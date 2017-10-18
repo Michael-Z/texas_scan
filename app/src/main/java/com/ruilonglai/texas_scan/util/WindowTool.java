@@ -378,7 +378,7 @@ public class WindowTool {
             return "";
         StringBuilder sb = new StringBuilder();
         if (name.equals("self")) {
-            name = "_self";
+            name = "self";
         }
         if (percents == null) {
             String json = context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("percentTypeArray", "");
@@ -392,8 +392,8 @@ public class WindowTool {
             }
         }
         List<PlayerData> playerDatas = DataSupport.where("name=?", name).find(PlayerData.class);
-        if (playerDatas.size() == 0 || "E".equals(name) || "玲".equals(name)|| "纹".equals(name) || "C".equals(name) || "c".equals(name)
-                || "5".equals(name) || "2".equals(name)) {
+        if (playerDatas.size() == 0 || "E".equals(name) || "玲".equals(name)|| "玟".equals(name) || "C".equals(name) || "c".equals(name)
+                || "5".equals(name) || "2".equals(name) ||"河".equals(name) ||"招".equals(name)||"[".equals(name)) {
             sb.append("－|－|－\n－|－|－");
         } else {
             PlayerData playerData = null;
@@ -492,7 +492,7 @@ public class WindowTool {
 
     //个人的总类
     public PlayerData getSelfPlayerData() {
-        List<PlayerData> dataList = where("name=?", "_self").find(PlayerData.class);
+        List<PlayerData> dataList = where("name=?", "self").find(PlayerData.class);
         PlayerData player = new PlayerData();
         for (int i = 0; i < dataList.size(); i++) {
             PlayerData playerData = dataList.get(i);
@@ -568,12 +568,12 @@ public class WindowTool {
         PlayerData player = null;
         ViewHolder vh = new ViewHolder(view);
         if (!TextUtils.isEmpty(playerName) || seatIdx == 0) {
-            if (playerName.equals("_self") || seatIdx == 0) {
-                List<PlayerData> playerDatas = where("name=?", "_self").find(PlayerData.class);
+            if (playerName.equals("self") || seatIdx == 0) {
+                List<PlayerData> playerDatas = where("name=?", "self").find(PlayerData.class);
                 player = getSelfPlayerData();
             } else {
-                if("E".equals(playerName) || "玲".equals(playerName)|| "纹".equals(playerName) || "C".equals(playerName) || "c".equals(playerName)
-                        || "5".equals(playerName) || "2".equals(playerName)){
+                if("E".equals(playerName) || "玲".equals(playerName)|| "玟".equals(playerName) || "C".equals(playerName) || "c".equals(playerName)
+                        || "5".equals(playerName) || "2".equals(playerName)||"河".equals(playerName)||"招".equals(playerName)||"[".equals(playerName)){
                     player = new PlayerData();
                 }else{
                     List<PlayerData> playerDatas = where("name=?", playerName).find(PlayerData.class);

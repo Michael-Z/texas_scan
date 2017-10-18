@@ -155,8 +155,8 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         for (int i = 0; i < 9; i++) {
             PlayerData player = new PlayerData();
             player.setSeatFlag(seatFlags[i]);
-            player.setName("_self");
-            List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "_self", seatFlags[i]).find(PlayerData.class);
+            player.setName("self");
+            List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "self", seatFlags[i]).find(PlayerData.class);
             if (self.size() == 0) {//不存在则创建一个
                 player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
                 player.save();
@@ -184,7 +184,7 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         int selfLastRaiseCount = 0;
         int selfTotalSTLPositionCount = 0;
         int selfTotalFaceSTLCount = 0;
-        List<PlayerData> dataList = where("name=?","_self").find(PlayerData.class);
+        List<PlayerData> dataList = where("name=?","self").find(PlayerData.class);
         for (int i = 0; i < dataList.size(); i++) {
             PlayerData playerData = dataList.get(i);
             switch (playerData.getSeatFlag()) {

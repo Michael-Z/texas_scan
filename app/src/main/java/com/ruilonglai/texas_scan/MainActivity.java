@@ -31,6 +31,7 @@ import com.google.gson.Gson;
 import com.ruilonglai.texas_scan.activity.LoginActivity;
 import com.ruilonglai.texas_scan.activity.SerialActivity;
 import com.ruilonglai.texas_scan.activity.SettingActivity;
+import com.ruilonglai.texas_scan.activity.UseActivity;
 import com.ruilonglai.texas_scan.adapter.TabFragmentAdapter;
 import com.ruilonglai.texas_scan.entity.JsonBean;
 import com.ruilonglai.texas_scan.entity.MyData;
@@ -332,8 +333,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (int i = 0; i < 9; i++) {
             PlayerData player = new PlayerData();
             player.setSeatFlag(seatFlags[i]);
-            player.setName("_self");
-            List<PlayerData> self = where("name=? and seatFlag=?", "_self", seatFlags[i]).find(PlayerData.class);
+            player.setName("self");
+            List<PlayerData> self = where("name=? and seatFlag=?", "self", seatFlags[i]).find(PlayerData.class);
             if (self.size() == 0) {//不存在则创建一个
                 player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
                 player.save();
@@ -352,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         listView=(ListView) findViewById(R.id.listview);
-        str = new String[] { "清除玩家信息", "清除个人数据", "全部清除","卸载前保存本地数据","数据显示设置","序列号信息","退出登录"};
+        str = new String[] { "清除玩家信息", "清除个人数据", "全部清除","数据迁移","数据显示设置","序列号信息","使用说明","退出登录"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, str);
         listView.setAdapter(adapter);
@@ -412,24 +413,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (position){
             case 0:
-                DataSupport.deleteAll(PlayerData.class, "not name=?", "_self");
+                DataSupport.deleteAll(PlayerData.class, "not name=?", "self");
                 if(fragIdx==0){
                     messageFragment.notifyDataSetChaged();
                 }
+                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
                 break;
             case 1:
-                DataSupport.deleteAll(PlayerData.class, "name=?","_self");
+                DataSupport.deleteAll(PlayerData.class, "name=?","self");
+                DataSupport.deleteAll(MyData.class);
                 for (int i = 0; i < 9; i++) {
                     PlayerData player = new PlayerData();
                     player.setSeatFlag(seatFlags[i]);
-                    player.setName("_self");
-                    List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "_self", seatFlags[i]).find(PlayerData.class);
+                    player.setName("self");
+                    List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "self", seatFlags[i]).find(PlayerData.class);
                     if (self.size() == 0) {//不存在则创建一个
                         player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
                         player.save();
                     }
                 }
                 mineFragment.getSelfSeatsData();
+                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
                 break;
             case 2:
                 DataSupport.deleteAll(PlayerData.class);
@@ -442,8 +446,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     for (int i = 0; i < 9; i++) {
                         PlayerData player = new PlayerData();
                         player.setSeatFlag(seatFlags[i]);
-                        player.setName("_self");
-                        List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "_self", seatFlags[i]).find(PlayerData.class);
+                        player.setName("self");
+                        List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "self", seatFlags[i]).find(PlayerData.class);
                         if (self.size() == 0) {//不存在则创建一个
                             player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
                             player.save();
@@ -451,58 +455,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     mineFragment.getSelfSeatsData();
                 }
+                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
                 break;
             case 3:
-                AssetsCopyUtil.copyDataBaseToSD(MainActivity.this);
+//                boolean save = AssetsCopyUtil.copyDataBaseToSD(MainActivity.this);
+//                if(save)
+                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
                 break;
             case 4:
                 Intent intent = new Intent(MainActivity.this, SettingActivity.class);
                 startActivityForResult(intent,0);
                 break;
             case 5:
-                QuerySerial serial = new QuerySerial();
-                serial.setUserid(phone);
-                String json = new Gson().toJson(serial);
-                HttpUtil.sendPostRequestData("queryserial",json,new okhttp3.Callback(){
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        String string = response.body().string();
-                        JsonBean jsonBean = GsonUtil.parseJsonWithGson(string, JsonBean.class);
-                        Log.e(TAG,string);
-                        if(jsonBean.result.equals("true")){
-                            if(jsonBean.serialInfos!=null){
-                                int size = jsonBean.serialInfos.size();
-                                for (int i = 0; i < size; i++) {
-                                    SerialInfo serialInfo = jsonBean.serialInfos.get(i);
-                                    string+= "serialno:"+serialInfo.getSerialno()+"    "+"remaindays:"+serialInfo.getRemaindays()+"#";
-                                }
-                            }
-                            Intent intent = new Intent(MainActivity.this, SerialActivity.class);
-                            intent.putExtra("log",string);
-                            startActivity(intent);
-                        }else{
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
-                                }
-                            });
-
-                        }
-                    }
-                });
+                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
+//                QuerySerial serial = new QuerySerial();
+//                serial.setUserid(phone);
+//                String json = new Gson().toJson(serial);
+//                HttpUtil.sendPostRequestData("queryserial",json,new okhttp3.Callback(){
+//                    @Override
+//                    public void onFailure(Call call, IOException e) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                    }
+//
+//                    @Override
+//                    public void onResponse(Call call, Response response) throws IOException {
+//                        String string = response.body().string();
+//                        JsonBean jsonBean = GsonUtil.parseJsonWithGson(string, JsonBean.class);
+//                        Log.e(TAG,string);
+//                        if(jsonBean.result.equals("true")){
+//                            if(jsonBean.serialInfos!=null){
+//                                int size = jsonBean.serialInfos.size();
+//                                for (int i = 0; i < size; i++) {
+//                                    SerialInfo serialInfo = jsonBean.serialInfos.get(i);
+//                                    string+= "serialno:"+serialInfo.getSerialno()+"    "+"remaindays:"+serialInfo.getRemaindays()+"#";
+//                                }
+//                            }
+//                            Intent intent = new Intent(MainActivity.this, SerialActivity.class);
+//                            intent.putExtra("log",string);
+//                            startActivity(intent);
+//                        }else{
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
+//                                }
+//                            });
+//
+//                        }
+//                    }
+//                });
                 break;
             case 6:
+                Intent intent1 = new Intent(this, UseActivity.class);
+                startActivity(intent1);
+                break;
+            case 7:
                 PokerUser pu = new PokerUser();
                 pu.id = phone;
                 pu.nick = "";
@@ -514,12 +526,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onFailure(Call call, IOException e) {
-                       Log.e(TAG,e.toString());
+                        Log.e(TAG,e.toString());
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                         Log.e(TAG,response.toString());
+                        Log.e(TAG,response.toString());
                         Intent in = new Intent(MainActivity.this,LoginActivity.class);
                         startActivity(in);
                         finish();
