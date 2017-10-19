@@ -16,6 +16,8 @@ public class PlayerData extends DataSupport {
     private double bbCount = 0;
     private String date;
     private String seatFlag="";
+    private String remark;
+    private int level;
     private int joinCount;
     private int bet3Count;
     private int foldCount;
@@ -286,5 +288,21 @@ public class PlayerData extends DataSupport {
 
     public void setFoldRiverCount(int foldRiverCount) {
         FoldRiverCount = foldRiverCount;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

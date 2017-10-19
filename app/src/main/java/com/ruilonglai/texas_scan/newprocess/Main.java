@@ -2,18 +2,18 @@ package com.ruilonglai.texas_scan.newprocess;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.ruilonglai.texas_scan.ScanTool;
 import com.ruilonglai.texas_scan.ScreenShotUtil.ScreentShotUtil;
-import com.ruilonglai.texas_scan.util.AssetsCopyUtil;
 import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.PokerAnalysisTool;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
-import java.net.Socket;
 
 
 /**
@@ -24,6 +24,7 @@ public class Main {
 
     public static boolean begin = true;
     public static int flag;
+    public final static String TAG = "Main";
     public static void main(String[] args) {
         System.out.println("Andcast Main Entry!");
         String str =  args[0];
@@ -43,7 +44,7 @@ public class Main {
         }
         int initRet = ScanTool.InitScan("/mnt/sdcard/desk_scan");
         ScanTool.SetTemplate("dpq");
-        PokerAnalysisTool instance = PokerAnalysisTool.getInstance();
+        final PokerAnalysisTool instance = PokerAnalysisTool.getInstance();
         boolean isConnect = false;
         BitmapFactory.Options opts = new BitmapFactory.Options();
         while (begin){
@@ -51,10 +52,28 @@ public class Main {
                 Connect.getInstance().connect(28838);
                 Connect.getInstance().setCallback(new Connect.CallBack() {
                     @Override
-                    public void action(int type) {
-                        Log.e("Main","设置的模板"+type);
-                        ScanTool.SetTemplate(Constant.PLATFORM[type-8]);
-                        flag = type-8;
+                    public void action(Package pkg) {
+                        int type =  pkg.getType();
+                        String content = pkg.getContent();
+                        if(type==Constant.SOCKET_PLATFORM_TEXASPOKER || type==Constant.SOCKET_PLATFORM_POKERFISHS || type==Constant.SOCKET_PLATFORM_NUTSPOKER || type==Constant.SOCKET_PLATFORM_NUTSPOKER_SNG) {
+                            Log.e("Main", "设置的模板" + type);
+                            ScanTool.SetTemplate(Constant.PLATFORM[type - 8]);
+                            flag = type - 8;
+                        }
+                        else if(type==Constant.SOCKET_SCANNAME)
+                        {//识别名字
+                            instance.updatename();
+                        }
+                        else if(type == Constant.SOCKET_UPDATE_NAME)
+                        {//更新名字
+                            try {
+                                JSONObject obj = new JSONObject(content);
+                                instance.changeName(obj.getInt("seatIdx"),obj.getString("name"));
+                            } catch (JSONException e) {
+                               Log.e(TAG,"更新名字失败");
+                            }
+                        }
+
                     }
                     @Override
                     public void exit() {

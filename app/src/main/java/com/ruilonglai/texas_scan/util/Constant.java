@@ -44,6 +44,8 @@ public final class Constant {
     public final static int SOCKET_IS_WATCH = 14;//是否是旁观者模式
     public final static int SOCKET_GET_TEMPLATE = 15;//获取重新初始化模板
     public final static int SOCKET_SEATCOUNT_CHANGE = 16;//座位数变化
+    public final static int SOCKET_SCANNAME = 17;//调用接口识别名字
+    public final static int SOCKET_UPDATE_NAME = 18;//修改名字
 
     public final static int TYPE_PERSON = 0;
     public final static int TYPE_OBSERVER = 1;

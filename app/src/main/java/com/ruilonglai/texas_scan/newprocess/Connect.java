@@ -18,7 +18,7 @@ public class Connect {
 
         void exit();
 
-        void action(int type);
+        void action(Package pkg);
 
      }
 
@@ -158,8 +158,10 @@ public class Connect {
                             case Constant.SOCKET_PLATFORM_POKERFISHS:
                             case Constant.SOCKET_PLATFORM_TEXASPOKER:
                             case Constant.SOCKET_PLATFORM_NUTSPOKER_SNG:
+                            case Constant.SOCKET_SCANNAME:
+                            case Constant.SOCKET_UPDATE_NAME:
                                 if(callback!=null)
-                                callback.action(aPackage.getType());
+                                callback.action(aPackage);
                                 break;
                         }
                     }

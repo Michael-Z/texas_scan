@@ -67,6 +67,7 @@ public class PokerAnalysisTool {
     private boolean newBtnIdx;
     private boolean needSendBoards;
     private boolean sendCloseWindow;
+    private boolean nextHandScanName = true;
     private int isWatch;
     private int flag;
     private boolean allOnline;
@@ -163,11 +164,19 @@ public class PokerAnalysisTool {
             disposeMoney();//记录钱的变化
             if(newBtnIdx)
             {//解析名字
-                try {
-                    bitmaps.add(bitmap);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if(nextHandScanName){
+                    try {
+                        bitmaps.add(bitmap);
+                        nextHandScanName = false;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+                String json = new Gson().toJson(seatNames);
+                Package pkg = new Package();
+                pkg.setType(Constant.SOCKET_KNOW_NAME);
+                pkg.setContent(json);
+                Connect.send(pkg);
             }
             else
             {
@@ -201,6 +210,21 @@ public class PokerAnalysisTool {
                 }
             }
         }
+    }
+    //接收外部接口解析名字
+    public void updatename(){
+        nextHandScanName = true;
+    }
+    //接收外部接口修改名字
+    public void changeName(int seatIdx,String name){
+        synchronized(seatNames){
+            seatNames.put(seatIdx,name);
+        }
+        String json = new Gson().toJson(seatNames);
+        Package pkg = new Package();
+        pkg.setType(Constant.SOCKET_KNOW_NAME);
+        pkg.setContent(json);
+        Connect.send(pkg);
     }
     /*从图片获取位置名字*/
     private void getSeatNames(Bitmap bitmap)
@@ -273,6 +297,7 @@ public class PokerAnalysisTool {
                 {
                     btnIdx = -1;
                     seatNames.clear();
+                    nextHandScanName = true;
                     Package pkg = new Package();
                     pkg.setType(Constant.SOCKET_SEATCOUNT_CHANGE);
                     pkg.setContent(json);
@@ -467,7 +492,12 @@ public class PokerAnalysisTool {
         List<GameUser> users = new ArrayList<>();
         for (int i = 0; i < gamers.size(); i++)
         {
-            users.add(gamers.valueAt(i));
+            GameUser user = gamers.valueAt(i);
+            String name = seatNames.get(user.getSeatIdx());
+            if(!TextUtils.isEmpty(name)){
+                user.setUserName(name);
+            }
+            users.add(user);
         }
         tableRecord.setAnte(ante);
         tableRecord.setStraddle(straddle);
