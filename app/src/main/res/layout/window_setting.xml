@@ -12,7 +12,7 @@
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
         android:layout_alignParentRight="true"
-        android:background="@drawable/close_48"/>
+        android:background="@drawable/check49"/>
     <TextView
         android:id="@+id/seatIdx"
         android:layout_width="match_parent"
@@ -36,6 +36,14 @@
         android:layout_height="50dp"
         android:textColor="@color/colorAccent"
         android:hint="请输入新的名字"
+        android:maxLines="1"
+        android:maxLength="10"
         android:textSize="14sp"
         android:textColorHint="#c9c9c9"/>
+    <ListView
+        android:id="@+id/nameList"
+        android:layout_below="@+id/name"
+        android:layout_width="match_parent"
+        android:minHeight="0dp"
+        android:layout_height="150dp" />
 </RelativeLayout>

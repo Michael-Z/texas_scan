@@ -35,6 +35,7 @@ public class ActionsTool {
 
     private final static String TAG = "ActionTool";
     private static int seq = 0;
+    private static int straddle;
 
     public static void disposeAction(String json,SparseArray<String> names,String userId){
         if(TextUtils.isEmpty(json)){
@@ -50,7 +51,7 @@ public class ActionsTool {
         PokerRecord pokerRecord = param.getPokerRecord();
         TableRecord tableRecord = param.getTableRecord();
         int blinds = tableRecord.getBlindType();
-        int straddle = tableRecord.getStraddle();
+        straddle = tableRecord.getStraddle();
         SparseArray<GameUser> users = new SparseArray<>();
         List<GameUser> gameUsers = pokerRecord.getUsers();
         for (int i = 0; i < gameUsers.size(); i++) {
@@ -146,7 +147,7 @@ public class ActionsTool {
             int addMoney = action.getAddMoney();
             int lastMoney = lastActionMoney.get(seatIdx);
 //            if(action.getAction()== -1){//action只有两种，一种弃牌==3，另外全部都是-1
-                curPlayerIfFaceFold(users,user,actions,i,button);
+                curPlayerIfFaceFold(users,user,actions,i,button,straddle);
                 if(lastRoundIdx != action.getRound()){//换圈初始化每个位置的钱
                     for (int j = 0; j < lastActionMoney.size(); j++) {
                         int key = lastActionMoney.keyAt(j);
@@ -267,7 +268,7 @@ public class ActionsTool {
         reqData.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+disposeNumber());
         String data = gson.toJson(reqData, ReqData.class);
         FileIOUtil.saveToFile(data);
-        new SaveDataUtil().disposeHandLog(data);
+//        new SaveDataUtil().disposeHandLog(data);
         //传输数据到服务器
         HttpUtil.sendPostRequestData("savehand", data, new Callback() {
             @Override
@@ -297,7 +298,8 @@ public class ActionsTool {
             return false;
         }
         //在三个位置，并且前面所有动作都是fold
-        if ("CO".equals(gameUser.getSeatFlag()) || "BTN".equals(gameUser.getSeatFlag()) || "SB".equals(gameUser.getSeatFlag())) {
+        if ("CO".equals(gameUser.getSeatFlag()) || "BTN".equals(gameUser.getSeatFlag())
+                || "SB".equals(gameUser.getSeatFlag())||(straddle>0 && "BB".equals(gameUser.getSeatFlag())) ) {
             return true;
         }
         return false;
@@ -316,7 +318,7 @@ public class ActionsTool {
     /*
     * index：当前动作的角标
     * */
-    public static void curPlayerIfFaceFold(SparseArray<GameUser> users,GameUser gameUser,List<GameAction> actions,int index,int btnIdx){
+    public static void curPlayerIfFaceFold(SparseArray<GameUser> users,GameUser gameUser,List<GameAction> actions,int index,int btnIdx,int straddle){
         if(users.size()>3){
             if(isSTLSeat(gameUser)){//判定偷盲机会
                 if(lastActionsAllFold(actions,index)){
@@ -326,15 +328,56 @@ public class ActionsTool {
             //判断是否有被偷盲机会
             GameUser stlUser = haveStealBlinds(users);
             if(stlUser !=null){//有人偷盲
-                if ("SB".equals(gameUser.getSeatFlag())){
-                    if("CO".equals(stlUser.getSeatFlag())){
-                        if(users.get(btnIdx).getFoldRound()==0){//btn位fold
+                if (("CO".equals(gameUser.getSeatFlag())&& users.size()==4) || ("UTG".equals(gameUser.getSeatFlag())&& users.size()>4)){
+                    if(straddle>0){
+                        if("CO".equals(stlUser.getSeatFlag())){
+                            boolean sbFold = false;
+                            boolean btnFold = false;
+                            boolean bbFold = false;
+                            for (int j = 0; j < users.size(); j++) {
+                                GameUser user = users.valueAt(j);
+                                if("BTN".equals(user.getSeatFlag()) && user.getFoldRound()==0){
+                                    btnFold = true;
+                                }else if("SB".equals(user.getSeatFlag()) && user.getFoldRound()==0){
+                                    sbFold = true;
+                                }else if("BB".equals(user.getSeatFlag()) && user.getFoldRound()==0){
+                                    bbFold = true;
+                                }
+                            }
+                            if(sbFold && btnFold && bbFold){
+                                gameUser.setFaceSTL(true);
+                            }
+                        }else if("BTN".equals(stlUser.getSeatFlag())){
+                            boolean sbFold = false;
+                            boolean bbFold = false;
+                            for (int j = 0; j < users.size(); j++) {
+                                GameUser user = users.valueAt(j);
+                                 if("SB".equals(user.getSeatFlag()) && user.getFoldRound()==0){
+                                    sbFold = true;
+                                }else if("BB".equals(user.getSeatFlag()) && user.getFoldRound()==0){
+                                    bbFold = true;
+                                }
+                            }
+                            if(sbFold && bbFold){
+                                gameUser.setFaceSTL(true);
+                            }
+                        }else if("SB".equals(stlUser.getSeatFlag())){
+                            boolean bbFold = false;
+                            for (int j = 0; j < users.size(); j++) {
+                                GameUser user = users.valueAt(j);
+                               if("BB".equals(user.getSeatFlag()) && user.getFoldRound()==0){
+                                    bbFold = true;
+                                   break;
+                                }
+                            }
+                            if(bbFold){
+                                gameUser.setFaceSTL(true);
+                            }
+                        }else if("BB".equals(stlUser.getSeatFlag())){
                             gameUser.setFaceSTL(true);
                         }
-                    }else if("BTN".equals(stlUser.getSeatFlag())){
-                        gameUser.setFaceSTL(true);
                     }
-                }else if("BB".equals(gameUser.getSeatFlag())){
+                }else if(straddle==0 && "BB".equals(gameUser.getSeatFlag())){
                     if("CO".equals(stlUser.getSeatFlag())){
                         boolean sbFold = false;
                         boolean btnFold = false;
@@ -374,11 +417,7 @@ public class ActionsTool {
             }
             GameUser user = haveStealBlinds(users);
             if(user!=null){
-                if("SB".equals(gameUser.getSeatFlag())){
-                    if("BTN".equals(user.getSeatFlag())){ //偷盲位是btn
-                        gameUser.setFaceSTL(true);
-                    }
-                }else if("BB".equals(gameUser.getSeatFlag())){
+               if("BB".equals(gameUser.getSeatFlag())){
                     if("BTN".equals(user.getSeatFlag())){ //偷盲位是btn
                         for (int j = 0; j < users.size(); j++) {
                             GameUser user1 = users.valueAt(j);
@@ -396,7 +435,7 @@ public class ActionsTool {
     public static GameUser haveStealBlinds(SparseArray<GameUser> users){//获取偷盲玩家
         for (int i = 0; i < users.size(); i++) {
             GameUser user = users.valueAt(i);
-            if("CO".equals(user.getSeatFlag()) || "BTN".equals(user.getSeatFlag()) || "SB".equals(user.getSeatFlag())){
+            if("CO".equals(user.getSeatFlag()) || "BTN".equals(user.getSeatFlag()) || "SB".equals(user.getSeatFlag())|| "BB".equals(user.getSeatFlag())){
                 if(user.isSTL()){
                     return user;
                 }

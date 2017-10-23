@@ -53,6 +53,10 @@ public class RegActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     number = et_number.getText().toString().trim();
+                    if(number.length()!=11){
+                        Toast.makeText(getApplicationContext(), "电话号码不足11位", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     pwd = password.getText().toString().trim();
                     if (pwd.isEmpty()) {
                         Toast.makeText(RegActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
@@ -71,7 +75,7 @@ public class RegActivity extends AppCompatActivity {
                             Log.d("失败：", "111" + e);
                             runOnUiThread(new Runnable() {
                                 public void run() {
-                                    Toast.makeText(getApplicationContext(), "登录失败,请联系管理员！", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "注册失败！", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }

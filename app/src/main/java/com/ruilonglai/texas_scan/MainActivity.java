@@ -59,7 +59,6 @@ import com.ruilonglai.texas_scan.util.SystemInfoUtil;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 import com.ruilonglai.texas_scan.util.WindowTool;
 import com.ruilonglai.texas_scan.view.TabContainerView;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
@@ -148,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String password = "";
 
+    private boolean haveOpenWindow;
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -155,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case Constant.SOCKET_BOARDS_AND_POKERS:
                     percent = (String) msg.obj;
                     wt.init(MainActivity.this,winIndex,phone);
-                    if(!hideWP){
+                    if(/*!hideWP*/false){
                         if(!haveCreateWindow){
                             if(isWatch==0)
                                 haveCreateWindow = wt.createWindow(percent);
@@ -166,17 +167,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
                 case Constant.SOCKET_CLOSE_WINDOW:
-                    WindowTool.getInstance().deleteWindow();
+                    WindowTool.getInstance().deleteWindow(false);
                     haveCreateWindow = false;
+                    haveOpenWindow = false;
                     break;
                 case Constant.SOCKET_OPEN_WINDOW:
-                    if(!haveCreateWindow && !hideWP){
-                        if(!TextUtils.isEmpty(percent) && !"0.0%".equals(percent)){
-                            wt.init(MainActivity.this,winIndex,phone);
-                            if(isWatch==0)
-                            haveCreateWindow = wt.createWindow(percent);
-                        }
-                    }
+//                    if(!haveCreateWindow && !hideWP){
+//                        if(!TextUtils.isEmpty(percent) && !"0.0%".equals(percent)){
+//                            wt.init(MainActivity.this,winIndex,phone);
+//                            if(isWatch==0)
+//                            haveCreateWindow = wt.createWindow(percent);
+//                        }
+//                    }
+                    wt.createOpenView(MainActivity.this);
                     wt.createNinePointWindow(winIndex,playCount,names,isWatch);
                     break;
                 case Constant.SOCKET_GET_TEMPLATE:
@@ -193,6 +196,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 case Constant.SOCKET_SEATCOUNT_CHANGE:
 
+                    break;
+                case Constant.SOCKET_SEATCOUNT:
+                    if(!haveOpenWindow){
+                        haveOpenWindow =  wt.createOpenView(MainActivity.this);
+                    }
                     break;
             }
         }
@@ -248,11 +256,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         msg.arg1 = Constant.SOCKET_SEATCOUNT;
                         playCount = JsonTool.getJsonMes(pkg.getContent(),"seatcount");
                         isWatch = JsonTool.getJsonMes(pkg.getContent(),"iswatch");
+                        msg.arg1 = Constant.SOCKET_SEATCOUNT;
+                        handler.sendMessage(msg);
                         break;
                     case Constant.SOCKET_SEATCOUNT_CHANGE://几人桌
                         msg.arg1 = Constant.SOCKET_SEATCOUNT_CHANGE;
                         playCount = JsonTool.getJsonMes(pkg.getContent(),"seatcount");
                         isWatch = JsonTool.getJsonMes(pkg.getContent(),"iswatch");
+
                         names.clear();
                         break;
                     case Constant.SOCKET_CLOSE_WINDOW://关闭悬浮窗
@@ -289,21 +300,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.open_server) {
             if(!isOpen){
                 open_server.setImageDrawable(MainActivity.this.getResources().getDrawable(R.drawable.stop));
-                MainProcessUtil.getInstance().exit(MainActivity.this);
-                boolean isphone = getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getBoolean("isPhone",false);
-                MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(MainActivity.this),isphone);
+//                MainProcessUtil.getInstance().exit(MainActivity.this);
+//                boolean isphone = getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getBoolean("isPhone",false);
+//                MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(MainActivity.this),isphone);
+                 wt.createOpenView(MainActivity.this);
             }else{
                 open_server.setImageDrawable(this.getResources().getDrawable(play));
-                try {
-                    Package pkg = new Package();
-                    pkg.setType( Constant.SOCKET_EXIT);
-                    pkg.setContent("exit");
-                    if(mainServer!=null)
-                    mainServer.send(pkg,this);
-                } catch (Exception e) {
-                    Log.e("error","异常退出");
-                    MainProcessUtil.getInstance().exit(MainActivity.this);
-                }
+                wt.deleteWindow(true);
+                MainProcessUtil.getInstance().exit(MainActivity.this);
+//                try {
+//                    Package pkg = new Package();
+//                    pkg.setType( Constant.SOCKET_EXIT);
+//                    pkg.setContent("exit");
+//                    MainServer.newInstance().send(pkg,MainActivity.this);
+//                } catch (Exception e) {
+//                    Log.e("error","异常退出");
+//                    MainProcessUtil.getInstance().exit(MainActivity.this);
+//                }
             }
             isOpen = !isOpen;
         }
@@ -557,7 +570,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onRestart() {
         super.onRestart();
-        WindowTool.getInstance().deleteWindow();
+        WindowTool.getInstance().deleteWindow(false);
+        haveOpenWindow = false;
         if(fragIdx==0){
             /*刷新玩家列表*/
             messageFragment.notifyDataSetChaged();

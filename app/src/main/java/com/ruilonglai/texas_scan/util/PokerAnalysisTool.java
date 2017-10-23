@@ -167,16 +167,11 @@ public class PokerAnalysisTool {
                 if(nextHandScanName){
                     try {
                         bitmaps.add(bitmap);
-                        nextHandScanName = false;
+//                        nextHandScanName = false;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                String json = new Gson().toJson(seatNames);
-                Package pkg = new Package();
-                pkg.setType(Constant.SOCKET_KNOW_NAME);
-                pkg.setContent(json);
-                Connect.send(pkg);
             }
             else
             {
@@ -218,7 +213,11 @@ public class PokerAnalysisTool {
     //接收外部接口修改名字
     public void changeName(int seatIdx,String name){
         synchronized(seatNames){
-            seatNames.put(seatIdx,name);
+            if(seatIdx==-1){
+                initView();
+            }else{
+                seatNames.put(seatIdx,name);
+            }
         }
         String json = new Gson().toJson(seatNames);
         Package pkg = new Package();
@@ -235,32 +234,23 @@ public class PokerAnalysisTool {
             return;
         synchronized (gamers)
         {
-            for (int i = 0; i < gamers.size(); i++)
+            for (int i = isWatch; i < seatCount+isWatch; i++)
             {
-                int seatIdx = gamers.keyAt(i);
-                String name = getJsonName(ScanTool.ScanSeatName(bitmap, seatIdx, 0), "name");
-
-//                String name = "位置"+seatIdx;
-                Log.e("name",seatIdx+"  "+name);
-                String userName = FileIOUtil.replaceBlank(name);
-                userName.replace("\\n","");
-//                if(flag==2 || flag == 3)
-//                userName = removeDigital(userName);
-//                Log.e("name","flag:"+flag+ " " +seatIdx+" 去除数字 "+userName);
-                if(!TextUtils.isEmpty(userName))
-                seatNames.put(seatIdx,userName);
-                GameUser user = gamers.get(seatIdx);
-                if(user!=null && (!TextUtils.isEmpty(userName)) && (!userName.contains("+")) && (!"null".equals(userName)))
-                {
-                    user.setUserName(userName);
-                }else{
-                    if(seatNames.get(seatIdx)!=null)
-                    user.setUserName(seatNames.get(seatIdx));
-                }
-                if(seatIdx==0)
-                {
-                    user.setUserName("self");
-                    seatNames.put(seatIdx,"self");
+                int seatIdx = i;
+                String oldName = seatNames.get(seatIdx);
+                if(TextUtils.isEmpty(oldName)){
+                    String name = getJsonName(ScanTool.ScanSeatName(bitmap, seatIdx, 0), "name");
+                    Log.e("name",seatIdx+"  "+name);
+                    String userName = FileIOUtil.replaceBlank(name);
+                    userName.replace("\\n","");
+                    Log.e(TAG,"重新识别"+seatIdx+"号位名字:"+userName);
+                    if(!TextUtils.isEmpty(userName)){
+                        seatNames.put(seatIdx,userName);
+                    }
+                    if(seatIdx==0)
+                    {
+                        seatNames.put(seatIdx,"self");
+                    }
                 }
             }
             String json = new Gson().toJson(seatNames);
@@ -358,9 +348,15 @@ public class PokerAnalysisTool {
                 String json = ScanTool.ScanSeat(bitmap, i);
                 Seat seat = gson.fromJson(json, Seat.class);
                 Log.e(TAG,i+"号位"+seat.toString());
-                if((seat.getMoney() > 0 && seat.getMoney()<300000) || i == btnIdx || seat.getHidecard()==1)
+                if((seat.getMoney() > 0 && seat.getMoney()<2000000) || i == btnIdx || seat.getHidecard()==1)
                 {
                     playSeats.put(i,i);
+                }else{
+                    if(seat.getMoney()==0 && seat.getBet()==0)
+                    {//出现空位名字初始化为空
+                        Log.e(TAG,i+"号位名字重新识别");
+                        seatNames.put(i,"");
+                    }
                 }
                 seats.put(i,seat);
             }
@@ -372,6 +368,7 @@ public class PokerAnalysisTool {
                 {
                     String json = ScanTool.ScanSeat(bitmap, i);
                     Seat seat = gson.fromJson(json, Seat.class);
+                    Log.e(TAG,i+"号位"+seat.toString());
                     if(i==0 && !havePoker)
                     {
                         if(seat.getCard1()!=-1 && seat.getCard2()!=-1)
@@ -385,7 +382,6 @@ public class PokerAnalysisTool {
                             havePoker = false;
                         }
                     }
-                    Log.e(TAG,i+"号位"+seat.toString());
                     seats.put(i,seat);
                 }
             }
@@ -481,6 +477,8 @@ public class PokerAnalysisTool {
              Seat seat = gson.fromJson(json, Seat.class);
              Log.e(TAG,i+"号位endMoney-->"+seat.getMoney() + " bet-->"+seat.getBet());
              GameUser user = gamers.get(i);
+             if(seat.getMoney()<0 || seat.getMoney()>1000000)
+                 seat.setMoney(0);
              if(user!=null){
                  user.setEndMoney(seat.getMoney()+seat.getBet());
              }

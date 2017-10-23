@@ -78,6 +78,7 @@ public class Main {
                     @Override
                     public void exit() {
                         begin = false;
+                        instance.changeName(-1,"");
                     }
                 });
                 Package pkg = new Package();
