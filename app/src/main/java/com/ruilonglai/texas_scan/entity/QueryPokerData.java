@@ -9,4 +9,5 @@ public class QueryPokerData {
     public String pokername;
     public String startdate;
     public String enddate;
+    public int plattype;
 }

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -88,8 +87,8 @@ public class LoginActivity extends AppCompatActivity {
         cbremember=(CheckBox)findViewById(R.id.rember);
         btjihuo=(Button)findViewById(R.id.btjihuo);
         // 获取手机IMEI
-        TelephonyManager TelephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        szImei = TelephonyMgr.getDeviceId();
+//        TelephonyManager TelephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+//        szImei = TelephonyMgr.getDeviceId();
     }
     /* 注册按钮 */
     public void Register() {
@@ -207,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
                         });
                     }
                     else{
-                        Toast.makeText(getApplicationContext(), "请检查网络！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "网络未连接,请检查网络！", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

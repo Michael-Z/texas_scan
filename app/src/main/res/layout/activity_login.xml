@@ -19,7 +19,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
-        android:background="@mipmap/icon_128" />
+        android:background="@drawable/icon_128" />
         <TextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"

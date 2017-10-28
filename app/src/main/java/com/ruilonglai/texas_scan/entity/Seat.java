@@ -5,11 +5,20 @@ package com.ruilonglai.texas_scan.entity;
  */
 
 public class Seat {
+    int empty;
     int money;
     int bet;
     int hidecard;
     int card1;
     int card2;
+
+    public int getEmpty() {
+        return empty;
+    }
+
+    public void setEmpty(int empty) {
+        this.empty = empty;
+    }
 
     public int getMoney() {
         return money;
@@ -54,7 +63,8 @@ public class Seat {
     @Override
     public String toString() {
         return "Seat{" +
-                "money=" + money +
+                "empty=" + empty +
+                ", money=" + money +
                 ", bet=" + bet +
                 ", hidecard=" + hidecard +
                 ", card1=" + card1 +

@@ -5,7 +5,7 @@
     <color name="red">#df2424</color>
     <color name="green">#24df5f</color>
     <color name="hui">#DBDBDB</color>
-    <color name="huiBai">#EDEDEE</color>
+    <color name="huiBai">#FFEFEBE7</color>
     <color name="black_overlay">#66000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="main_bottom_tab_textcolor_normal">#999999</color>
@@ -19,6 +19,8 @@
     <color name="los_3">#FB0100</color>
     <color name="los_4">#A01413</color>
     <color name="normal_color">#0093fe</color>
+    <color name="blue_normal">#99ccff</color>
     <color name="statusBarColor">#DFDFD5</color>
+    <color name="title_bg_color">#106184</color>
     <color name="nocolor">#DFDFD5</color>
 </resources>

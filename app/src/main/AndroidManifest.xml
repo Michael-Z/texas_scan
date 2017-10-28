@@ -17,7 +17,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/icon_256"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/icon_128"
+        android:roundIcon="@drawable/icon_128"
         android:supportsRtl="true"
         android:theme="@style/ImageTranslucentTheme">
         <activity
@@ -34,7 +34,6 @@
         </activity>
         <activity android:name=".activity.SerialActivity" />
         <activity android:name=".activity.LogListActivity" />
-        <activity android:name=".activity.PokerDetailActivity" />
         <activity
             android:name=".activity.FindpwdActivity"
             android:screenOrientation="portrait" />

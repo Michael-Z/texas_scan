@@ -1,12 +1,15 @@
 package com.ruilonglai.texas_scan.fragment;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,20 +17,37 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ruilonglai.texas_scan.MainActivity;
 import com.ruilonglai.texas_scan.R;
-import com.ruilonglai.texas_scan.activity.PokerDetailActivity;
+import com.ruilonglai.texas_scan.activity.LoginActivity;
 import com.ruilonglai.texas_scan.adapter.AppAdapter;
 import com.ruilonglai.texas_scan.adapter.MyAdapter;
 import com.ruilonglai.texas_scan.entity.PlayerData;
+import com.ruilonglai.texas_scan.entity.QuerySelf;
+import com.ruilonglai.texas_scan.entity.ReqData;
+import com.ruilonglai.texas_scan.entity.Result;
+import com.ruilonglai.texas_scan.util.ActionsTool;
+import com.ruilonglai.texas_scan.util.Constant;
+import com.ruilonglai.texas_scan.util.GsonUtil;
+import com.ruilonglai.texas_scan.util.HttpUtil;
 import com.ruilonglai.texas_scan.util.TimeUtil;
-import com.ruilonglai.texas_scan.util.ToastUtil;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 import static org.litepal.crud.DataSupport.where;
 
@@ -55,39 +75,22 @@ import static org.litepal.crud.DataSupport.where;
  * 　　　　　　　　　　┗┻┛　┗┻┛
  * Created by wangjian on 2016/9/9.
  */
-public class MineFragment extends Fragment implements View.OnClickListener{
+public class MineFragment extends Fragment {
     private View view;
     private MyAdapter myAdapter;
-    private RecyclerView appList;
     private List<PlayerData> seatList;
-    private RecyclerView seatFlagsList;
-    private MainActivity activity= null;
+
+    private MainActivity activity = null;
     public int winIndex = 2;
-    private Button btn_poker_detail;
-    private int selfTotalWinCount;
-    private int selfTotalLoseCount;
-    private int selfTotalPlayCount;
-    private int selfTotalJoinCount;
-    private int selfTotalBet3Count;
-    private int selfTotalStlCount;
-    private int selfTotalFoldStlCount;
-    private int selfTotalPfrCount;
-    private double selfTotalBBCount;
-    private TextView winLoseCount;
-    private TextView totalBBCount;
-    private TextView totalPlayCount;
-    private TextView totalBet3Count;
-    private TextView totalVpipCount;
-    private TextView totalPfrCount;
-    private TextView totalStlCount;
-    private TextView totalFoldStlCount;
-    private String[] appNames = {"德扑圈","德友圈","扑克部落MTT","扑克部落SNG"};
+    private ViewHolder vh = null;
 
     private String[] seatFlags = {"BTN", "SB", "BB", "UTG", "UTG+1", "MP", "MP+1", "HJ", "CO"};
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_mine, container, false);
+        vh = new ViewHolder(view);
         return view;
     }
 
@@ -96,7 +99,6 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         super.onActivityCreated(savedInstanceState);
         activity = (MainActivity) getActivity();
         initView();
-        getSelfSeatsData();
     }
 
     @Override
@@ -105,52 +107,43 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     }
 
     public void initView() {
-        totalBBCount = (TextView) view.findViewById(R.id.totalBBCount);
-        totalPlayCount = (TextView) view.findViewById(R.id.totalPlayCount);
-        winLoseCount = (TextView) view.findViewById(R.id.winLoseCount);
-        totalBet3Count = (TextView) view.findViewById(R.id.self_bet3Percent);
-        totalVpipCount = (TextView) view.findViewById(R.id.self_vpipPercent);
-        totalPfrCount = (TextView) view.findViewById(R.id.self_pfrPercent);
-        totalStlCount = (TextView) view.findViewById(R.id.self_stlPercent);
-        totalFoldStlCount = (TextView) view.findViewById(R.id.self_foldStlPercent);
-        btn_poker_detail = (Button) view.findViewById(R.id.btn_poker_details);
-        btn_poker_detail.setOnClickListener(this);
+        vh.title.setText("个人数据");
         LinearLayoutManager layoutManager = new LinearLayoutManager(activity);
-        seatFlagsList = (RecyclerView) view.findViewById(R.id.selfDataRecyclerView);
-        seatFlagsList.setLayoutManager(layoutManager);
-        seatFlagsList.setItemAnimator(new DefaultItemAnimator());
 
-        appList = (RecyclerView) view.findViewById(R.id.appList);
+        vh.selfDataRecyclerView.setLayoutManager(layoutManager);
+        vh.selfDataRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
         LinearLayoutManager layoutManager1 = new LinearLayoutManager(activity);
         layoutManager1.setOrientation(LinearLayoutManager.HORIZONTAL);
-        appList.setLayoutManager(layoutManager1);
-        appList.setItemAnimator(new DefaultItemAnimator());
-        final AppAdapter appAdapter = new AppAdapter(activity,appNames);
+        vh.appList.setLayoutManager(layoutManager1);
+        vh.appList.setItemAnimator(new DefaultItemAnimator());
+        final AppAdapter appAdapter = new AppAdapter(activity, Constant.APPNAMES);
         appAdapter.setOnItemListener(new AppAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
                 winIndex = position;
-                Toast.makeText(activity,"开启"+appNames[position], Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, Constant.APPNAMES[position] + "数据", Toast.LENGTH_SHORT).show();
                 int count = appAdapter.getItemCount();
                 for (int i = 0; i < count; i++) {
-                    View child = appList.getChildAt(i);
-                    if(child!=null){
+                    View child = vh.appList.getChildAt(i);
+                    if (child != null) {
                         TextView item = (TextView) child.findViewById(R.id.appName);
-                        if(i==position){
+                        if (i == position) {
                             item.setTextColor(activity.getResources().getColor(R.color.red));
-                        }else{
+                        } else {
                             item.setTextColor(activity.getResources().getColor(R.color.black_overlay));
                         }
                     }
                 }
-                activity.setTemplate(position+8);
+                 querySelfData();
             }
+
             @Override
             public void onLongClick(int position) {
                 //Toast.makeText(activity,appNames[position]+"长按", Toast.LENGTH_SHORT).show();
             }
         });
-        appList.setAdapter(appAdapter);
+        vh.appList.setAdapter(appAdapter);
         seatList = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
             PlayerData player = new PlayerData();
@@ -163,28 +156,61 @@ public class MineFragment extends Fragment implements View.OnClickListener{
             }
             seatList.add(player);
         }
-
+        querySelfData();
     }
+    public void querySelfData(){
+        ReqData data = new ReqData();
+        QuerySelf queryself = new QuerySelf();
+        queryself.setUserid(activity.phone);
+        String param = new Gson().toJson(queryself);
+        data.setParam(param);
+        data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
+        data.setReqid(activity.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
+        HttpUtil.sendPostRequestData("queryself", new Gson().toJson(data), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("WindowTool", "response:(error)" + e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                Log.e("MineFragment", "response:" + json);
+                Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+                Map<String, String> map = result.getRets();
+                String players = map.get("listself");
+                List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+                Type listType = new TypeToken<List<PlayerData>>() {
+                }.getType();
+                playerDatas = new Gson().fromJson(players, listType);
+                if (playerDatas != null) {
+                    for (int i = 0; i < playerDatas.size(); i++) {
+                        PlayerData playerData = playerDatas.get(i);
+                        if (playerData != null) {
+                            List<PlayerData> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData.class);
+                            if (datas.size() > 0) {
+                                DataSupport.deleteAll(PlayerData.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
+                            }
+                            playerData.save();
+                        }
+                    }
+                }
+                Message msg = new Message();
+                msg.arg1 = 1;
+                handler.sendMessage(msg);
+            }
+        });
+    }
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.arg1==1){
+                getSelfSeatsData();
+            }
+        }
+    };
     public void getSelfSeatsData() {//获取个人在每个位置的玩家数据
-        double selfTotalBBCount = 0;
-        int selfTotalWinCount = 0;
-        int selfTotalLoseCount = 0;
-        int selfTotalPlayCount = 0;
-        int selfTotalJoinCount = 0;
-        int selfTotalBet3Count = 0;
-        int selfTotalPfrCount = 0;
-        int selfTotalStlCount = 0;
-        int selfTotalFoldStlCount = 0;
-        int selfTotalFold3BetCount = 0;
-        int selfTotalFace3BetCount = 0;
-        int selfTotalFaceOpenCount = 0;
-        int selfTotalCallCount = 0;
-        int selfTotalRaiseCount = 0;
-        int selfTotalCbCount = 0;
-        int selfLastRaiseCount = 0;
-        int selfTotalSTLPositionCount = 0;
-        int selfTotalFaceSTLCount = 0;
-        List<PlayerData> dataList = where("name=?","self").find(PlayerData.class);
+        List<PlayerData> dataList = where("name=?", "self").find(PlayerData.class);
         for (int i = 0; i < dataList.size(); i++) {
             PlayerData playerData = dataList.get(i);
             switch (playerData.getSeatFlag()) {
@@ -219,63 +245,105 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                     break;
             }
         }
-        if(myAdapter==null){
+        if (myAdapter == null) {
             myAdapter = new MyAdapter(activity, seatList);
-            seatFlagsList.setAdapter(myAdapter);
-        }else{
+            vh.selfDataRecyclerView.setAdapter(myAdapter);
+        } else {
             myAdapter.notifyDataSetChanged();
         }
+        PlayerData self = new PlayerData();
         for (int i = 0; i < seatList.size(); i++) {
             PlayerData playerData = seatList.get(i);
-            selfTotalBBCount += playerData.getBbCount();
-            selfTotalWinCount += playerData.getWinCount();
-            selfTotalLoseCount += playerData.getLoseCount();
-            selfTotalPlayCount += playerData.getPlayCount();
-            selfTotalJoinCount += playerData.getJoinCount();
-            selfTotalBet3Count += playerData.getBet3Count();
-            selfTotalPfrCount += playerData.getPfrCount();
-            selfTotalStlCount += playerData.getStlCount();
-            selfTotalFoldStlCount += playerData.getFoldStlCount();
-            selfTotalFace3BetCount += playerData.getFace3BetCount();
-            selfTotalFaceSTLCount += playerData.getFaceStlCount();
-            selfTotalSTLPositionCount += playerData.getStlPosCount();
-            selfTotalFaceOpenCount += playerData.getFaceOpenCount();
+            self.setPlayCount(self.getPlayCount()+playerData.getPlayCount());
+            self.setLoseCount(self.getLoseCount()+playerData.getLoseCount());
+            self.setWinCount(self.getWinCount()+playerData.getWinCount());
+            self.setBbCount(self.getBbCount()+playerData.getBbCount());
+            self.setPfrCount(self.getPfrCount()+playerData.getPfrCount());
+            self.setJoinCount(self.getJoinCount()+playerData.getJoinCount());
+            self.setBet3Count(self.getBet3Count()+playerData.getBet3Count());
+            self.setFoldCount(self.getFoldCount()+playerData.getFoldCount());
+            self.setCallCount(self.getCallCount()+playerData.getCallCount());
+            self.setRaiseCount(self.getRaiseCount()+playerData.getRaiseCount());
+            self.setStlCount(self.getStlCount()+playerData.getStlCount());
+            self.setFoldStlCount(self.getFoldStlCount()+playerData.getFoldStlCount());
+            self.setFaceOpenCount(self.getFaceOpenCount()+playerData.getFaceOpenCount());
+            self.setFaceCbCount(self.getFaceCbCount()+playerData.getFaceCbCount());
+            self.setFaceStlCount(self.getFaceStlCount()+playerData.getFaceStlCount());
+            self.setFace3BetCount(self.getFace3BetCount()+playerData.getFace3BetCount());
+            self.setLastRaiseCount(self.getLastRaiseCount()+playerData.getLastRaiseCount());
+            self.setCbCount(self.getCbCount()+playerData.getCbCount());
+            self.setStlPosCount(self.getStlPosCount()+playerData.getStlPosCount());
+            self.setFlopCount(self.getFlopCount()+playerData.getFlopCount());
+            self.setFoldFlopCount(self.getFoldFlopCount()+playerData.getFoldFlopCount());
+            self.setTurnCount(self.getTurnCount()+playerData.getTurnCount());
+            self.setFoldTurnCount(self.getFoldTurnCount()+playerData.getFoldTurnCount());
+            self.setRiverCount(self.getRiverCount()+playerData.getRiverCount());
+            self.setFoldRiverCount(self.getFoldRiverCount()+playerData.getFoldRiverCount());
         }
-        totalBBCount.setText("总战绩:"+String.format("%.2f",selfTotalBBCount)+"bb");
-        winLoseCount.setText("胜负比例:"+selfTotalWinCount+"/"+selfTotalLoseCount);
-        totalPlayCount.setText("总手数:"+selfTotalPlayCount);
-        if(selfTotalFaceOpenCount!=0){
-            totalBet3Count.setText("3Bet("+selfTotalBet3Count*100/selfTotalFaceOpenCount+"%)");
-        }else{
-            totalBet3Count.setText("3Bet(0.0%)");
-        }
-       if(selfTotalPlayCount>0){
-           totalVpipCount.setText("VPIP("+selfTotalJoinCount*100/selfTotalPlayCount+"%)");
-           totalPfrCount.setText("PFR("+selfTotalPfrCount*100/selfTotalPlayCount+"%)");
-           if(selfTotalSTLPositionCount>0){
-               totalStlCount.setText("STL("+selfTotalStlCount*100/selfTotalSTLPositionCount+"%)");
-           }else{
-               totalStlCount.setText("STL(-%)");
-           }
-           if(selfTotalFaceSTLCount>0){
-               totalFoldStlCount.setText("FSTL("+selfTotalFoldStlCount*100/selfTotalFaceSTLCount+"%)");
-           }else{
-               totalFoldStlCount.setText("FSTL(-%)");
-           }
-       }else{
-           totalVpipCount.setText("VPIP(-%)");
-           totalPfrCount.setText("PFR(-%)");
-           totalStlCount.setText("STL(-%)");
-           totalFoldStlCount.setText("FSTL(-%)");
-       }
+        vh.totalBBCount.setText("总战绩:" + String.format("%.2f", self.getBbCount()) + "bb");
+        vh.winLoseCount.setText("胜负比例:" + self.getWinCount() + "/" + self.getLoseCount());
+        vh.totalPlayCount.setText("总手数:" + self.getPlayCount());
+        vh.selfVpipPercent.setText(Constant.percentTypes[1] + "(" + Constant.getPercent(self, Constant.TYPE_VPIP) + "%)");
+        vh.selfPfrPercent.setText(Constant.percentTypes[2] + "(" + Constant.getPercent(self, Constant.TYPE_PFR) + "%)");
+        vh.selfBet3Percent.setText(Constant.percentTypes[3] + "(" + Constant.getPercent(self, Constant.TYPE_3BET) + "%)");
+        vh.totalCBPercent.setText(Constant.percentTypes[4] + "(" + Constant.getPercent(self, Constant.TYPE_CB) + "%)");
+        vh.totalAFPercent.setText(Constant.percentTypes[5] + "(" + Constant.getPercent(self, Constant.TYPE_AF) + ")");
+        vh.totalF3BetPercent.setText(Constant.percentTypes[6] + "(" + Constant.getPercent(self, Constant.TYPE_F3BET) + "%)");
+        vh.totalStlPercent.setText(Constant.percentTypes[7] + "(" + Constant.getPercent(self, Constant.TYPE_STL) + "%)");
+        vh.totalFStlPercent.setText(Constant.percentTypes[8] + "(" + Constant.getPercent(self, Constant.TYPE_FSTL) + "%)");
+        vh.totalFCBPercent.setText(Constant.percentTypes[9] + "(" + Constant.getPercent(self, Constant.TYPE_FCB) + "%)");
+        vh.totalFFlopPercent.setText(Constant.percentTypes[10] + "(" + Constant.getPercent(self, Constant.TYPE_FFLOP) + "%)");
+        vh.totalFTurnPercent.setText(Constant.percentTypes[11] + "(" + Constant.getPercent(self, Constant.TYPE_FTURN) + "%)");
+        vh.totalFRiverPercent.setText(Constant.percentTypes[12] + "(" + Constant.getPercent(self, Constant.TYPE_FRIVER) + "%)");
     }
 
-    @Override
-    public void onClick(View v) {
-       if(v.getId()==R.id.btn_poker_details){
-           Intent intent = new Intent(activity, PokerDetailActivity.class);
-           startActivity(intent);
-       }
-    }
 
+    static class ViewHolder {
+        @BindView(R.id.back)
+        Button back;
+        @BindView(R.id.title)
+        TextView title;
+        @BindView(R.id.right)
+        Button right;
+        @BindView(R.id.totalPlayCount)
+        TextView totalPlayCount;
+        @BindView(R.id.winLoseCount)
+        TextView winLoseCount;
+        @BindView(R.id.totalBBCount)
+        TextView totalBBCount;
+        @BindView(R.id.self_vpipPercent)
+        TextView selfVpipPercent;
+        @BindView(R.id.self_pfrPercent)
+        TextView selfPfrPercent;
+        @BindView(R.id.self_bet3Percent)
+        TextView selfBet3Percent;
+        @BindView(R.id.totalStlPercent)
+        TextView totalStlPercent;
+        @BindView(R.id.totalFStlPercent)
+        TextView totalFStlPercent;
+        @BindView(R.id.totalF3BetPercent)
+        TextView totalF3BetPercent;
+        @BindView(R.id.totalCBPercent)
+        TextView totalCBPercent;
+        @BindView(R.id.totalFCBPercent)
+        TextView totalFCBPercent;
+        @BindView(R.id.totalAFPercent)
+        TextView totalAFPercent;
+        @BindView(R.id.totalFFlopPercent)
+        TextView totalFFlopPercent;
+        @BindView(R.id.totalFTurnPercent)
+        TextView totalFTurnPercent;
+        @BindView(R.id.totalFRiverPercent)
+        TextView totalFRiverPercent;
+        @BindView(R.id.appList)
+        RecyclerView appList;
+        @BindView(R.id.textView2)
+        TextView textView2;
+        @BindView(R.id.selfDataRecyclerView)
+        RecyclerView selfDataRecyclerView;
+
+        ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
 }

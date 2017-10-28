@@ -27,17 +27,15 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.ruilonglai.texas_scan.MainActivity;
 import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.activity.LoginActivity;
-import com.ruilonglai.texas_scan.entity.JsonBean;
 import com.ruilonglai.texas_scan.entity.PercentType;
 import com.ruilonglai.texas_scan.entity.PlayerData;
 import com.ruilonglai.texas_scan.entity.QuerySelf;
 import com.ruilonglai.texas_scan.entity.QueryUser;
 import com.ruilonglai.texas_scan.entity.ReqData;
 import com.ruilonglai.texas_scan.entity.Result;
-import com.ruilonglai.texas_scan.newprocess.Connect;
+import com.ruilonglai.texas_scan.entity.UserName;
 import com.ruilonglai.texas_scan.newprocess.MainProcessUtil;
 import com.ruilonglai.texas_scan.newprocess.MainServer;
 import com.ruilonglai.texas_scan.newprocess.Package;
@@ -62,14 +60,15 @@ import static com.ruilonglai.texas_scan.util.Constant.winPos_1080;
 import static org.litepal.crud.DataSupport.where;
 
 /**
- * Created by Administrator on 2017/8/17.
+ * Created by wgl on 2017/8/17.
  */
 
 public class WindowTool {
 
     private View view;
     private View settingView;
-    private TextView openCloseView;//开启，结束,重启
+    private View openCloseView;//开启，结束,重启
+    private OpenViewHolder ovh;
     private boolean isOpen = false;
     private boolean isClose = true;
     private Intent intent1;
@@ -94,42 +93,47 @@ public class WindowTool {
     private String userId;
     private int appCount;
     private int widthIdx;//默认是720,当widthIdx=1时,适配1080*1920
+    List<Double> vpips; //当前牌桌各玩家得入池率
+    List<Double> flops; //当前牌桌各玩家得翻牌率
 
     private volatile static WindowTool instance = null;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if(msg.arg1==0){
+            if (msg.arg1 == 0) {
                 getUpdateSeatContents(names);
                 updateNineWindow();
-            }else if(msg.arg1 == 1){
-                params.width = 60;
-                params.height =40;
+            } else if (msg.arg1 == 1) {
+                params.width = 100;
+                params.height = WindowManager.LayoutParams.WRAP_CONTENT;
                 params.x = 20;
-                params.y = 270;
-                 if(isClose){
-                     MainProcessUtil.getInstance().exit(context);
-                     boolean isphone = context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getBoolean("isPhone",false);
-                     MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(context),isphone,true);
-                     openCloseView.setText("暂停");
-                     isClose = false;
-                 }else{
-                     try {
-                         Package pkg = new Package();
-                         pkg.setType( Constant.SOCKET_EXIT);
-                         pkg.setContent("exit");
-                         MainServer.newInstance().send(pkg,context);
-                         openCloseView.setText("开启");
-                         isClose = true;
-                         deleteWindow(false);
-                         names.clear();
-                     } catch (Exception e) {
-                         Log.e("error","异常退出");
-                         MainProcessUtil.getInstance().exit(context);
-                     }
-                 }
-                windowManager.updateViewLayout(openCloseView,params);
+                params.y = 250;
+                if (isClose) {
+                    MainProcessUtil.getInstance().exit(context);
+                    boolean isphone = context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getBoolean("isPhone", false);
+                    MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(context), isphone, true);
+                    ovh.open.setText("暂停");
+                    isClose = false;
+                } else {
+                    try {
+                        Package pkg = new Package();
+                        pkg.setType(Constant.SOCKET_EXIT);
+                        pkg.setContent("exit");
+                        MainServer.newInstance().send(pkg, context);
+                        ovh.open.setText("开启");
+                        ovh.avgVpip.setText("");
+                        isClose = true;
+                        deleteWindow(false);
+                        names.clear();
+                        vpips.clear();
+                        flops.clear();
+                    } catch (Exception e) {
+                        Log.e("error", "异常退出");
+                        MainProcessUtil.getInstance().exit(context);
+                    }
+                }
+                windowManager.updateViewLayout(openCloseView, params);
             }
 
         }
@@ -155,6 +159,10 @@ public class WindowTool {
         this.userId = userId;
         Log.e("isInit", isInit + "");
         this.winIndex = winIndex;
+        if (vpips == null)
+            vpips = new ArrayList<>();
+        if(flops == null)
+            flops = new ArrayList<>();
         if (!isInit) {
             this.context = context;
             if (windowManager == null) {
@@ -164,12 +172,12 @@ public class WindowTool {
             if (params == null)
                 params = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_TOAST);
             //初始化后不首先获得窗口焦点。不妨碍设备上其他部件的点击、触摸事件。
-            params.flags =WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+            params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
             params.format = PixelFormat.RGBA_8888;
             params.gravity = Gravity.BOTTOM | Gravity.LEFT;
-            if(nameParams == null)
+            if (nameParams == null)
                 nameParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_TOAST);
-            nameParams.flags =WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+            nameParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
             nameParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
             nameParams.width = 200;
             nameParams.x = 0;
@@ -187,15 +195,17 @@ public class WindowTool {
             }
         }
     }
-    public boolean createOpenView(Activity context){//开启和关闭mian进程
+
+    public boolean createOpenView(Activity context) {//开启和关闭mian进程
         this.context = context;
-        if(!isOpen){
-            if(openCloseView==null){
-                openCloseView = new TextView(context);
-                openCloseView.setText("开启");
-                openCloseView.setGravity(Gravity.CENTER);
+        if (!isOpen) {
+            if (openCloseView == null) {
+                openCloseView = LayoutInflater.from(context).inflate(R.layout.window_open, null, false);
+                ovh = new OpenViewHolder(openCloseView);
+                ovh.open.setText("开启");
+                ovh.avgVpip.setText("");
                 openCloseView.setBackgroundColor(context.getResources().getColor(R.color.hui));
-                openCloseView.setOnClickListener(new View.OnClickListener() {
+                ovh.open.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Message msg = new Message();
@@ -204,16 +214,27 @@ public class WindowTool {
                     }
                 });
             }
-            params.width = 60;
-            params.height =40;
+            params.width = 100;
+            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
             params.x = 20;
-            params.y = 270;
-            windowManager.addView(openCloseView,params);
+            params.y = 250;
+            windowManager.addView(openCloseView, params);
             isOpen = true;
-        }else{
+        } else {
             return false;
         }
-     return true;
+        return true;
+    }
+    /*更新平均入池率*/
+    public void updateOpenViewVPIP(){
+        if(openCloseView!=null && ovh != null){
+            params.width = 100;
+            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            params.x = 20;
+            params.y = 250;
+            ovh.avgVpip.setText(getAvgVpip());
+            windowManager.updateViewLayout(openCloseView,params);
+        }
     }
     public boolean createWindow(String percent) {
         if (TextUtils.isEmpty(percent)) {
@@ -250,26 +271,29 @@ public class WindowTool {
     }
 
     public boolean createSettingView(final int seatIdx) {
+        if(haveSettingView){
+            return false;
+        }
         if (settingView == null) {
             settingView = LayoutInflater.from(context).inflate(R.layout.window_setting, null, false);
         }
-         final SettingViewHolder vh = new SettingViewHolder(settingView);
-         vh.seatIdx.setText(seatIdx+"号位");
-         vh.name.setText("");
-         vh.close.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 String name = vh.name.getText().toString();
-                 if(!TextUtils.isEmpty(name) ){
-                     Package pkg = new Package();
-                     pkg.setType(Constant.SOCKET_UPDATE_NAME);
-                     pkg.setContent("{\"seatIdx\":"+seatIdx+",\"name\":"+name+"}");
-                     MainServer.newInstance().send(pkg,context);
-                 }
-                 windowManager.removeViewImmediate(settingView);
-                 haveSettingView = false;
-             }
-         });
+        final SettingViewHolder vh = new SettingViewHolder(settingView);
+        vh.seatIdx.setText(seatIdx + "号位");
+        vh.name.setText("");
+        vh.close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = vh.name.getText().toString();
+                if (!TextUtils.isEmpty(name)) {
+                    Package pkg = new Package();
+                    pkg.setType(Constant.SOCKET_UPDATE_NAME);
+                    pkg.setContent("{\"seatIdx\":" + seatIdx + ",\"name\":" + name + "}");
+                    MainServer.newInstance().send(pkg, context);
+                }
+                windowManager.removeViewImmediate(settingView);
+                haveSettingView = false;
+            }
+        });
         vh.nameList.setAdapter(null);
         vh.name.addTextChangedListener(new TextWatcher() {
             @Override
@@ -279,21 +303,21 @@ public class WindowTool {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("WindowTool",s.toString());
+                Log.e("WindowTool", s.toString());
                 String searchName = s.toString();
                 List<String> list = new ArrayList<String>();
-                if(!TextUtils.isEmpty(searchName)){
-                    List<PlayerData> playerDatas = DataSupport.where("name like ?","%" + searchName + "%").find(PlayerData.class);
-                    for (int i = 0; i < playerDatas.size(); i++) {
-                        PlayerData playerData = playerDatas.get(i);
-                        if(playerData!=null){
-                            String name = playerData.getName();
-                            if(!TextUtils.isEmpty(name) && !name.contains("self"))
+                if (!TextUtils.isEmpty(searchName)) {
+                    List<UserName> userNames = DataSupport.where("name like ?", "%" + searchName + "%").find(UserName.class);
+                    for (int i = 0; i < userNames.size(); i++) {
+                        UserName userName = userNames.get(i);
+                        if (userName != null) {
+                            String name = userName.name;
+                            if (!TextUtils.isEmpty(name) && !name.contains("self"))
                                 list.add(name);
                         }
                     }
                 }
-                vh.nameList.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,list));
+                vh.nameList.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, list));
             }
 
             @Override
@@ -308,7 +332,7 @@ public class WindowTool {
                 vh.name.setText(name);
             }
         });
-        windowManager.addView(settingView,nameParams);
+        windowManager.addView(settingView, nameParams);
         return true;
     }
 
@@ -364,7 +388,6 @@ public class WindowTool {
                     params.x = winPos_1080[appCount][arr3Idx][j][0];
                     params.y = winPos_1080[appCount][arr3Idx][j][1];
                 }
-
             } else {
                 btn.setText("－|－|－\n－|－|－");
                 if (widthIdx == 0) {
@@ -387,32 +410,66 @@ public class WindowTool {
                 @Override
                 public void onClick(View v) {
                     int seatIdx = (int) v.getTag();
-                    createPlayerMessage(seatIdx);
+                    String name = names.get(seatIdx);
+                    if(!TextUtils.isEmpty(name)){
+                        createPlayerMessage(seatIdx);
+                    }else{
+                        if (!haveSettingView) {
+                            haveSettingView = createSettingView(seatIdx);
+                        }
+                    }
                 }
             });
             seats.add(btn);
             windowManager.addView(btn, params);
         }
-//        if(settingView!=null && haveSettingView){//在更新9个位置的时候同时更新修改名字的窗口
-//            windowManager.removeViewImmediate(settingView);
-//            haveSettingView = false;
-//        }
         haveSeatsWindow = true;
     }
 
+    public String getAvgVpip() {//获取平均入池率
+        double sum = 0.0;
+        double sumFlop = 0.0;
+        String str = "";
+        if (vpips.size() == 0){
+            str += "0.0";
+        }else{
+            for (int i = 0; i < vpips.size(); i++) {
+                Double aDouble = vpips.get(i);
+                sum += aDouble;
+            }
+            String avgVpip= String.format("%.1f", sum / vpips.size());
+            if(Double.valueOf(avgVpip)>100)
+                avgVpip = "100.0";
+            str += avgVpip;
+        }
+        
+        if (flops.size() == 0){
+            str += "|0.0";
+        }else{
+            for (int i = 0; i < flops.size(); i++) {
+                Double aDouble = flops.get(i);
+                sumFlop += aDouble;
+            }
+            String avgFlop = String.format("%.1f", sumFlop / flops.size());
+            if(Double.valueOf(avgFlop)>100)
+                avgFlop = "100.0";
+            str += "|"+avgFlop;
+        }
+        return str;
+    }
     public void getSeatContents(final SparseArray<String> names) {
         if (names == null || names.size() == 0)
             return;
         Gson gson = new Gson();
         ReqData data = new ReqData();
-        QueryUser user = new QueryUser();
-        List<String> usernames = new ArrayList<>();
+        final List<String> usernames = new ArrayList<>();
         for (int i = isWatch; i < playCount + isWatch; i++) {
             String name = names.get(i);
             if (!TextUtils.isEmpty(name)) {
                 if (name.contains("self")) {
                     QuerySelf queryself = new QuerySelf();
                     queryself.setUserid(userId);
+                    queryself.setPlatType(winIndex);
                     String param = gson.toJson(queryself);
                     data.setParam(param);
                     data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
@@ -437,10 +494,10 @@ public class WindowTool {
                             if (playerDatas != null) {
                                 for (int i = 0; i < playerDatas.size(); i++) {
                                     PlayerData playerData = playerDatas.get(i);
-                                    if(playerData!=null){
-                                        List<PlayerData> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(),playerData.getSeatFlag()).find(PlayerData.class);
+                                    if (playerData != null) {
+                                        List<PlayerData> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData.class);
                                         if (datas.size() > 0) {
-                                            DataSupport.deleteAll(PlayerData.class,"name=? and seatFlag=?", playerData.getName(),playerData.getSeatFlag());
+                                            DataSupport.deleteAll(PlayerData.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
                                         }
                                         playerData.save();
                                     }
@@ -453,7 +510,9 @@ public class WindowTool {
                 }
             }
         }
+        QueryUser user = new QueryUser();
         user.setUsernames(usernames);
+        user.setPlatType(winIndex);
         data.setParam(gson.toJson(user));
         data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
         data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
@@ -471,18 +530,23 @@ public class WindowTool {
                 Map<String, String> map = result.getRets();
                 String players = map.get("listuser");
                 List<PlayerData> playerDatas = new ArrayList<PlayerData>();
-                Type listType = new TypeToken<List<PlayerData>>() {
-                }.getType();
+                Type listType = new TypeToken<List<PlayerData>>() {}.getType();
                 playerDatas = new Gson().fromJson(players, listType);
                 if (playerDatas != null) {
                     for (int i = 0; i < playerDatas.size(); i++) {
                         PlayerData playerData = playerDatas.get(i);
-                        if(playerData!=null){
+                        if (playerData != null) {
                             List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
                             if (datas.size() > 0) {
-                                DataSupport.deleteAll(PlayerData.class,"name=?", playerData.getName());
+                                DataSupport.deleteAll(PlayerData.class, "name=?", playerData.getName());
                             }
                             playerData.save();
+                            List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
+                            if(userNames1.size()==0){
+                                UserName un = new UserName();
+                                un.name = playerData.getName();
+                                un.save();
+                            }
                         }
                     }
                 }
@@ -492,15 +556,19 @@ public class WindowTool {
             }
         });
     }
+
     public void getUpdateSeatContents(SparseArray<String> names) {
         if (names == null || names.size() == 0)
             return;
+        vpips.clear();
+        flops.clear();
         for (int i = isWatch; i < playCount + isWatch; i++) {
             String name = names.get(i);
             if (!TextUtils.isEmpty(name)) {
                 seatContents.put(i, getPlayerMessage(name));
             }
         }
+        updateOpenViewVPIP();
     }
 
     /*改变显示设置的时候重新获取显示列表*/
@@ -509,6 +577,7 @@ public class WindowTool {
     }
 
     public String getPlayerMessage(String name) {
+        double vpip = 0;
         if (TextUtils.isEmpty(name))
             return "";
         StringBuilder sb = new StringBuilder();
@@ -543,86 +612,18 @@ public class WindowTool {
             } else {
                 for (int i = 0; i < percents.size(); i++) {
                     int value = percents.get(i).intValue();
-                    sb.append(getPercent(playerData, value));
+                    sb.append(Constant.getPercent(playerData, value));
                     if (i == 2) {
                         sb.append("\n");
                     } else if (i < 5) {
                         sb.append("|");
                     }
                 }
+                vpips.add(Double.valueOf(Constant.getPercent(playerData, Constant.TYPE_VPIP)));
+                flops.add(Double.valueOf(playerData.getFlopCount()*100/playCount));
             }
         }
         return sb.toString();
-    }
-
-    /*获取相应类型的概率*/
-    public String getPercent(PlayerData player, int type) {
-        String percent = "－";
-        int playCount = player.getPlayCount();
-        switch (type) {
-            case Constant.TYPE_HAND:
-                if (playCount >= 1000) {
-                    percent = playCount / 1000 + "K+";
-                } else {
-                    percent = "(" + playCount + ")";
-                }
-                break;
-            case Constant.TYPE_VPIP:
-                if (playCount != 0)
-                    percent = player.getJoinCount() * 100 / playCount + "";
-                break;
-            case Constant.TYPE_PFR:
-                if (playCount != 0)
-                    percent = player.getPfrCount() * 100 / playCount + "";
-                break;
-            case Constant.TYPE_3BET:
-                if (player.getFaceOpenCount() != 0)
-                    percent = player.getBet3Count() * 100 / player.getFaceOpenCount() + "";
-                break;
-            case Constant.TYPE_CB:
-                if (player.getLastRaiseCount() != 0)
-                    percent = player.getCbCount() * 100 / player.getLastRaiseCount() + "";
-                break;
-            case Constant.TYPE_AF:
-                if (player.getCallCount() != 0) {
-                    double af = player.getRaiseCount() / Double.valueOf(player.getCallCount());
-                    if (af > 10) {
-                        af = af / 2;
-                    }
-                    percent = String.format("%.1f", af);
-                }
-
-                break;
-            case Constant.TYPE_F3BET:
-                if (player.getFace3BetCount() != 0)
-                    percent = player.getFold3BetCount() * 100 / player.getFace3BetCount() + "";
-                break;
-            case Constant.TYPE_STL:
-                if (player.getStlPosCount() != 0)
-                    percent = player.getStlCount() * 100 / player.getStlPosCount() + "";
-                break;
-            case Constant.TYPE_FSTL:
-                if (player.getFaceStlCount() != 0)
-                    percent = player.getFoldStlCount() * 100 / player.getFaceStlCount() + "";
-                break;
-            case Constant.TYPE_FCB:
-                if (player.getFaceCbCount() != 0)
-                    percent = player.getFoldCbCount() * 100 / player.getFaceCbCount() + "";
-                break;
-            case Constant.TYPE_FFLOP:
-                if (player.getFlopCount() != 0 && playCount != 0)
-                    percent = player.getFoldFlopCount() * 100 / player.getFlopCount() + "";
-                break;
-            case Constant.TYPE_FTURN:
-                if (player.getTurnCount() != 0 && playCount != 0)
-                    percent = player.getFoldTurnCount() * 100 / player.getTurnCount() + "";
-                break;
-            case Constant.TYPE_FRIVER:
-                if (player.getRiverCount() != 0 && playCount != 0)
-                    percent = player.getFoldRiverCount() * 100 / player.getRiverCount() + "";
-                break;
-        }
-        return percent;
     }
 
     //个人的总类
@@ -733,19 +734,19 @@ public class WindowTool {
             vh.pos13.setTextSize(8);
         }
         if (player != null) {
-            vh.pos1.setText(playerName + getPercent(player, Constant.TYPE_HAND));
-            vh.pos2.setText(Constant.percentTypes[1] + "(" + getPercent(player, Constant.TYPE_VPIP) + "%)");
-            vh.pos3.setText(Constant.percentTypes[2] + "(" + getPercent(player, Constant.TYPE_PFR) + "%)");
-            vh.pos4.setText(Constant.percentTypes[3] + "(" + getPercent(player, Constant.TYPE_3BET) + "%)");
-            vh.pos5.setText(Constant.percentTypes[4] + "(" + getPercent(player, Constant.TYPE_CB) + "%)");
-            vh.pos6.setText(Constant.percentTypes[5] + "(" + getPercent(player, Constant.TYPE_AF) + ")");
-            vh.pos7.setText(Constant.percentTypes[6] + "(" + getPercent(player, Constant.TYPE_F3BET) + "%)");
-            vh.pos8.setText(Constant.percentTypes[7] + "(" + getPercent(player, Constant.TYPE_STL) + "%)");
-            vh.pos9.setText(Constant.percentTypes[8] + "(" + getPercent(player, Constant.TYPE_FSTL) + "%)");
-            vh.pos10.setText(Constant.percentTypes[9] + "(" + getPercent(player, Constant.TYPE_FCB) + "%)");
-            vh.pos11.setText(Constant.percentTypes[10] + "(" + getPercent(player, Constant.TYPE_FFLOP) + "%)");
-            vh.pos12.setText(Constant.percentTypes[11] + "(" + getPercent(player, Constant.TYPE_FTURN) + "%)");
-            vh.pos13.setText(Constant.percentTypes[12] + "(" + getPercent(player, Constant.TYPE_FRIVER) + "%)");
+            vh.pos1.setText(playerName + Constant.getPercent(player, Constant.TYPE_HAND));
+            vh.pos2.setText(Constant.percentTypes[1] + "(" + Constant.getPercent(player, Constant.TYPE_VPIP) + "%)");
+            vh.pos3.setText(Constant.percentTypes[2] + "(" + Constant.getPercent(player, Constant.TYPE_PFR) + "%)");
+            vh.pos4.setText(Constant.percentTypes[3] + "(" + Constant.getPercent(player, Constant.TYPE_3BET) + "%)");
+            vh.pos5.setText(Constant.percentTypes[4] + "(" + Constant.getPercent(player, Constant.TYPE_CB) + "%)");
+            vh.pos6.setText(Constant.percentTypes[5] + "(" + Constant.getPercent(player, Constant.TYPE_AF) + ")");
+            vh.pos7.setText(Constant.percentTypes[6] + "(" + Constant.getPercent(player, Constant.TYPE_F3BET) + "%)");
+            vh.pos8.setText(Constant.percentTypes[7] + "(" + Constant.getPercent(player, Constant.TYPE_STL) + "%)");
+            vh.pos9.setText(Constant.percentTypes[8] + "(" + Constant.getPercent(player, Constant.TYPE_FSTL) + "%)");
+            vh.pos10.setText(Constant.percentTypes[9] + "(" + Constant.getPercent(player, Constant.TYPE_FCB) + "%)");
+            vh.pos11.setText(Constant.percentTypes[10] + "(" + Constant.getPercent(player, Constant.TYPE_FFLOP) + "%)");
+            vh.pos12.setText(Constant.percentTypes[11] + "(" + Constant.getPercent(player, Constant.TYPE_FTURN) + "%)");
+            vh.pos13.setText(Constant.percentTypes[12] + "(" + Constant.getPercent(player, Constant.TYPE_FRIVER) + "%)");
         } else {
             vh.pos1.setText(playerName + "(-)");
             vh.pos2.setText(Constant.percentTypes[1] + "(-%)");
@@ -764,8 +765,8 @@ public class WindowTool {
         vh.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!haveSettingView){
-                    haveSettingView =   createSettingView(seatIdx);
+                if (!haveSettingView) {
+                    haveSettingView = createSettingView(seatIdx);
                 }
             }
         });
@@ -803,7 +804,7 @@ public class WindowTool {
             seats.clear();
             haveSeatsWindow = false;
         }
-        if(close && openCloseView != null){
+        if (close && openCloseView != null) {
             windowManager.removeViewImmediate(openCloseView);
             openCloseView = null;
             isOpen = false;
@@ -860,6 +861,17 @@ public class WindowTool {
         ListView nameList;
 
         SettingViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    static class OpenViewHolder {
+        @BindView(R.id.open)
+        TextView open;
+        @BindView(R.id.avgVpip)
+        TextView avgVpip;
+
+        OpenViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }

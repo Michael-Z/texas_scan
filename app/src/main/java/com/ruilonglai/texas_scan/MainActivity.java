@@ -3,59 +3,43 @@ package com.ruilonglai.texas_scan;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.ruilonglai.texas_scan.activity.LoginActivity;
-import com.ruilonglai.texas_scan.activity.SerialActivity;
-import com.ruilonglai.texas_scan.activity.SettingActivity;
-import com.ruilonglai.texas_scan.activity.UseActivity;
 import com.ruilonglai.texas_scan.adapter.TabFragmentAdapter;
-import com.ruilonglai.texas_scan.entity.JsonBean;
-import com.ruilonglai.texas_scan.entity.MyData;
-import com.ruilonglai.texas_scan.entity.OneHand;
-import com.ruilonglai.texas_scan.entity.OneHandLog;
 import com.ruilonglai.texas_scan.entity.PlayerData;
-import com.ruilonglai.texas_scan.entity.PokerUser;
-import com.ruilonglai.texas_scan.entity.QuerySerial;
-import com.ruilonglai.texas_scan.entity.SerialInfo;
+import com.ruilonglai.texas_scan.entity.QueryUserName;
+import com.ruilonglai.texas_scan.entity.ReqData;
+import com.ruilonglai.texas_scan.entity.Result;
+import com.ruilonglai.texas_scan.entity.UserName;
+import com.ruilonglai.texas_scan.fragment.HomeFragment;
 import com.ruilonglai.texas_scan.fragment.MineFragment;
 import com.ruilonglai.texas_scan.fragment.PlayerFragment;
-import com.ruilonglai.texas_scan.fragment.TargetFragment;
-import com.ruilonglai.texas_scan.newprocess.Main;
-import com.ruilonglai.texas_scan.util.ActionsTool;
+import com.ruilonglai.texas_scan.fragment.PokerDetialsFragment;
+import com.ruilonglai.texas_scan.fragment.SettingFragment;
 import com.ruilonglai.texas_scan.newprocess.JsonTool;
-import com.ruilonglai.texas_scan.newprocess.MainProcessUtil;
 import com.ruilonglai.texas_scan.newprocess.MainServer;
 import com.ruilonglai.texas_scan.newprocess.Package;
-import com.ruilonglai.texas_scan.service.ScreenCapService;
+import com.ruilonglai.texas_scan.util.ActionsTool;
 import com.ruilonglai.texas_scan.util.AssetsCopyUtil;
 import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.GsonUtil;
 import com.ruilonglai.texas_scan.util.HttpUtil;
-import com.ruilonglai.texas_scan.util.SystemInfoUtil;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 import com.ruilonglai.texas_scan.util.WindowTool;
 import com.ruilonglai.texas_scan.view.TabContainerView;
@@ -64,6 +48,7 @@ import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,32 +56,31 @@ import java.util.Map;
 
 import butterknife.ButterKnife;
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Response;
 
-import static com.ruilonglai.texas_scan.R.drawable.play;
 import static org.litepal.crud.DataSupport.where;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, ViewPager.OnPageChangeListener,AdapterView.OnItemClickListener{
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener{
 
-   /* @BindView(R.id.test)
-    TextView test;*/
     private static final String TAG = "MainActivity";
 
     private boolean isOpen = false;
 
     private boolean hideWP;
 
-    private ImageButton open_server;
-
     private List<String> percentList;
 
-    private ScreenCapService.ChangeMsgBinder myBinder;
 
     private MineFragment mineFragment = new MineFragment();
 
     private PlayerFragment messageFragment = new PlayerFragment();
 
-    private TargetFragment targetFragment = new TargetFragment();
+    private SettingFragment settingFragment = new SettingFragment();
+
+    private HomeFragment homeFragment = new HomeFragment();
+
+    private PokerDetialsFragment pokerDetialsFragment = new PokerDetialsFragment();
 
     private MainServer mainServer = null;
 
@@ -106,17 +90,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private FragmentManager fragmentManager;
 
-    private String[] str;
-
-    private WindowTool wt;
+    public WindowTool wt;
 
     private int fragIdx = 2;
 
-    private int winIndex = 0;
+    public int winIndex = 0;
+
+    private int seatCount;
 
     private int playCount;
 
     private int isWatch;
+
 
     private String percent = "";
 
@@ -124,8 +109,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /*tab图标集合*/
     private final int ICONS_RES[][] = {
             {R.mipmap.ic_message_normal,R.mipmap.ic_message_focus},
-            {R.mipmap.ic_home_normal,R.mipmap.ic_home_focus},
-            {R.mipmap.ic_mine_normal,R.mipmap.ic_mine_focus}
+            {R.mipmap.ic_mine_normal,R.mipmap.ic_mine_focus},
+            {R.mipmap.bottom_home,R.mipmap.bottom_home2},
+            {R.mipmap.bottom_poker,R.mipmap.bottom_poker2},
+            {R.mipmap.bottom_setting,R.mipmap.bottom_setting2}
     };
 
     /*tab 颜色值 */
@@ -135,17 +122,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Fragment[] fragments = {
             messageFragment,
-            targetFragment,
-            mineFragment
+            mineFragment,
+            homeFragment,
+            pokerDetialsFragment,
+            settingFragment
     };
-
-    private String[] seatFlags = {"BTN", "SB", "BB", "UTG", "UTG+1", "MP", "MP+1", "HJ", "CO"};
 
     private boolean haveCreateWindow;
 
-    private String phone = "";
+    public String phone = "";
 
-    private String password = "";
+    public String password = "";
 
     private boolean haveOpenWindow;
 
@@ -166,6 +153,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                     break;
+                case  Constant.SOCKET_ONE_HAND_LOG:
+
+                    break;
                 case Constant.SOCKET_CLOSE_WINDOW:
                     WindowTool.getInstance().deleteWindow(false);
                     haveCreateWindow = false;
@@ -180,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                        }
 //                    }
                     wt.createOpenView(MainActivity.this);
-                    wt.createNinePointWindow(winIndex,playCount,names,isWatch);
+                    wt.createNinePointWindow(winIndex,seatCount,names,isWatch);
                     break;
                 case Constant.SOCKET_GET_TEMPLATE:
                     setTemplate(winIndex+8);
@@ -192,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         int seatIdx = array.keyAt(i);
                         names.put(seatIdx,(String)array.get(seatIdx));
                     }
-                    wt.createNinePointWindow(winIndex, playCount, names,isWatch);
+                    wt.createNinePointWindow(winIndex, seatCount, names,isWatch);
                     break;
                 case Constant.SOCKET_SEATCOUNT_CHANGE:
 
@@ -216,10 +206,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         password = msgs[1];
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        open_server = (ImageButton) findViewById(R.id.open_server);
-        open_server.setOnClickListener(this);
-        initViews();
         Connector.getDatabase();//创建数据库
+        initViews();
         SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
         boolean isUpdateDB = share.getBoolean("isUpdateDB", false);
         if(!isUpdateDB){
@@ -254,17 +242,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     case Constant.SOCKET_SEATCOUNT://几人桌
                         msg.arg1 = Constant.SOCKET_SEATCOUNT;
-                        playCount = JsonTool.getJsonMes(pkg.getContent(),"seatcount");
+                        seatCount = JsonTool.getJsonMes(pkg.getContent(),"seatcount");
                         isWatch = JsonTool.getJsonMes(pkg.getContent(),"iswatch");
                         msg.arg1 = Constant.SOCKET_SEATCOUNT;
                         handler.sendMessage(msg);
                         break;
                     case Constant.SOCKET_SEATCOUNT_CHANGE://几人桌
                         msg.arg1 = Constant.SOCKET_SEATCOUNT_CHANGE;
-                        playCount = JsonTool.getJsonMes(pkg.getContent(),"seatcount");
+                        seatCount = JsonTool.getJsonMes(pkg.getContent(),"seatcount");
                         isWatch = JsonTool.getJsonMes(pkg.getContent(),"iswatch");
-
-                        names.clear();
                         break;
                     case Constant.SOCKET_CLOSE_WINDOW://关闭悬浮窗
                         msg.arg1 = Constant.SOCKET_CLOSE_WINDOW;
@@ -283,48 +269,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         msg.obj = pkg.getContent();
                         handler.sendMessage(msg);
                         break;
-
                 }
             }
         });
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                .detectDiskReads().detectDiskWrites().detectNetwork()
-                .penaltyLog().build());
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectLeakedSqlLiteObjects().detectLeakedClosableObjects()
-                .penaltyLog().penaltyDeath().build());
-    }
+        for (int i = 0; i < Constant.APPNAMES.length; i++) {
+            ReqData data = new ReqData();
+            QueryUserName queryUserName = new QueryUserName();
+            queryUserName.setPlattype(i);
+            String param = new Gson().toJson(queryUserName);
+            data.setParam(param);
+            data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
+            data.setReqid(getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
+            HttpUtil.sendPostRequestData("queryusernames", new Gson().toJson(data), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.e("WindowTool", "response:(error)" + e.toString());
+                }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.open_server) {
-            if(!isOpen){
-                open_server.setImageDrawable(MainActivity.this.getResources().getDrawable(R.drawable.stop));
-//                MainProcessUtil.getInstance().exit(MainActivity.this);
-//                boolean isphone = getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getBoolean("isPhone",false);
-//                MainProcessUtil.getInstance().createMainProcess(AssetsCopyUtil.getPackageName(MainActivity.this),isphone);
-                 wt.createOpenView(MainActivity.this);
-            }else{
-                open_server.setImageDrawable(this.getResources().getDrawable(play));
-                wt.deleteWindow(true);
-                MainProcessUtil.getInstance().exit(MainActivity.this);
-//                try {
-//                    Package pkg = new Package();
-//                    pkg.setType( Constant.SOCKET_EXIT);
-//                    pkg.setContent("exit");
-//                    MainServer.newInstance().send(pkg,MainActivity.this);
-//                } catch (Exception e) {
-//                    Log.e("error","异常退出");
-//                    MainProcessUtil.getInstance().exit(MainActivity.this);
-//                }
-            }
-            isOpen = !isOpen;
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String json = response.body().string();
+                    Log.e("MineFragment", "response:" + json);
+                    try {
+                        Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+                        Map<String, String> map = result.getRets();
+                        String players = map.get("listnames");
+                        List<String> names = new ArrayList<String>();
+                        Type listType = new TypeToken<List<String>>() {
+                        }.getType();
+                        names = new Gson().fromJson(players, listType);
+                        if (names != null) {
+                            for (int j = 0; j < names.size(); j++) {
+                                UserName userName = new UserName();
+                                List<UserName> userNames = DataSupport.where("name=?", names.get(j)).find(UserName.class);
+                                if(userNames.size()==0){
+                                    userName.name = names.get(j);
+                                    userName.save();
+                                }
+                            }
+                        }
+                    } catch (JsonSyntaxException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+//                                Toast.makeText(MainActivity.this,"更新数据异常",Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            });
         }
-        if (v.getId() == R.id.showLog) {
-           showDrawerLayout();
-        }
+//        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//                .detectDiskReads().detectDiskWrites().detectNetwork()
+//                .penaltyLog().build());
+//        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//                .detectLeakedSqlLiteObjects().detectLeakedClosableObjects()
+//                .penaltyLog().penaltyDeath().build());
     }
-
     private void initViews() {
         percentList = new ArrayList<>();
         names = new SparseArray<>();
@@ -345,34 +346,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mPager.setCurrentItem(getIntent().getIntExtra("tab",2));
         for (int i = 0; i < 9; i++) {
             PlayerData player = new PlayerData();
-            player.setSeatFlag(seatFlags[i]);
+            player.setSeatFlag(Constant.seatFlags[i]);
             player.setName("self");
-            List<PlayerData> self = where("name=? and seatFlag=?", "self", seatFlags[i]).find(PlayerData.class);
+            List<PlayerData> self = where("name=? and seatFlag=?", "self", Constant.seatFlags[i]).find(PlayerData.class);
             if (self.size() == 0) {//不存在则创建一个
                 player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
                 player.save();
             }
         }
 
-        drawerLayout=(DrawerLayout) findViewById(R.id.id_drawerlayout);
-        drawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-        });
-        listView=(ListView) findViewById(R.id.listview);
-        str = new String[] { "清除玩家信息", "清除个人数据", "全部清除","数据迁移","数据显示设置","序列号信息","使用说明","退出登录"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, str);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
-        TextView phon = (TextView) findViewById(R.id.phone);
-        phon.setText(getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).getString("name", ""));
         wt = WindowTool.getInstance();
         wt.init(MainActivity.this,winIndex,phone);
         fragmentManager = getSupportFragmentManager();
@@ -394,15 +376,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-
-    private void showDrawerLayout() {
-        if (!drawerLayout.isDrawerOpen(Gravity.LEFT)) {
-            drawerLayout.openDrawer(Gravity.LEFT);
-        } else {
-            drawerLayout.closeDrawer(Gravity.LEFT);
-        }
-    }
-
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
@@ -420,140 +393,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onPageScrollStateChanged(int state) {}
-
-    /*抽屉选项*/
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        switch (position){
-            case 0:
-                DataSupport.deleteAll(PlayerData.class, "not name=?", "self");
-                if(fragIdx==0){
-                    messageFragment.notifyDataSetChaged();
-                }
-                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
-                break;
-            case 1:
-                DataSupport.deleteAll(PlayerData.class, "name=?","self");
-                DataSupport.deleteAll(MyData.class);
-                for (int i = 0; i < 9; i++) {
-                    PlayerData player = new PlayerData();
-                    player.setSeatFlag(seatFlags[i]);
-                    player.setName("self");
-                    List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "self", seatFlags[i]).find(PlayerData.class);
-                    if (self.size() == 0) {//不存在则创建一个
-                        player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
-                        player.save();
-                    }
-                }
-                mineFragment.getSelfSeatsData();
-                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
-                break;
-            case 2:
-                DataSupport.deleteAll(PlayerData.class);
-                DataSupport.deleteAll(MyData.class);
-                DataSupport.deleteAll(OneHand.class);
-                DataSupport.deleteAll(OneHandLog.class);
-                if(fragIdx==0){
-                    messageFragment.notifyDataSetChaged();
-                }else if(fragIdx==2){
-                    for (int i = 0; i < 9; i++) {
-                        PlayerData player = new PlayerData();
-                        player.setSeatFlag(seatFlags[i]);
-                        player.setName("self");
-                        List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "self", seatFlags[i]).find(PlayerData.class);
-                        if (self.size() == 0) {//不存在则创建一个
-                            player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
-                            player.save();
-                        }
-                    }
-                    mineFragment.getSelfSeatsData();
-                }
-                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
-                break;
-            case 3:
-//                boolean save = AssetsCopyUtil.copyDataBaseToSD(MainActivity.this);
-//                if(save)
-                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
-                break;
-            case 4:
-                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                startActivityForResult(intent,0);
-                break;
-            case 5:
-                Toast.makeText(MainActivity.this,"暂未开放此功能",Toast.LENGTH_SHORT).show();
-//                QuerySerial serial = new QuerySerial();
-//                serial.setUserid(phone);
-//                String json = new Gson().toJson(serial);
-//                HttpUtil.sendPostRequestData("queryserial",json,new okhttp3.Callback(){
-//                    @Override
-//                    public void onFailure(Call call, IOException e) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void onResponse(Call call, Response response) throws IOException {
-//                        String string = response.body().string();
-//                        JsonBean jsonBean = GsonUtil.parseJsonWithGson(string, JsonBean.class);
-//                        Log.e(TAG,string);
-//                        if(jsonBean.result.equals("true")){
-//                            if(jsonBean.serialInfos!=null){
-//                                int size = jsonBean.serialInfos.size();
-//                                for (int i = 0; i < size; i++) {
-//                                    SerialInfo serialInfo = jsonBean.serialInfos.get(i);
-//                                    string+= "serialno:"+serialInfo.getSerialno()+"    "+"remaindays:"+serialInfo.getRemaindays()+"#";
-//                                }
-//                            }
-//                            Intent intent = new Intent(MainActivity.this, SerialActivity.class);
-//                            intent.putExtra("log",string);
-//                            startActivity(intent);
-//                        }else{
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    Toast.makeText(MainActivity.this,"获取序列号信息失败",Toast.LENGTH_SHORT).show();
-//                                }
-//                            });
-//
-//                        }
-//                    }
-//                });
-                break;
-            case 6:
-                Intent intent1 = new Intent(this, UseActivity.class);
-                startActivity(intent1);
-                break;
-            case 7:
-                PokerUser pu = new PokerUser();
-                pu.id = phone;
-                pu.nick = "";
-                pu.passwd = password;
-                pu.license = 10;
-                Gson gson = new Gson();
-                String jsonstr = gson.toJson(pu);
-                HttpUtil.sendPostRequestData("logout",jsonstr,new okhttp3.Callback(){
-
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Log.e(TAG,e.toString());
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        Log.e(TAG,response.toString());
-                        Intent in = new Intent(MainActivity.this,LoginActivity.class);
-                        startActivity(in);
-                        finish();
-                    }
-                });
-                break;
-        }
-        showDrawerLayout();
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -575,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(fragIdx==0){
             /*刷新玩家列表*/
             messageFragment.notifyDataSetChaged();
-        }else if(fragIdx == 2){
+        }else if(fragIdx == 1){
             /*刷新个人列表*/
             mineFragment.getSelfSeatsData();
         }

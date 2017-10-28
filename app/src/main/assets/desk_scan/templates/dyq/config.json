@@ -67,7 +67,11 @@
 "isdeskinfonagtive":1,
 "betflagwidth":30,
 "betflagheight":30,
-"seat9":{
+"boxflagvalue":5000000,
+"seatposesflagvalue":3000000,
+"othercardflagposesflagvalue":1000000,
+
+  "seat9":{
   "namewidth":130,
   "nameheight":26,
   "nameposes":[

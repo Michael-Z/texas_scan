@@ -7,7 +7,6 @@ import android.util.SparseArray;
 import android.util.SparseIntArray;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.ruilonglai.texas_scan.ScanTool;
 import com.ruilonglai.texas_scan.entity.Boards;
 import com.ruilonglai.texas_scan.entity.GameAction;
@@ -18,11 +17,7 @@ import com.ruilonglai.texas_scan.entity.Seat;
 import com.ruilonglai.texas_scan.entity.TableRecord;
 import com.ruilonglai.texas_scan.newprocess.Connect;
 import com.ruilonglai.texas_scan.newprocess.JsonTool;
-import com.ruilonglai.texas_scan.newprocess.Main;
 import com.ruilonglai.texas_scan.newprocess.Package;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -149,6 +144,7 @@ public class PokerAnalysisTool {
                         if(user != null)
                         {
                             user.setBeginMoney(seat.getMoney()+seat.getBet());
+
                         }
                     }
                     if(straddle>0)
@@ -283,18 +279,18 @@ public class PokerAnalysisTool {
                   Connect.send(pkg);
                 }
             }else{
-                if(seatCount != count)
-                {
-                    btnIdx = -1;
-                    seatNames.clear();
-                    nextHandScanName = true;
-                    Package pkg = new Package();
-                    pkg.setType(Constant.SOCKET_SEATCOUNT_CHANGE);
-                    pkg.setContent(json);
-                    Connect.send(pkg);
-                    initView();
-                    return;
-                }
+//                if(seatCount != count)
+//                {//不同几人桌
+//                    btnIdx = -1;
+//                    seatNames.clear();
+//                    nextHandScanName = true;
+//                    Package pkg = new Package();
+//                    pkg.setType(Constant.SOCKET_SEATCOUNT_CHANGE);
+//                    pkg.setContent(json);
+//                    Connect.send(pkg);
+//                    initView();
+//                    return;
+//                }
             }
             json = ScanTool.ScanCurDichi(bitmap);
             curDichi = getJsonMes(json,"curdichi ");
@@ -348,7 +344,7 @@ public class PokerAnalysisTool {
                 String json = ScanTool.ScanSeat(bitmap, i);
                 Seat seat = gson.fromJson(json, Seat.class);
                 Log.e(TAG,i+"号位"+seat.toString());
-                if((seat.getMoney() > 0 && seat.getMoney()<2000000) || i == btnIdx || seat.getHidecard()==1)
+                if((seat.getMoney() > 0 && seat.getMoney()<1000000) || i == btnIdx || seat.getHidecard()==1)
                 {
                     playSeats.put(i,i);
                 }else{
@@ -403,6 +399,7 @@ public class PokerAnalysisTool {
                 actions.addAll(newActions);
             }
         }
+        saveOtherPlayerCards();//保存玩家show牌的牌型
     }
 
     private void sendWinPercent(){
@@ -497,6 +494,7 @@ public class PokerAnalysisTool {
             }
             users.add(user);
         }
+        tableRecord.setPlatformType(flag);
         tableRecord.setAnte(ante);
         tableRecord.setStraddle(straddle);
         tableRecord.setBlindType(blinds);
@@ -776,4 +774,4 @@ public class PokerAnalysisTool {
             }
         }
     }
-}
+ }

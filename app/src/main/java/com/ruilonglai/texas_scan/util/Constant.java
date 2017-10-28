@@ -1,5 +1,7 @@
 package com.ruilonglai.texas_scan.util;
 
+import com.ruilonglai.texas_scan.entity.PlayerData;
+
 /**
  * Created by WangShuai on 2017/5/3.
  */
@@ -7,6 +9,9 @@ package com.ruilonglai.texas_scan.util;
 public final class Constant {
 
     public final static String[] PLATFORM = new String[]{"dpq","dyq","pkbl-mtt","pkbl-sng"};
+    public final static String[] APPNAMES = {"德扑圈","德友圈","扑克部落MTT","扑克部落SNG"};
+    public final static String[] seatFlags = {"BTN", "SB", "BB", "UTG", "UTG+1", "MP", "MP+1", "HJ", "CO"};
+
     //一手数据中的输赢平
     public final static int FLAG_SELF = 0;
     public final static int FLAG_WATCH = 1;
@@ -99,11 +104,11 @@ public final class Constant {
                             {50, 230, 80, 40},
                             {200, 730, 350, -2},
                             {100, 130, 100, 50},
-                            {30,  350, 100, 50},
+                            {30,  330, 100, 50},
                             {30,  980, 100, 50},
                             {450, 1150, 100, 50},
                             {600, 980, 100, 50},
-                            {600, 350, 100, 50},
+                            {600, 330, 100, 50},
                             {200, 180, 100, 50},
                     },
                     {
@@ -524,7 +529,85 @@ public final class Constant {
             "在转牌圈,弃牌的频率",
             "在河牌圈,弃牌的频率"
     };
+    //保留几位小数
     public static String getDoubleString(int num,double count){
       return  String.format("%."+num+"f", count);
     }
+
+    /*获取相应类型的概率*/
+    public static String getPercent(PlayerData player, int type) {
+        String percent = "－";
+        int playCount = player.getPlayCount();
+        switch (type) {
+            case Constant.TYPE_HAND:
+                if (playCount >= 1000) {
+                    percent = playCount / 1000 + "K+";
+                } else {
+                    percent = "(" + playCount + ")";
+                }
+                break;
+            case Constant.TYPE_VPIP:
+                if (playCount != 0)
+                    percent = disposeBadNumber(player.getJoinCount() * 100 / playCount) + "";
+                break;
+            case Constant.TYPE_PFR:
+                if (playCount != 0)
+                    percent = disposeBadNumber(player.getPfrCount() * 100 / playCount) + "";
+                break;
+            case Constant.TYPE_3BET:
+                if (player.getFaceOpenCount() != 0)
+                    percent = disposeBadNumber(player.getBet3Count() * 100 / player.getFaceOpenCount()) + "";
+                break;
+            case Constant.TYPE_CB:
+                if (player.getLastRaiseCount() != 0)
+                    percent = disposeBadNumber(player.getCbCount() * 100 / player.getLastRaiseCount()) + "";
+                break;
+            case Constant.TYPE_AF:
+                if (player.getCallCount() != 0) {
+                    double af = player.getRaiseCount() / Double.valueOf(player.getCallCount());
+                    if (af > 10) {
+                        af = af / 2;
+                    }
+                    percent = String.format("%.1f", af);
+                }
+
+                break;
+            case Constant.TYPE_F3BET:
+                if (player.getFace3BetCount() != 0)
+                    percent = disposeBadNumber(player.getFold3BetCount() * 100 / player.getFace3BetCount()) + "";
+                break;
+            case Constant.TYPE_STL:
+                if (player.getStlPosCount() != 0)
+                    percent = disposeBadNumber(player.getStlCount() * 100 / player.getStlPosCount()) + "";
+                break;
+            case Constant.TYPE_FSTL:
+                if (player.getFaceStlCount() != 0)
+                    percent = disposeBadNumber(player.getFoldStlCount() * 100 / player.getFaceStlCount()) + "";
+                break;
+            case Constant.TYPE_FCB:
+                if (player.getFaceCbCount() != 0)
+                    percent = disposeBadNumber(player.getFoldCbCount() * 100 / player.getFaceCbCount()) + "";
+                break;
+            case Constant.TYPE_FFLOP:
+                if (player.getFlopCount() != 0 && playCount != 0)
+                    percent = disposeBadNumber(player.getFoldFlopCount() * 100 / player.getFlopCount()) + "";
+                break;
+            case Constant.TYPE_FTURN:
+                if (player.getTurnCount() != 0 && playCount != 0)
+                    percent = disposeBadNumber(player.getFoldTurnCount() * 100 / player.getTurnCount()) + "";
+                break;
+            case Constant.TYPE_FRIVER:
+                if (player.getRiverCount() != 0 && playCount != 0)
+                    percent = disposeBadNumber(player.getFoldRiverCount() * 100 / player.getRiverCount()) + "";
+                break;
+        }
+        return percent;
+    }
+
+    public static int disposeBadNumber(int num){
+        if(num>100)
+            num = 100;
+        return num;
+    }
+
 }

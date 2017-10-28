@@ -14,6 +14,7 @@ public class PokerUser {
 	public int logined;
 	public String curmachine;
 	public String sendtime;
+	public int version;
 	public List<String> machines=new ArrayList<String>();
 	public String getId() {
 		return id;
@@ -70,5 +71,13 @@ public class PokerUser {
 
 	public void setSendtime(String sendtime) {
 		this.sendtime = sendtime;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
 	}
 }

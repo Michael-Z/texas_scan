@@ -14,6 +14,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -30,15 +31,19 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SettingActivity extends AppCompatActivity implements OnClickListener,CompoundButton.OnCheckedChangeListener{
+public class SettingActivity extends AppCompatActivity implements OnClickListener, CompoundButton.OnCheckedChangeListener {
 
-    @BindView(R.id.sure)
+
+    @BindView(R.id.back)
+    Button back;
+    @BindView(R.id.title)
+    TextView title;
+    @BindView(R.id.right)
     Button sure;
-    @BindView(R.id.selects)
-    RecyclerView selects;
     @BindView(R.id.hideWinPercent)
     CheckBox hideWinPercent;
-
+    @BindView(R.id.selects)
+    RecyclerView selects;
     private SparseArray<ShowMes> list;
 
     private int percentCount;
@@ -50,9 +55,15 @@ public class SettingActivity extends AppCompatActivity implements OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         ButterKnife.bind(this);
+        title.setText("显示设置");
+        back.setVisibility(View.VISIBLE);
+        sure.setVisibility(View.VISIBLE);
+        sure.setText("确定");
+        sure.setTextColor(getResources().getColor(R.color.green));
         sure.setOnClickListener(this);
+        back.setOnClickListener(this);
         boolean hideWP = getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).getBoolean("hidewinpercent", false);
-        if(hideWP){
+        if (hideWP) {
             hideWinPercent.setChecked(true);
         }
         hideWinPercent.setOnCheckedChangeListener(this);
@@ -111,7 +122,7 @@ public class SettingActivity extends AppCompatActivity implements OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sure:
+            case R.id.right:
                 Intent intent = new Intent();
                 Gson gson = new Gson();
                 keys.clear();
@@ -131,9 +142,10 @@ public class SettingActivity extends AppCompatActivity implements OnClickListene
                     setResult(1, intent);
                     Toast.makeText(SettingActivity.this, "设置成功!", Toast.LENGTH_SHORT).show();
                 } else {
-                    if(keys.size()!=0)
                     Toast.makeText(SettingActivity.this, "选项少于6项，设置失败", Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case R.id.back:
                 finish();
                 break;
         }
@@ -146,6 +158,6 @@ public class SettingActivity extends AppCompatActivity implements OnClickListene
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).edit().putBoolean("hidewinpercent",isChecked).apply();
+        getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).edit().putBoolean("hidewinpercent", isChecked).apply();
     }
 }

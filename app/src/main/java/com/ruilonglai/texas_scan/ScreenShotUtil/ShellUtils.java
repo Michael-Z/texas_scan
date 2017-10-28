@@ -16,7 +16,6 @@ public class ShellUtils {
         boolean exception = false;
         try {
             process = Runtime.getRuntime().exec(isRoot ? COMMAND_SU : COMMAND_SH);
-
             os = new DataOutputStream(process.getOutputStream());
         } catch (IOException e) {
             exception = true;

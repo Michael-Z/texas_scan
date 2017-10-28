@@ -75,6 +75,10 @@
 
   "betflagwidth":31,
   "betflagheight":31,
+  "boxflagvalue":5000000,
+  "seatposesflagvalue":3000000,
+  "othercardflagposesflagvalue":1000000,
+
   "seat9":{
     "namewidth":117,
     "nameheight":30,

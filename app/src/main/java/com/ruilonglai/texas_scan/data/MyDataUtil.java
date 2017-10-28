@@ -23,9 +23,9 @@ public class MyDataUtil {
 
     public static List<MyData> getSomeDayMyData(int daySize){
         List<MyData> list = new ArrayList<MyData>();
-        for (int i = 0; i < daySize; i++) {
-            Date date = new Date(System.currentTimeMillis() - i * 24 * 3600 * 1000);
-            List<MyData> myDatas = DataSupport.where("date=?", TimeUtil.getCurrentDateToDay(date)).find(MyData.class);
+        for (int i = 0; i <= daySize; i++) {
+            String currentDateToDay = TimeUtil.getCurrentDateToDay(new Date(System.currentTimeMillis() - i * 24 * 3600 * 1000));
+            List<MyData> myDatas = DataSupport.where("date=?", currentDateToDay).find(MyData.class);
             list.addAll(myDatas);
         }
         return list;

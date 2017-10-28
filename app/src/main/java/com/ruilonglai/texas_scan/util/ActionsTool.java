@@ -12,12 +12,6 @@ import com.ruilonglai.texas_scan.entity.PokerRecord;
 import com.ruilonglai.texas_scan.entity.ReqData;
 import com.ruilonglai.texas_scan.entity.SaveRecordParam;
 import com.ruilonglai.texas_scan.entity.TableRecord;
-import com.ruilonglai.texas_scan.util.Constant;
-import com.ruilonglai.texas_scan.util.FileIOUtil;
-import com.ruilonglai.texas_scan.util.GsonUtil;
-import com.ruilonglai.texas_scan.util.HttpUtil;
-import com.ruilonglai.texas_scan.util.SaveDataUtil;
-import com.ruilonglai.texas_scan.util.TimeUtil;
 
 import java.io.IOException;
 import java.util.Date;
@@ -37,7 +31,7 @@ public class ActionsTool {
     private static int seq = 0;
     private static int straddle;
 
-    public static void disposeAction(String json,SparseArray<String> names,String userId){
+    public static void disposeAction(String json, SparseArray<String> names, String userId){
         if(TextUtils.isEmpty(json)){
             return;
         }
@@ -53,9 +47,15 @@ public class ActionsTool {
         int blinds = tableRecord.getBlindType();
         straddle = tableRecord.getStraddle();
         SparseArray<GameUser> users = new SparseArray<>();
+
         List<GameUser> gameUsers = pokerRecord.getUsers();
         for (int i = 0; i < gameUsers.size(); i++) {
             GameUser user = gameUsers.get(i);
+            Log.e(TAG,"seatIdx-->"+user.getSeatIdx()+" beginMoney-->"+user.getBeginMoney()+" endMoney-->"+user.getEndMoney());
+            if(Math.abs((user.getEndMoney()-user.getBeginMoney())/blinds)>10000){
+                user.setBeginMoney(0);
+                user.setEndMoney(0);
+            }
             users.put(user.getSeatIdx(),user);
             if(names!=null)
             names.put(user.getSeatIdx(),user.getUserName());
@@ -268,7 +268,7 @@ public class ActionsTool {
         reqData.setReqno(TimeUtil.getCurrentDateToMinutes(new Date())+disposeNumber());
         String data = gson.toJson(reqData, ReqData.class);
         FileIOUtil.saveToFile(data);
-//        new SaveDataUtil().disposeHandLog(data);
+        //new SaveDataUtil().disposeHandLog(data);
         //传输数据到服务器
         HttpUtil.sendPostRequestData("savehand", data, new Callback() {
             @Override

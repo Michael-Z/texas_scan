@@ -12,6 +12,7 @@ public class TableRecord {
     int  straddle;		//强抖设置大小：
     int  ante;			//anti设置大小：
     int  maxPlayCount;		//几人桌
+    int  platformType;      //平台类型  0-德扑圈 1-德友圈 2-扑克部落MTT 3-扑克部落SNG
     public String getTableno() {
         return tableno;
     }
@@ -66,5 +67,13 @@ public class TableRecord {
 
     public void setMaxPlayCount(int maxPlayCount) {
         this.maxPlayCount = maxPlayCount;
+    }
+
+    public int getPlatformType() {
+        return platformType;
+    }
+
+    public void setPlatformType(int platformType) {
+        this.platformType = platformType;
     }
 }

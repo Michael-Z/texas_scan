@@ -10,11 +10,21 @@ public class QueryUser {
 
     private List<String> usernames;
 
+    private int plattype;
+
     public List<String> getUsernames() {
         return usernames;
     }
 
     public void setUsernames(List<String> usernames) {
         this.usernames = usernames;
+    }
+
+    public int getPlatType() {
+        return plattype;
+    }
+
+    public void setPlatType(int platType) {
+        this.plattype = platType;
     }
 }

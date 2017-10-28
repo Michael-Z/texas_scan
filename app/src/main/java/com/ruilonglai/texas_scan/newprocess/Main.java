@@ -32,10 +32,10 @@ public class Main {
         String packagename = split[0];
         if(!TextUtils.isEmpty(packagename)&& Boolean.valueOf(split[1])){
             Log.e("main",packagename);
-            System.load(packagename+"/lib/arm/libleptonica.so");
-            System.load(packagename+"/lib/arm/liblibtesseract.so");
-            System.load(packagename+"/lib/arm/libopencv_info.so");
-            System.load(packagename+"/lib/arm/libnative-lib.so");
+            System.load(packagename+"/lib/arm64/libleptonica.so");
+            System.load(packagename+"/lib/arm64/liblibtesseract.so");
+            System.load(packagename+"/lib/arm64/libopencv_info.so");
+            System.load(packagename+"/lib/arm64/libnative-lib.so");
         }else{
             System.load("/data/data/com.ruilonglai.texas_scan/lib/libleptonica.so");
             System.load("/data/data/com.ruilonglai.texas_scan/lib/liblibtesseract.so");
@@ -73,7 +73,6 @@ public class Main {
                                Log.e(TAG,"更新名字失败");
                             }
                         }
-
                     }
                     @Override
                     public void exit() {

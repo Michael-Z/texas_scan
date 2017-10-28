@@ -5,8 +5,10 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <array name="tab_main_title">
-        <item>对手</item>
-        <item>计划</item>
-        <item>我的</item>
+        <item>玩家</item>
+        <item>个人数据</item>
+        <item>首页</item>
+        <item>手牌详情</item>
+        <item>设置</item>
     </array>
 </resources>
