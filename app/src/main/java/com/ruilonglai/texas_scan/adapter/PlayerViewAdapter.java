@@ -50,13 +50,14 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.My
     //填充onCreateViewHolder方法返回的holder中的控件
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
+        holder.item.setBackgroundColor(mContext.getResources().getColor(R.color.huiBai));
         if(position%2==0){
             holder.item.setBackgroundColor(mContext.getResources().getColor(R.color.hui));
         }
         PlayerData player = players.get(position);
         holder.name.setText(player.getName());
         int playCount = player.getPlayCount();
-        holder.totalPlayAndBBCount.setText("("+String.format("%.2f",player.getBbCount())+"bb)");
+        holder.totalPlayAndBBCount.setText("("+String.format("%.1f",player.getBbCount())+"bb)");
         holder.winLoseCount.setText("W/L/ALL("+player.getWinCount()+"/"+player.getLoseCount()+"/"+playCount+")");
         if(player.getBbCount()>=0){
             holder.totalPlayAndBBCount.setTextColor(mContext.getResources().getColor(R.color.red));

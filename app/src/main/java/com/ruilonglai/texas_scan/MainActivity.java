@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private boolean isOpen = false;
 
-    private boolean hideWP;
-
     private List<String> percentList;
 
 
@@ -216,7 +214,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             editor.putBoolean("isUpdateDB",isUpdate);
             editor.apply();
         }
-        hideWP = getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).getBoolean("hidewinpercent", false);
         mainServer = MainServer.newInstance();
         mainServer.setCallBack(new MainServer.CallBack() {
             @Override
@@ -304,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                                 List<UserName> userNames = DataSupport.where("name=?", names.get(j)).find(UserName.class);
                                 if(userNames.size()==0){
                                     userName.name = names.get(j);
-                                    userName.save();
+                                    userName.saveIfNotExist("name=?",names.get(j));
                                 }
                             }
                         }
@@ -319,6 +316,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 }
             });
         }
+
+
 //        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 //                .detectDiskReads().detectDiskWrites().detectNetwork()
 //                .penaltyLog().build());
@@ -403,7 +402,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             if(wt!=null)
             wt.clearPercents();
         }
-        hideWP = getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).getBoolean("hidewinpercent", false);
     }
 
     @Override

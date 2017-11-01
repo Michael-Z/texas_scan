@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +24,9 @@ import com.ruilonglai.texas_scan.activity.LoginActivity;
 import com.ruilonglai.texas_scan.adapter.AppAdapter;
 import com.ruilonglai.texas_scan.adapter.MyAdapter;
 import com.ruilonglai.texas_scan.entity.PlayerData;
+import com.ruilonglai.texas_scan.entity.PlayerData1;
+import com.ruilonglai.texas_scan.entity.PlayerData2;
+import com.ruilonglai.texas_scan.entity.PlayerData3;
 import com.ruilonglai.texas_scan.entity.QuerySelf;
 import com.ruilonglai.texas_scan.entity.ReqData;
 import com.ruilonglai.texas_scan.entity.Result;
@@ -81,7 +83,7 @@ public class MineFragment extends Fragment {
     private List<PlayerData> seatList;
 
     private MainActivity activity = null;
-    public int winIndex = 2;
+    public int winIndex = 0;
     private ViewHolder vh = null;
 
     private String[] seatFlags = {"BTN", "SB", "BB", "UTG", "UTG+1", "MP", "MP+1", "HJ", "CO"};
@@ -162,6 +164,7 @@ public class MineFragment extends Fragment {
         ReqData data = new ReqData();
         QuerySelf queryself = new QuerySelf();
         queryself.setUserid(activity.phone);
+        queryself.setPlatType(winIndex);
         String param = new Gson().toJson(queryself);
         data.setParam(param);
         data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
@@ -178,28 +181,86 @@ public class MineFragment extends Fragment {
                 Log.e("MineFragment", "response:" + json);
                 Result result = GsonUtil.parseJsonWithGson(json, Result.class);
                 Map<String, String> map = result.getRets();
-                String players = map.get("listself");
-                List<PlayerData> playerDatas = new ArrayList<PlayerData>();
-                Type listType = new TypeToken<List<PlayerData>>() {
-                }.getType();
-                playerDatas = new Gson().fromJson(players, listType);
-                if (playerDatas != null) {
-                    for (int i = 0; i < playerDatas.size(); i++) {
-                        PlayerData playerData = playerDatas.get(i);
-                        if (playerData != null) {
-                            List<PlayerData> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData.class);
-                            if (datas.size() > 0) {
-                                DataSupport.deleteAll(PlayerData.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
-                            }
-                            playerData.save();
-                        }
-                    }
-                }
+                String listself = map.get("listself");
+                saveSelfData(listself);
                 Message msg = new Message();
                 msg.arg1 = 1;
                 handler.sendMessage(msg);
             }
         });
+    }
+
+    public void saveSelfData(String json){
+        if(winIndex==0){//德扑圈
+            List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+            Type listType = new TypeToken<List<PlayerData>>() {
+            }.getType();
+            playerDatas = new Gson().fromJson(json, listType);
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
+                        }
+                        playerData.save();
+                    }
+                }
+            }
+        }else if(winIndex==1){//德友圈
+            List<PlayerData1> playerDatas = new ArrayList<PlayerData1>();
+            Type listType = new TypeToken<List<PlayerData1>>() {
+            }.getType();
+            playerDatas = new Gson().fromJson(json, listType);
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData1 playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData1> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData1.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData1.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
+                        }
+                        playerData.save();
+                    }
+                }
+            }
+        }else if(winIndex==2){//扑克部落MTT
+            List<PlayerData2> playerDatas = new ArrayList<PlayerData2>();
+            Type listType = new TypeToken<List<PlayerData2>>() {
+            }.getType();
+            playerDatas = new Gson().fromJson(json, listType);
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData2 playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData2> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData2.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
+                        }
+                        playerData.save();
+                    }
+                }
+            }
+        }else if(winIndex==3){//扑克部落SNG
+            List<PlayerData3> playerDatas = new ArrayList<PlayerData3>();
+            Type listType = new TypeToken<List<PlayerData3>>() {
+            }.getType();
+            playerDatas = new Gson().fromJson(json, listType);
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData3 playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData3> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData3.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData3.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
+                        }
+                        playerData.save();
+                    }
+                }
+            }
+        }
+
     }
     Handler handler = new Handler(){
         @Override
@@ -210,7 +271,28 @@ public class MineFragment extends Fragment {
         }
     };
     public void getSelfSeatsData() {//获取个人在每个位置的玩家数据
-        List<PlayerData> dataList = where("name=?", "self").find(PlayerData.class);
+        List<PlayerData> dataList = new ArrayList<>();
+        if(winIndex==0){
+            List<PlayerData> playerDatas = where("name=?", "self").find(PlayerData.class);
+            for (int i = 0; i < playerDatas.size(); i++) {
+                dataList.add(playerDatas.get(i));
+            }
+        }else if(winIndex==1){
+            List<PlayerData1> playerDatas = where("name=?", "self").find(PlayerData1.class);
+            for (int i = 0; i < playerDatas.size(); i++) {
+                dataList.add(playerDatas.get(i));
+            }
+        }else if(winIndex==2){
+            List<PlayerData2> playerDatas = where("name=?", "self").find(PlayerData2.class);
+            for (int i = 0; i < playerDatas.size(); i++) {
+                dataList.add(playerDatas.get(i));
+            }
+        }else if(winIndex==3){
+            List<PlayerData3> playerDatas = where("name=?", "self").find(PlayerData3.class);
+            for (int i = 0; i < playerDatas.size(); i++) {
+                dataList.add(playerDatas.get(i));
+            }
+        }
         for (int i = 0; i < dataList.size(); i++) {
             PlayerData playerData = dataList.get(i);
             switch (playerData.getSeatFlag()) {
@@ -300,11 +382,11 @@ public class MineFragment extends Fragment {
 
     static class ViewHolder {
         @BindView(R.id.back)
-        Button back;
+        TextView back;
         @BindView(R.id.title)
         TextView title;
         @BindView(R.id.right)
-        Button right;
+        TextView right;
         @BindView(R.id.totalPlayCount)
         TextView totalPlayCount;
         @BindView(R.id.winLoseCount)

@@ -207,12 +207,26 @@ public class PokerAnalysisTool {
         nextHandScanName = true;
     }
     //接收外部接口修改名字
-    public void changeName(int seatIdx,String name){
+    public void changeName(int seatIdx,String name,String remark,int level){
         synchronized(seatNames){
             if(seatIdx==-1){
                 initView();
             }else{
+                if(!TextUtils.isEmpty(name))
                 seatNames.put(seatIdx,name);
+            }
+        }
+        synchronized (gamers){
+            if(seatIdx!=-1){
+                GameUser gameUser = gamers.get(seatIdx);
+                if(gameUser!=null){
+                    if(!TextUtils.isEmpty(remark)){
+                        gameUser.setRemark(remark);
+                    }
+                    if(level!=-1){
+                        gameUser.setLevel(level);
+                    }
+                }
             }
         }
         String json = new Gson().toJson(seatNames);
@@ -220,6 +234,10 @@ public class PokerAnalysisTool {
         pkg.setType(Constant.SOCKET_KNOW_NAME);
         pkg.setContent(json);
         Connect.send(pkg);
+    }
+    /*接收外部接口修改笔记和标记*/
+    public void changeRemark(int seatIdx,String remark,int level){
+
     }
     /*从图片获取位置名字*/
     private void getSeatNames(Bitmap bitmap)

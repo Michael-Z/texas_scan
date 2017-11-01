@@ -42,37 +42,37 @@ public class JihuoActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "激活码是16位，请重新输入", Toast.LENGTH_SHORT).show();
             return;
         }
-                PokerUser pu = new PokerUser();
-                pu.id = phone;
-                pu.serialno = code;
-                Gson gson = new Gson();
-                String jsonstr = gson.toJson(pu);
-                HttpUtil.sendPostRequestData("serialno", jsonstr, new okhttp3.Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        //  Log.d("失败：", e);
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), "激活失败！请联系管理员！", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        String responseDate = response.body().string();
-                         Log.d("返回的数据：", responseDate);
-                        Gson gson = new Gson();
-                        Type type = new TypeToken<JsonBean>() {
-                        }.getType();
-                        final JsonBean jsonBean = gson.fromJson(responseDate, type);
-                      //  String resp = jsonBean.result;
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), jsonBean.result, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+        PokerUser pu = new PokerUser();
+        pu.id = phone;
+        pu.serialno = code;
+        Gson gson = new Gson();
+        String jsonstr = gson.toJson(pu);
+        HttpUtil.sendPostRequestData("serialno", jsonstr, new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //  Log.d("失败：", e);
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "激活失败！请联系管理员！", Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseDate = response.body().string();
+                 Log.d("返回的数据：", responseDate);
+                Gson gson = new Gson();
+                Type type = new TypeToken<JsonBean>() {
+                }.getType();
+                final JsonBean jsonBean = gson.fromJson(responseDate, type);
+              //  String resp = jsonBean.result;
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), jsonBean.result, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
     public void back(View view) {
         Intent intent = new Intent();

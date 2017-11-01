@@ -17,7 +17,7 @@ public class PlayerData extends DataSupport {
     private String date;
     private String seatFlag="";
     private String remark;
-    private int level;
+    private int level=-1;
     private int joinCount;
     private int bet3Count;
     private int foldCount;

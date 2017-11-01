@@ -11,11 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ruilonglai.texas_scan.R;
-import com.ruilonglai.texas_scan.entity.MyData;
 import com.ruilonglai.texas_scan.entity.PokerBest;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by Administrator on 2017/10/26.
@@ -87,11 +83,6 @@ public class AppsAdapter extends BaseAdapter {
             vh.layoutPokerDetails.setVisibility(View.GONE);
             vh.hand.setText("");
             vh.position.setText("");
-            if(position==0){
-                vh.layoutPokerDetails.setVisibility(View.VISIBLE);
-                vh.hand.setText("23e2qwqw");
-                vh.position.setText("qwrqwerqw");
-            }
         }else{
             vh.layoutPokerDetails.setVisibility(View.VISIBLE);
             vh.hand.setText("");

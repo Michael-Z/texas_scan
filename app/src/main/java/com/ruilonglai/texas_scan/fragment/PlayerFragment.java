@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,9 @@ import com.ruilonglai.texas_scan.activity.LoginActivity;
 import com.ruilonglai.texas_scan.adapter.AppAdapter;
 import com.ruilonglai.texas_scan.adapter.PlayerViewAdapter;
 import com.ruilonglai.texas_scan.entity.PlayerData;
+import com.ruilonglai.texas_scan.entity.PlayerData1;
+import com.ruilonglai.texas_scan.entity.PlayerData2;
+import com.ruilonglai.texas_scan.entity.PlayerData3;
 import com.ruilonglai.texas_scan.entity.QueryUser;
 import com.ruilonglai.texas_scan.entity.ReqData;
 import com.ruilonglai.texas_scan.entity.Result;
@@ -83,6 +87,7 @@ public class PlayerFragment extends Fragment {
     private boolean fristOpen = true;
     private MainActivity activity = null;
     private ViewHolder vh;
+    private int winIdx;
 
     @Override
     public void onAttach(Context context) {
@@ -101,10 +106,10 @@ public class PlayerFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initView();
-        findData(TimeUtil.getCurrentDateToDay(new Date()));
+        findData();
     }
 
-    public void initView(){
+    public void initView() {
         LinearLayoutManager layoutManager1 = new LinearLayoutManager(activity);
         layoutManager1.setOrientation(LinearLayoutManager.HORIZONTAL);
         vh.appList.setLayoutManager(layoutManager1);
@@ -126,6 +131,8 @@ public class PlayerFragment extends Fragment {
                         }
                     }
                 }
+                winIdx = position;
+                findData();
             }
 
             @Override
@@ -163,9 +170,9 @@ public class PlayerFragment extends Fragment {
         vh.playerList.setItemAnimator(new DefaultItemAnimator());
     }
 
-    public void queryUserData(){
+    public void queryUserData() {
         List<UserName> names = DataSupport.findAll(UserName.class);
-        if(names.size()==0)
+        if (names.size() == 0)
             return;
         List<String> usernames = new ArrayList<>();
         for (int i = 0; i < names.size(); i++) {
@@ -174,7 +181,7 @@ public class PlayerFragment extends Fragment {
         ReqData data = new ReqData();
         QueryUser user = new QueryUser();
         user.setUsernames(usernames);
-        user.setPlatType(activity.winIndex);
+        user.setPlatType(winIdx);
         data.setParam(new Gson().toJson(user));
         data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
         data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
@@ -192,7 +199,8 @@ public class PlayerFragment extends Fragment {
                 Map<String, String> map = result.getRets();
                 String players = map.get("listuser");
                 List<PlayerData> playerDatas = new ArrayList<PlayerData>();
-                Type listType = new TypeToken<List<PlayerData>>() {}.getType();
+                Type listType = new TypeToken<List<PlayerData>>() {
+                }.getType();
                 playerDatas = new Gson().fromJson(players, listType);
                 if (playerDatas != null) {
                     for (int i = 0; i < playerDatas.size(); i++) {
@@ -212,16 +220,41 @@ public class PlayerFragment extends Fragment {
             }
         });
     }
-    public void findData(String date) {//在数据库获取当天赢的钱最多的玩家得信息
+
+    public void findData() {//在数据库获取当天赢的钱最多的玩家得信息
         if (list == null) {
             list = new ArrayList<>();
         } else {
             list.clear();
         }
-        List<PlayerData> playerDatas = DataSupport.where("not name=?", "self").find(PlayerData.class);
-        for (PlayerData player : playerDatas) {
-            if (!"self".contains(player.getName())) {
-                list.add(player);
+
+        if (winIdx == 0) {
+            List<PlayerData> playerDatas = DataSupport.where("not name=?", "self").find(PlayerData.class);
+            for (PlayerData player : playerDatas) {
+                if (!"self".contains(player.getName())) {
+                    list.add(player);
+                }
+            }
+        } else if (winIdx == 1) {
+            List<PlayerData1> playerData1s = DataSupport.where("not name=?", "self").find(PlayerData1.class);
+            for (PlayerData player : playerData1s) {
+                if (!"self".contains(player.getName())) {
+                    list.add(player);
+                }
+            }
+        } else if (winIdx == 2) {
+            List<PlayerData2> playerData1s = DataSupport.where("not name=?", "self").find(PlayerData2.class);
+            for (PlayerData player : playerData1s) {
+                if (!"self".contains(player.getName())) {
+                    list.add(player);
+                }
+            }
+        } else if (winIdx == 3) {
+            List<PlayerData3> playerData1s = DataSupport.where("not name=?", "self").find(PlayerData3.class);
+            for (PlayerData player : playerData1s) {
+                if (!"self".contains(player.getName())) {
+                    list.add(player);
+                }
             }
         }
         if (adapter == null) {
@@ -229,7 +262,33 @@ public class PlayerFragment extends Fragment {
             adapter.setOnItemListener(new PlayerViewAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
-
+                    View view = LayoutInflater.from(context).inflate(R.layout.layout_window, null, false);
+                    PlayerViewHolder pvh = new PlayerViewHolder(view);
+                    PlayerData player = list.get(position);
+                    pvh.item.setBackgroundColor(context.getResources().getColor(R.color.white));
+                    pvh.pos1.setText(player.getName() + Constant.getPercent(player, Constant.TYPE_HAND));
+                    pvh.pos2.setText(Constant.percentTypes[1] + "(" + Constant.getPercent(player, Constant.TYPE_VPIP) + "%)");
+                    pvh.pos3.setText(Constant.percentTypes[2] + "(" + Constant.getPercent(player, Constant.TYPE_PFR) + "%)");
+                    pvh.pos4.setText(Constant.percentTypes[3] + "(" + Constant.getPercent(player, Constant.TYPE_3BET) + "%)");
+                    pvh.pos5.setText(Constant.percentTypes[4] + "(" + Constant.getPercent(player, Constant.TYPE_CB) + "%)");
+                    pvh.pos6.setText(Constant.percentTypes[5] + "(" + Constant.getPercent(player, Constant.TYPE_AF) + ")");
+                    pvh.pos7.setText(Constant.percentTypes[6] + "(" + Constant.getPercent(player, Constant.TYPE_F3BET) + "%)");
+                    pvh.pos8.setText(Constant.percentTypes[7] + "(" + Constant.getPercent(player, Constant.TYPE_STL) + "%)");
+                    pvh.pos9.setText(Constant.percentTypes[8] + "(" + Constant.getPercent(player, Constant.TYPE_FSTL) + "%)");
+                    pvh.pos10.setText(Constant.percentTypes[9] + "(" + Constant.getPercent(player, Constant.TYPE_FCB) + "%)");
+                    pvh.pos11.setText(Constant.percentTypes[10] + "(" + Constant.getPercent(player, Constant.TYPE_FFLOP) + "%)");
+                    pvh.pos12.setText(Constant.percentTypes[11] + "(" + Constant.getPercent(player, Constant.TYPE_FTURN) + "%)");
+                    pvh.pos13.setText(Constant.percentTypes[12] + "(" + Constant.getPercent(player, Constant.TYPE_FRIVER) + "%)");
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder .setView(view)
+                            .setCancelable(false)
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .show();
                 }
 
                 @Override
@@ -256,14 +315,16 @@ public class PlayerFragment extends Fragment {
             adapter.notifyDataSetChanged();
         }
     }
-    Handler handler = new Handler(){
+
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if(msg.arg1==1){
-                findData(TimeUtil.getCurrentDateToDay(new Date()));
+            if (msg.arg1 == 1) {
+                findData();
             }
         }
     };
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -273,6 +334,7 @@ public class PlayerFragment extends Fragment {
     public void notifyDataSetChaged() {
         queryUserData();
     }
+
 
     static class ViewHolder {
         @BindView(R.id.title)
@@ -285,6 +347,45 @@ public class PlayerFragment extends Fragment {
         TwinklingRefreshLayout refreshLayout;
 
         ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    static class PlayerViewHolder {
+        @BindView(R.id.pos1)
+        TextView pos1;
+        @BindView(R.id.pos2)
+        TextView pos2;
+        @BindView(R.id.pos3)
+        TextView pos3;
+        @BindView(R.id.pos4)
+        TextView pos4;
+        @BindView(R.id.pos5)
+        TextView pos5;
+        @BindView(R.id.pos6)
+        TextView pos6;
+        @BindView(R.id.pos7)
+        TextView pos7;
+        @BindView(R.id.pos8)
+        TextView pos8;
+        @BindView(R.id.pos9)
+        TextView pos9;
+        @BindView(R.id.pos10)
+        TextView pos10;
+        @BindView(R.id.pos11)
+        TextView pos11;
+        @BindView(R.id.pos12)
+        TextView pos12;
+        @BindView(R.id.pos13)
+        TextView pos13;
+        @BindView(R.id.pos14)
+        TextView pos14;
+        @BindView(R.id.pos15)
+        TextView pos15;
+        @BindView(R.id.item)
+        LinearLayout item;
+
+        PlayerViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }

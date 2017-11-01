@@ -4,12 +4,14 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:background="@color/title_bg_color">
-    <Button
+    <TextView
         android:id="@+id/back"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@drawable/back"
+        android:background="@color/title_bg_color"
+        android:textColor="@color/white"
         android:layout_marginLeft="10dp"
+        android:gravity="center"
         android:visibility="gone"/>
     <TextView
         android:id="@+id/title"
@@ -20,13 +22,16 @@
         android:background="@color/title_bg_color"
         android:textColor="@color/white"
         android:textSize="16sp"
+        android:textStyle="bold"
         android:text="德扑数据大师"/>
-    <Button
+    <TextView
         android:id="@+id/right"
         android:layout_width="wrap_content"
         android:minWidth="32dp"
         android:layout_height="40dp"
-        android:background="@null"
+        android:background="@color/title_bg_color"
         android:layout_marginRight="10dp"
+        android:textColor="@color/white"
+        android:gravity="center"
         android:visibility="gone"/>
 </LinearLayout>

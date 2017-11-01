@@ -330,7 +330,7 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
                 List<MyData> myDatas = new ArrayList<MyData>();
                 Type listType = new TypeToken<List<MyData>>() {}.getType();
                 myDatas = new Gson().fromJson(pokers, listType);
-                if(myDatas.size()>0){
+                if(myDatas!=null && myDatas.size()>0){
                     DataSupport.deleteAll(MyData.class);
                     for (int i = 0; i < myDatas.size(); i++) {
                         MyData myData = myDatas.get(i);

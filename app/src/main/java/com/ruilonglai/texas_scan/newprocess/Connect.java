@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.concurrent.Executors;
 
 public class Connect {
 
@@ -160,6 +159,8 @@ public class Connect {
                             case Constant.SOCKET_PLATFORM_NUTSPOKER_SNG:
                             case Constant.SOCKET_SCANNAME:
                             case Constant.SOCKET_UPDATE_NAME:
+                            case Constant.SOCKET_UPDATE_REMARK:
+                            case Constant.SOCKET_UPDATE_LEVER:
                                 if(callback!=null)
                                 callback.action(aPackage);
                                 break;

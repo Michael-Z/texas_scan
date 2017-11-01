@@ -1,5 +1,6 @@
 package com.ruilonglai.texas_scan.util;
 
+import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.entity.PlayerData;
 
 /**
@@ -11,6 +12,7 @@ public final class Constant {
     public final static String[] PLATFORM = new String[]{"dpq","dyq","pkbl-mtt","pkbl-sng"};
     public final static String[] APPNAMES = {"德扑圈","德友圈","扑克部落MTT","扑克部落SNG"};
     public final static String[] seatFlags = {"BTN", "SB", "BB", "UTG", "UTG+1", "MP", "MP+1", "HJ", "CO"};
+    public final static int[] colors = {R.color.numbers_text_color,R.color.color1,R.color.color2,R.color.color3,R.color.color4,R.color.color5,R.color.color6,R.color.color7,R.color.color8};
 
     //一手数据中的输赢平
     public final static int FLAG_SELF = 0;
@@ -51,6 +53,8 @@ public final class Constant {
     public final static int SOCKET_SEATCOUNT_CHANGE = 16;//座位数变化
     public final static int SOCKET_SCANNAME = 17;//调用接口识别名字
     public final static int SOCKET_UPDATE_NAME = 18;//修改名字
+    public final static int SOCKET_UPDATE_REMARK = 19;//修改备注
+    public final static int SOCKET_UPDATE_LEVER = 20;//修改标记
 
     public final static int TYPE_PERSON = 0;
     public final static int TYPE_OBSERVER = 1;

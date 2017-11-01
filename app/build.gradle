@@ -8,8 +8,8 @@ android {
         applicationId "com.ruilonglai.texas_scan"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 20
-        versionName "v2.1.2"
+        versionCode 21
+        versionName "v2.1.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

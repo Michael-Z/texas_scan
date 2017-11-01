@@ -67,17 +67,20 @@ public class Main {
                         else if(type == Constant.SOCKET_UPDATE_NAME)
                         {//更新名字
                             try {
+                                Log.e(TAG,"修改名字:"+content);
                                 JSONObject obj = new JSONObject(content);
-                                instance.changeName(obj.getInt("seatIdx"),obj.getString("name"));
+                                instance.changeName(obj.getInt("seatIdx"),obj.getString("name"),obj.getString("remark"),obj.getInt("level"));
                             } catch (JSONException e) {
                                Log.e(TAG,"更新名字失败");
                             }
+                        }else if(type == Constant.SOCKET_UPDATE_REMARK){
+
                         }
                     }
                     @Override
                     public void exit() {
                         begin = false;
-                        instance.changeName(-1,"");
+                        instance.changeName(-1,"","",-1);
                     }
                 });
                 Package pkg = new Package();

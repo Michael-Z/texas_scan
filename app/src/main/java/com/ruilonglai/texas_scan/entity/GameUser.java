@@ -29,6 +29,8 @@ public class GameUser {
     private boolean isFoldCB; //面对翻牌再加注弃牌
     private boolean isFaceCB; //是否面对翻牌再加注
     private int lastActionRound;//最后一个动作的圈数
+    private int level = -1;//玩家标记的颜色  -1表示不改变该玩家的level 0表示不用颜色  1~8表示8种颜色
+    private String remark;//不为空时，覆盖玩家得笔记
 
     public int getSeatIdx() {
         return seatIdx;
@@ -220,5 +222,21 @@ public class GameUser {
 
     public void setLastActionRound(int lastActionRound) {
         this.lastActionRound = lastActionRound;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

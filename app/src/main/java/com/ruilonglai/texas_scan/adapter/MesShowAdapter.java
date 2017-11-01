@@ -7,10 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.entity.ShowMes;
@@ -45,13 +43,16 @@ public class MesShowAdapter extends RecyclerView.Adapter<MesShowAdapter.ViewHold
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_select, null, false);
+        View view = inflater.inflate(R.layout.item_select, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+//        if(position%2==0){
+//            holder.layout.setBackgroundColor(context.getResources().getColor(R.color.black_overlay));
+//        }
         final ShowMes mes = list.valueAt(position);
         holder.percentContent.setText(mes.getPercentContent());
         holder.percentType.setText(mes.getPercentType());

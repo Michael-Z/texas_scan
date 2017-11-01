@@ -18,6 +18,14 @@
     <color name="los_2">#FF9728</color>
     <color name="los_3">#FB0100</color>
     <color name="los_4">#A01413</color>
+    <color name="color1">#349800</color>
+    <color name="color2">#67CD00</color>
+    <color name="color3">#9ACD68</color>
+    <color name="color4">#CCFF9A</color>
+    <color name="color5">#FFCC33</color>
+    <color name="color6">#FF9728</color>
+    <color name="color7">#FB0100</color>
+    <color name="color8">#A01413</color>
     <color name="normal_color">#0093fe</color>
     <color name="blue_normal">#99ccff</color>
     <color name="statusBarColor">#DFDFD5</color>

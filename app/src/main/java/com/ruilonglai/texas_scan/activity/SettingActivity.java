@@ -3,6 +3,8 @@ package com.ruilonglai.texas_scan.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,8 +14,6 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,25 +31,42 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SettingActivity extends AppCompatActivity implements OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class SettingActivity extends AppCompatActivity implements OnClickListener {
 
 
     @BindView(R.id.back)
-    Button back;
+    TextView back;
     @BindView(R.id.title)
     TextView title;
     @BindView(R.id.right)
-    Button sure;
-    @BindView(R.id.hideWinPercent)
-    CheckBox hideWinPercent;
+    TextView sure;
     @BindView(R.id.selects)
     RecyclerView selects;
+    @BindView(R.id.selectNum)
+    TextView selectNum;
+    @BindView(R.id.sureSelect)
+    Button sureSelect;
     private SparseArray<ShowMes> list;
 
     private int percentCount;
 
     private List<Integer> keys;
 
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            percentCount = 0;
+            for (int i = 0; i < list.size(); i++) {
+                int key = list.keyAt(i);
+                ShowMes sm = list.get(key);
+                if (sm.getIsSelect() == 1) {
+                    percentCount++;
+                    keys.add(key);
+                }
+            }
+            selectNum.setText("已选择"+percentCount+"项");
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,15 +75,12 @@ public class SettingActivity extends AppCompatActivity implements OnClickListene
         title.setText("显示设置");
         back.setVisibility(View.VISIBLE);
         sure.setVisibility(View.VISIBLE);
-        sure.setText("确定");
-        sure.setTextColor(getResources().getColor(R.color.green));
-        sure.setOnClickListener(this);
+        back.setBackgroundColor(getResources().getColor(R.color.title_bg_color));
+        back.setText("取消");
+        back.setTextColor(getResources().getColor(R.color.white));
+        sureSelect.setOnClickListener(this);
         back.setOnClickListener(this);
         boolean hideWP = getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).getBoolean("hidewinpercent", false);
-        if (hideWP) {
-            hideWinPercent.setChecked(true);
-        }
-        hideWinPercent.setOnCheckedChangeListener(this);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         selects.setLayoutManager(manager);
         selects.setItemAnimator(new DefaultItemAnimator());
@@ -90,7 +104,6 @@ public class SettingActivity extends AppCompatActivity implements OnClickListene
         adapter.setOnItemListener(new MesShowAdapter.OnItemListener() {
             @Override
             public void onClick(int position, boolean isSelect) {
-
                 percentCount = 0;
                 for (int i = 0; i < list.size(); i++) {
                     int key = list.keyAt(i);
@@ -113,7 +126,7 @@ public class SettingActivity extends AppCompatActivity implements OnClickListene
                     showMes.setIsSelect(0);
                     adapter.notifyDataSetChanged();
                 }
-
+                handler.sendEmptyMessage(0);
             }
         });
         selects.setAdapter(adapter);
@@ -122,7 +135,7 @@ public class SettingActivity extends AppCompatActivity implements OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.right:
+            case R.id.sureSelect:
                 Intent intent = new Intent();
                 Gson gson = new Gson();
                 keys.clear();
@@ -154,10 +167,5 @@ public class SettingActivity extends AppCompatActivity implements OnClickListene
     public void saveKeysToPreference(String json) {
         SharedPreferences preferences = getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE);
         preferences.edit().putString("percentTypeArray", json).apply();
-    }
-
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        getSharedPreferences(LoginActivity.PREF_FILE, MODE_PRIVATE).edit().putBoolean("hidewinpercent", isChecked).apply();
     }
 }

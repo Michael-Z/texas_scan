@@ -2,11 +2,11 @@ package com.ruilonglai.texas_scan.util;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.ruilonglai.texas_scan.entity.PlayerData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +23,8 @@ public class GsonUtil {
     // 将Json数组解析成相应的映射对象列表
     public static <T> List<T> parseJsonArrayWithGson(String jsonData, Class<T> type) {
         Gson gson = new Gson();
-        List<T> result = gson.fromJson(jsonData, new TypeToken<List<T>>() {}.getType());
+        List<T> result = new ArrayList<T>();
+        result = gson.fromJson(jsonData, new TypeToken<List<T>>() {}.getType());
         return result;
     }
     /*获取json对象map中一个key对应的值*/

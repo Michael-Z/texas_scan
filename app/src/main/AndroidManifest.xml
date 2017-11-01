@@ -32,8 +32,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.SerialActivity" />
-        <activity android:name=".activity.LogListActivity" />
         <activity
             android:name=".activity.FindpwdActivity"
             android:screenOrientation="portrait" />

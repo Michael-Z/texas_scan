@@ -31,6 +31,9 @@ import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.activity.LoginActivity;
 import com.ruilonglai.texas_scan.entity.PercentType;
 import com.ruilonglai.texas_scan.entity.PlayerData;
+import com.ruilonglai.texas_scan.entity.PlayerData1;
+import com.ruilonglai.texas_scan.entity.PlayerData2;
+import com.ruilonglai.texas_scan.entity.PlayerData3;
 import com.ruilonglai.texas_scan.entity.QuerySelf;
 import com.ruilonglai.texas_scan.entity.QueryUser;
 import com.ruilonglai.texas_scan.entity.ReqData;
@@ -95,6 +98,7 @@ public class WindowTool {
     private int widthIdx;//默认是720,当widthIdx=1时,适配1080*1920
     List<Double> vpips; //当前牌桌各玩家得入池率
     List<Double> flops; //当前牌桌各玩家得翻牌率
+    private int levelIdx=-1;
 
     private volatile static WindowTool instance = null;
 
@@ -161,7 +165,7 @@ public class WindowTool {
         this.winIndex = winIndex;
         if (vpips == null)
             vpips = new ArrayList<>();
-        if(flops == null)
+        if (flops == null)
             flops = new ArrayList<>();
         if (!isInit) {
             this.context = context;
@@ -179,7 +183,7 @@ public class WindowTool {
                 nameParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_TOAST);
             nameParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
             nameParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            nameParams.width = 200;
+            nameParams.width = 400;
             nameParams.x = 0;
             nameParams.y = 0;
             nameParams.format = PixelFormat.RGBA_8888;
@@ -225,17 +229,19 @@ public class WindowTool {
         }
         return true;
     }
+
     /*更新平均入池率*/
-    public void updateOpenViewVPIP(){
-        if(openCloseView!=null && ovh != null){
+    public void updateOpenViewVPIP() {
+        if (openCloseView != null && ovh != null) {
             params.width = 100;
             params.height = WindowManager.LayoutParams.WRAP_CONTENT;
             params.x = 20;
             params.y = 250;
             ovh.avgVpip.setText(getAvgVpip());
-            windowManager.updateViewLayout(openCloseView,params);
+            windowManager.updateViewLayout(openCloseView, params);
         }
     }
+
     public boolean createWindow(String percent) {
         if (TextUtils.isEmpty(percent)) {
             return false;
@@ -271,7 +277,8 @@ public class WindowTool {
     }
 
     public boolean createSettingView(final int seatIdx) {
-        if(haveSettingView){
+        levelIdx = -1;
+        if (haveSettingView) {
             return false;
         }
         if (settingView == null) {
@@ -279,22 +286,53 @@ public class WindowTool {
         }
         final SettingViewHolder vh = new SettingViewHolder(settingView);
         vh.seatIdx.setText(seatIdx + "号位");
+        vh.nameList.setVisibility(View.VISIBLE);
+        vh.remark.setVisibility(View.GONE);
+        vh.name.setVisibility(View.VISIBLE);
+        vh.remarkContent.setVisibility(View.GONE);
+        vh.changeEntry.setText("笔记");
         vh.name.setText("");
+        vh.name.setHint("请输入新的名字");
+        vh.selectColors.setVisibility(View.GONE);
+        vh.remark.setText("");
+        vh.remarkContent.setText("");
+        vh.level.setBackgroundColor(context.getResources().getColor(R.color.numbers_text_color));
+        if(names.get(seatIdx)!=null){
+            List<PlayerData> playerDatas = DataSupport.where("name=?", names.get(seatIdx)).find(PlayerData.class);
+            if(playerDatas.size()>0){
+                PlayerData playerData = playerDatas.get(0);
+                int level = playerData.getLevel();
+                if(level!=-1){
+                    vh.level.setBackgroundColor(context.getResources().getColor(Constant.colors[level]));
+                }
+                if(!TextUtils.isEmpty(playerData.getRemark())){
+                    vh.remark.setText(playerData.getRemark());
+                    vh.remarkContent.setText(playerData.getRemark());
+                }
+            }
+        }
+        //关闭保存监听
         vh.close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String name = vh.name.getText().toString();
-                if (!TextUtils.isEmpty(name)) {
-                    Package pkg = new Package();
-                    pkg.setType(Constant.SOCKET_UPDATE_NAME);
-                    pkg.setContent("{\"seatIdx\":" + seatIdx + ",\"name\":" + name + "}");
-                    MainServer.newInstance().send(pkg, context);
+                String remark = vh.remark.getText().toString();
+                if (TextUtils.isEmpty(name)) {
+                   name = "";
                 }
+                if(TextUtils.isEmpty(remark)){
+                    remark = "";
+                }
+                Package pkg = new Package();
+                pkg.setType(Constant.SOCKET_UPDATE_NAME);
+                pkg.setContent("{\"seatIdx\":" + seatIdx + ",\"name\":\"" + name +  "\",\"remark\":\"" + remark + "\",\"level\":" + levelIdx +"}");
+                MainServer.newInstance().send(pkg, context);
                 windowManager.removeViewImmediate(settingView);
                 haveSettingView = false;
             }
         });
         vh.nameList.setAdapter(null);
+         //输入框监听
         vh.name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -304,10 +342,10 @@ public class WindowTool {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.e("WindowTool", s.toString());
-                String searchName = s.toString();
+                String content = s.toString();
                 List<String> list = new ArrayList<String>();
-                if (!TextUtils.isEmpty(searchName)) {
-                    List<UserName> userNames = DataSupport.where("name like ?", "%" + searchName + "%").find(UserName.class);
+                if (!TextUtils.isEmpty(content)) {
+                    List<UserName> userNames = DataSupport.where("name like ?", "%" + content + "%").find(UserName.class);
                     for (int i = 0; i < userNames.size(); i++) {
                         UserName userName = userNames.get(i);
                         if (userName != null) {
@@ -319,12 +357,47 @@ public class WindowTool {
                 }
                 vh.nameList.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, list));
             }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        vh.remarkContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                      vh.remark.setText(s.toString());
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
 
             }
         });
+        vh.changeEntry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String str = vh.changeEntry.getText().toString();
+                if (str.equals("笔记")) {
+                    vh.nameList.setVisibility(View.GONE);
+                    vh.name.setVisibility(View.GONE);
+                    vh.remark.setVisibility(View.VISIBLE);
+                    vh.remarkContent.setVisibility(View.VISIBLE);
+                    vh.changeEntry.setText("备注");
+                } else {
+                    vh.nameList.setVisibility(View.VISIBLE);
+                    vh.name.setVisibility(View.VISIBLE);
+                    vh.remark.setVisibility(View.GONE);
+                    vh.remarkContent.setVisibility(View.GONE);
+                    vh.changeEntry.setText("笔记");
+                }
+            }
+        });
+        /*查询名字选取*/
         vh.nameList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -332,10 +405,87 @@ public class WindowTool {
                 vh.name.setText(name);
             }
         });
+        /**/
+        vh.level.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(vh.selectColors.getVisibility()==View.VISIBLE){
+                    vh.selectColors.setVisibility(View.GONE);
+                    return;
+                }
+                vh.selectColors.setVisibility(View.VISIBLE);
+            }
+        });
+        vh.color1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vh.level.setBackgroundColor(context.getResources().getColor(R.color.color1));
+                levelIdx = 1;
+                vh.selectColors.setVisibility(View.GONE);
+            }
+        });
+        vh.color2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vh.level.setBackgroundColor(context.getResources().getColor(R.color.color2));
+                levelIdx = 2;
+                vh.selectColors.setVisibility(View.GONE);
+            }
+        });
+        vh.color3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vh.level.setBackgroundColor(context.getResources().getColor(R.color.color3));
+                levelIdx = 3;
+                vh.selectColors.setVisibility(View.GONE);
+            }
+        });
+        vh.color4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vh.level.setBackgroundColor(context.getResources().getColor(R.color.color4));
+                levelIdx = 4;
+                vh.selectColors.setVisibility(View.GONE);
+            }
+        });
+        vh.color5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vh.level.setBackgroundColor(context.getResources().getColor(R.color.color5));
+                levelIdx = 5;
+                vh.selectColors.setVisibility(View.GONE);
+            }
+        });
+        vh.color6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vh.level.setBackgroundColor(context.getResources().getColor(R.color.color6));
+                levelIdx = 6;
+                vh.selectColors.setVisibility(View.GONE);
+            }
+        });
+        vh.color7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vh.level.setBackgroundColor(context.getResources().getColor(R.color.color7));
+                levelIdx = 7;
+                vh.selectColors.setVisibility(View.GONE);
+            }
+        });
+        vh.color8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vh.level.setBackgroundColor(context.getResources().getColor(R.color.color8));
+                levelIdx = 8;
+                vh.selectColors.setVisibility(View.GONE);
+            }
+        });
         windowManager.addView(settingView, nameParams);
         return true;
     }
+    public void saveLevelColorsAndRemark(int seatIdx){
 
+    }
     public boolean createNinePointWindow(int appCount, int playCount, SparseArray<String> seatNames, int isWatch) {
         this.isWatch = isWatch;
         this.appCount = appCount;
@@ -373,8 +523,21 @@ public class WindowTool {
         for (int j = 2 + isWatch; j < playCount + 2 + isWatch; j++) {
             TextView btn = new TextView(context);
             btn.setTag(j - 2);
+            btn.setTextColor(Color.WHITE);
             if (names != null && !TextUtils.isEmpty(names.get(j - 2))) {
-                btn.setText(seatContents.get(j - 2));
+                String text = seatContents.get(j - 2);
+                if(text.contains("#")){
+                    String[] strs = text.split("#");
+                    btn.setText(strs[0]);
+                    int colorIdx = Integer.valueOf(strs[1]).intValue();
+                    if(colorIdx>0){
+                        btn.setTextColor(context.getResources().getColor(Constant.colors[colorIdx]));
+                    }else{
+                        btn.setTextColor(context.getResources().getColor(Constant.colors[colorIdx+4]));
+                    }
+                }else{
+                    btn.setText(text);
+                }
                 if (widthIdx == 0) {
                     params.width = WindowManager.LayoutParams.WRAP_CONTENT;
                     params.height = winPos[appCount][arr3Idx][j][3];
@@ -405,15 +568,14 @@ public class WindowTool {
                 }
             }
             btn.setGravity(Gravity.CENTER);
-            btn.setTextColor(Color.WHITE);
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int seatIdx = (int) v.getTag();
                     String name = names.get(seatIdx);
-                    if(!TextUtils.isEmpty(name)){
+                    if (!TextUtils.isEmpty(name)) {
                         createPlayerMessage(seatIdx);
-                    }else{
+                    } else {
                         if (!haveSettingView) {
                             haveSettingView = createSettingView(seatIdx);
                         }
@@ -430,33 +592,34 @@ public class WindowTool {
         double sum = 0.0;
         double sumFlop = 0.0;
         String str = "";
-        if (vpips.size() == 0){
+        if (vpips.size() == 0) {
             str += "0.0";
-        }else{
+        } else {
             for (int i = 0; i < vpips.size(); i++) {
                 Double aDouble = vpips.get(i);
                 sum += aDouble;
             }
-            String avgVpip= String.format("%.1f", sum / vpips.size());
-            if(Double.valueOf(avgVpip)>100)
+            String avgVpip = String.format("%.1f", sum / vpips.size());
+            if (Double.valueOf(avgVpip) > 100)
                 avgVpip = "100.0";
             str += avgVpip;
         }
-        
-        if (flops.size() == 0){
+
+        if (flops.size() == 0) {
             str += "|0.0";
-        }else{
+        } else {
             for (int i = 0; i < flops.size(); i++) {
                 Double aDouble = flops.get(i);
                 sumFlop += aDouble;
             }
             String avgFlop = String.format("%.1f", sumFlop / flops.size());
-            if(Double.valueOf(avgFlop)>100)
+            if (Double.valueOf(avgFlop) > 100)
                 avgFlop = "100.0";
-            str += "|"+avgFlop;
+            str += "|" + avgFlop;
         }
         return str;
     }
+
     public void getSeatContents(final SparseArray<String> names) {
         if (names == null || names.size() == 0)
             return;
@@ -529,32 +692,106 @@ public class WindowTool {
                 Result result = GsonUtil.parseJsonWithGson(json, Result.class);
                 Map<String, String> map = result.getRets();
                 String players = map.get("listuser");
-                List<PlayerData> playerDatas = new ArrayList<PlayerData>();
-                Type listType = new TypeToken<List<PlayerData>>() {}.getType();
-                playerDatas = new Gson().fromJson(players, listType);
-                if (playerDatas != null) {
-                    for (int i = 0; i < playerDatas.size(); i++) {
-                        PlayerData playerData = playerDatas.get(i);
-                        if (playerData != null) {
-                            List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
-                            if (datas.size() > 0) {
-                                DataSupport.deleteAll(PlayerData.class, "name=?", playerData.getName());
-                            }
-                            playerData.save();
-                            List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
-                            if(userNames1.size()==0){
-                                UserName un = new UserName();
-                                un.name = playerData.getName();
-                                un.save();
-                            }
-                        }
-                    }
-                }
+                saveUserData(players);
                 Message msg = new Message();
                 msg.arg1 = 0;
                 handler.sendMessage(msg);
             }
         });
+    }
+
+    public void saveUserData(String json) {
+        Gson gson = new Gson();
+        if (winIndex == 0) {
+            List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+            playerDatas = gson.fromJson(json, new TypeToken<List<PlayerData>>() {
+            }.getType());
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData.class, "name=?", playerData.getName());
+                        }
+                        playerData.save();
+                        List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
+                        if (userNames1.size() == 0) {
+                            UserName un = new UserName();
+                            un.name = playerData.getName();
+                            un.save();
+                        }
+                    }
+                }
+            }
+        } else if (winIndex == 1) {
+            List<PlayerData1> playerDatas = new ArrayList<PlayerData1>();
+            playerDatas = gson.fromJson(json, new TypeToken<List<PlayerData1>>() {
+            }.getType());
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData1 playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData1> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData1.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData1.class, "name=?", playerData.getName());
+                        }
+                        playerData.save();
+                        List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
+                        if (userNames1.size() == 0) {
+                            UserName un = new UserName();
+                            un.name = playerData.getName();
+                            un.save();
+                        }
+                    }
+                }
+            }
+        } else if (winIndex == 2) {
+            List<PlayerData2> playerDatas = new ArrayList<PlayerData2>();
+            playerDatas = gson.fromJson(json, new TypeToken<List<PlayerData2>>() {
+            }.getType());
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData2 playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData2> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData2.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData2.class, "name=?", playerData.getName());
+                        }
+                        playerData.save();
+                        List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
+                        if (userNames1.size() == 0) {
+                            UserName un = new UserName();
+                            un.name = playerData.getName();
+                            un.save();
+                        }
+                    }
+                }
+            }
+        } else if (winIndex == 3) {
+            List<PlayerData3> playerDatas = new ArrayList<PlayerData3>();
+            playerDatas = gson.fromJson(json, new TypeToken<List<PlayerData3>>() {
+            }.getType());
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData3 playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData3> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData3.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData3.class, "name=?", playerData.getName());
+                        }
+                        playerData.save();
+                        List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
+                        if (userNames1.size() == 0) {
+                            UserName un = new UserName();
+                            un.name = playerData.getName();
+                            un.save();
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     public void getUpdateSeatContents(SparseArray<String> names) {
@@ -620,7 +857,10 @@ public class WindowTool {
                     }
                 }
                 vpips.add(Double.valueOf(Constant.getPercent(playerData, Constant.TYPE_VPIP)));
-                flops.add(Double.valueOf(playerData.getFlopCount()*100/playCount));
+                flops.add(Double.valueOf(playerData.getFlopCount() * 100 / playCount));
+                if(playerData.getLevel()>-1){
+                    sb.append("#"+playerData.getLevel());
+                }
             }
         }
         return sb.toString();
@@ -855,10 +1095,40 @@ public class WindowTool {
         Button close;
         @BindView(R.id.seatIdx)
         TextView seatIdx;
+        @BindView(R.id.level)
+        TextView level;
+        @BindView(R.id.line)
+        TextView line;
+        @BindView(R.id.color1)
+        TextView color1;
+        @BindView(R.id.color2)
+        TextView color2;
+        @BindView(R.id.color3)
+        TextView color3;
+        @BindView(R.id.color4)
+        TextView color4;
+        @BindView(R.id.color5)
+        TextView color5;
+        @BindView(R.id.color6)
+        TextView color6;
+        @BindView(R.id.color7)
+        TextView color7;
+        @BindView(R.id.color8)
+        TextView color8;
+        @BindView(R.id.select_colors)
+        LinearLayout selectColors;
         @BindView(R.id.name)
         EditText name;
+        @BindView(R.id.entry)
+        LinearLayout entry;
         @BindView(R.id.nameList)
         ListView nameList;
+        @BindView(R.id.remark)
+        TextView remark;
+        @BindView(R.id.remarkContent)
+        EditText remarkContent;
+        @BindView(R.id.changeEntry)
+        TextView changeEntry;
 
         SettingViewHolder(View view) {
             ButterKnife.bind(this, view);

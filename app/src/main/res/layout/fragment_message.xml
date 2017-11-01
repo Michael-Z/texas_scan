@@ -27,13 +27,14 @@
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_weight="1"
-               android:paddingLeft="5dp"
+               android:textColor="@color/white"
                android:gravity="center"
                android:text="W/L(胜/负)"/>
            <TextView
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_weight="1"
+               android:textColor="@color/white"
                android:gravity="center"
                android:text="3BET(翻牌前再加注率)"/>
 
@@ -44,6 +45,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:paddingLeft="5dp"
+                android:textColor="@color/white"
                 android:text="AF(翻牌后Call/Raise概率)" />
         </LinearLayout>
         <LinearLayout
@@ -55,7 +57,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingLeft="5dp"
+                android:textColor="@color/white"
                 android:gravity="center"
                 android:text="VPIP(入局率)"/>
             <TextView
@@ -63,12 +65,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:textColor="@color/white"
                 android:text="STL(偷盲率)"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:textColor="@color/white"
                 android:text="Fold STL(被偷盲率)"/>
         </LinearLayout>
         <LinearLayout
@@ -80,14 +84,15 @@
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_weight="1"
-               android:paddingLeft="5dp"
                android:gravity="center"
+               android:textColor="@color/white"
                android:text="PFR(翻前加注率)"/>
            <TextView
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_weight="1"
                android:gravity="center"
+               android:textColor="@color/white"
                android:text="F3BET(面对3Bet弃牌率)"/>
 
             <TextView
@@ -96,6 +101,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:paddingLeft="5dp"
+                android:textColor="@color/white"
                 android:text="CB(翻牌圈继续下注率)" />
         </LinearLayout>
     </LinearLayout>

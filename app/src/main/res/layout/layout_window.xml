@@ -16,6 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="-"
             android:textSize="14sp"/>
 
@@ -24,6 +25,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="VPIP(-%)" />
 
         <TextView
@@ -32,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:paddingLeft="5dp"
+            android:gravity="center"
             android:text="PFR(-%)" />
 
     </LinearLayout>
@@ -46,6 +49,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="3BET(-%)" />
 
         <TextView
@@ -53,6 +57,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="CB(-%)" />
 
         <TextView
@@ -60,6 +65,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="AF(-)" />
 
     </LinearLayout>
@@ -75,6 +81,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="F3BET(-%)" />
 
         <TextView
@@ -82,6 +89,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="STL(-%)" />
 
         <TextView
@@ -89,6 +97,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="FSTL(-%)"/>
     </LinearLayout>
 
@@ -104,6 +113,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="FCB(-%)" />
 
         <TextView
@@ -111,6 +121,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="FFLOP(-%)" />
 
         <TextView
@@ -118,6 +129,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="FTURN(-%)" />
     </LinearLayout>
     <LinearLayout
@@ -132,6 +144,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="FRIVER(-%)" />
 
         <TextView
@@ -139,6 +152,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="" />
 
         <TextView
@@ -146,6 +160,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="" />
     </LinearLayout>
 </LinearLayout>
