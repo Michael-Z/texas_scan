@@ -9,6 +9,7 @@ import org.litepal.crud.DataSupport;
 public class OneHandLog extends DataSupport{
     private long date;
     private String log;
+    private int plattype;
 
     public long getDate() {
         return date;
@@ -24,5 +25,13 @@ public class OneHandLog extends DataSupport{
 
     public void setLog(String log) {
         this.log = log;
+    }
+
+    public int getPlattype() {
+        return plattype;
+    }
+
+    public void setPlattype(int plattype) {
+        this.plattype = plattype;
     }
 }

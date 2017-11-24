@@ -7,5 +7,23 @@ import org.litepal.crud.DataSupport;
  */
 
 public class UserName extends DataSupport{
+
+    public int plattype;
     public String name;
+
+    public int getPlattype() {
+        return plattype;
+    }
+
+    public void setPlattype(int plattype) {
+        this.plattype = plattype;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

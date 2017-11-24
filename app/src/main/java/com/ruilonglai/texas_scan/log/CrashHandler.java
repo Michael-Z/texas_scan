@@ -8,10 +8,10 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.ruilonglai.texas_scan.newprocess.MainProcessUtil;
+import com.ruilonglai.texas_scan.util.MyLog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -143,7 +143,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
                 infos.put("versionCode", versionCode);
             }
         } catch (NameNotFoundException e) {
-            Log.e(TAG, "an error occured when collect package info", e);
+            MyLog.e(TAG, "an error occured when collect package info", e);
         }
         Field[] fields = Build.class.getDeclaredFields();
         for (Field field : fields) {
@@ -151,7 +151,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
                 field.setAccessible(true);
                 infos.put(field.getName(), field.get(null).toString());
             } catch (Exception e) {
-                Log.e(TAG, "an error occured when collect crash info", e);
+                MyLog.e(TAG, "an error occured when collect crash info", e);
             }
         }
     }
@@ -192,7 +192,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             String fileName1 = writeFile(sb.toString(),1);
             return fileName+"/"+fileName1;
         } catch (Exception e) {
-            Log.e(TAG, "an error occured while writing file...", e);
+            MyLog.e(TAG, "an error occured while writing file...", e);
             sb.append("an error occured while writing file...\r\n");
             writeFile(sb.toString(),1);
             writeFile(sb.toString(),0);
@@ -209,7 +209,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             File dir = new File(path);
             if (!dir.exists())
                 dir.mkdirs();
-            Log.e(TAG,"奔溃日志:"+sb);
+            MyLog.e(TAG,"奔溃日志:"+sb);
             FileOutputStream fos = new FileOutputStream(path + fileName, true);
             fos.write(sb.getBytes());
             fos.flush();

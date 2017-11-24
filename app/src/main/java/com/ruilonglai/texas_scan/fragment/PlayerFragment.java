@@ -11,13 +11,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,18 +31,19 @@ import com.ruilonglai.texas_scan.entity.PlayerData2;
 import com.ruilonglai.texas_scan.entity.PlayerData3;
 import com.ruilonglai.texas_scan.entity.QueryUser;
 import com.ruilonglai.texas_scan.entity.ReqData;
+import com.ruilonglai.texas_scan.entity.ReqDelUser;
 import com.ruilonglai.texas_scan.entity.Result;
 import com.ruilonglai.texas_scan.entity.UserName;
 import com.ruilonglai.texas_scan.util.ActionsTool;
 import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.GsonUtil;
 import com.ruilonglai.texas_scan.util.HttpUtil;
+import com.ruilonglai.texas_scan.util.MyLog;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -81,13 +80,14 @@ import okhttp3.Response;
  * Created by wangshuai on 2016/9/9.
  */
 public class PlayerFragment extends Fragment {
-    private List<PlayerData> list;
+    public static List<PlayerData> list;
     private Context context = null;
     private PlayerViewAdapter adapter = null;
     private boolean fristOpen = true;
     private MainActivity activity = null;
     private ViewHolder vh;
     private int winIdx;
+    private int offsetIdx;
 
     @Override
     public void onAttach(Context context) {
@@ -106,7 +106,6 @@ public class PlayerFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initView();
-        findData();
     }
 
     public void initView() {
@@ -118,7 +117,7 @@ public class PlayerFragment extends Fragment {
         appAdapter.setOnItemListener(new AppAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                Toast.makeText(activity, Constant.APPNAMES[position], Toast.LENGTH_SHORT).show();
+//                Toast.makeText(activity, Constant.APPNAMES[position], Toast.LENGTH_SHORT).show();
                 int count = appAdapter.getItemCount();
                 for (int i = 0; i < count; i++) {
                     View child = vh.appList.getChildAt(i);
@@ -131,8 +130,12 @@ public class PlayerFragment extends Fragment {
                         }
                     }
                 }
+                if(winIdx!=position){
+                    offsetIdx=0;
+                    list.clear();
+                }
                 winIdx = position;
-                findData();
+                queryUserData(false);
             }
 
             @Override
@@ -161,8 +164,9 @@ public class PlayerFragment extends Fragment {
                     @Override
                     public void run() {
                         refreshLayout.finishLoadmore();
+                        queryUserData(false);
                     }
-                }, 200);
+                }, 1000);
             }
         });
         LinearLayoutManager manager = new LinearLayoutManager(context);
@@ -170,10 +174,23 @@ public class PlayerFragment extends Fragment {
         vh.playerList.setItemAnimator(new DefaultItemAnimator());
     }
 
-    public void queryUserData() {
-        List<UserName> names = DataSupport.findAll(UserName.class);
-        if (names.size() == 0)
+    public void queryUserData(boolean isClear) {
+        if(isClear){
+            offsetIdx = 0;
+            list.clear();
+        }
+        List<UserName> names = DataSupport.where("not name=? and platType=?","self",winIdx+"").order("id desc").limit(20).offset(offsetIdx).find(UserName.class);
+        offsetIdx+=names.size();
+        for (int i = names.size()-1; i >=0 ; i--) {
+            UserName name = names.get(i);
+            if(name.name.contains(activity.phone)){
+                names.remove(i);
+            }
+        }
+        if (names.size() == 0){
+            findData(isClear);
             return;
+        }
         List<String> usernames = new ArrayList<>();
         for (int i = 0; i < names.size(); i++) {
             usernames.add(names.get(i).name);
@@ -188,83 +205,140 @@ public class PlayerFragment extends Fragment {
         HttpUtil.sendPostRequestData("queryuser", new Gson().toJson(data), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("WindowTool", "response:(error)" + e.toString());
+                MyLog.e("WindowTool", "response:(error)" + e.toString());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String json = response.body().string();
-                Log.e("WindowTool", "response:" + json);
+                MyLog.e("WindowTool", "response:" + json);
                 Result result = GsonUtil.parseJsonWithGson(json, Result.class);
                 Map<String, String> map = result.getRets();
                 String players = map.get("listuser");
-                List<PlayerData> playerDatas = new ArrayList<PlayerData>();
-                Type listType = new TypeToken<List<PlayerData>>() {
-                }.getType();
-                playerDatas = new Gson().fromJson(players, listType);
-                if (playerDatas != null) {
-                    for (int i = 0; i < playerDatas.size(); i++) {
-                        PlayerData playerData = playerDatas.get(i);
-                        if (playerData != null) {
-                            List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
-                            if (datas.size() > 0) {
-                                DataSupport.deleteAll(PlayerData.class, "name=?", playerData.getName());
-                            }
-                            playerData.save();
-                        }
-                    }
-                }
+                saveUserData(players);
                 Message msg = new Message();
                 msg.arg1 = 1;
                 handler.sendMessage(msg);
             }
         });
     }
-
-    public void findData() {//在数据库获取当天赢的钱最多的玩家得信息
-        if (list == null) {
-            list = new ArrayList<>();
-        } else {
-            list.clear();
-        }
-
+    public void saveUserData(String json) {
+        Gson gson = new Gson();
         if (winIdx == 0) {
-            List<PlayerData> playerDatas = DataSupport.where("not name=?", "self").find(PlayerData.class);
-            for (PlayerData player : playerDatas) {
-                if (!"self".contains(player.getName())) {
-                    list.add(player);
+            List<PlayerData> playerDatas = new ArrayList<PlayerData>();
+            playerDatas = gson.fromJson(json, new TypeToken<List<PlayerData>>() {
+            }.getType());
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData.class, "name=?", playerData.getName());
+                        }
+                        if(!playerData.getName().equals("self"))
+                        list.add(playerData);
+                        playerData.save();
+                        List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
+                        if (userNames1.size() == 0) {
+                            UserName un = new UserName();
+                            un.name = playerData.getName();
+                            un.save();
+                        }
+                    }
                 }
             }
         } else if (winIdx == 1) {
-            List<PlayerData1> playerData1s = DataSupport.where("not name=?", "self").find(PlayerData1.class);
-            for (PlayerData player : playerData1s) {
-                if (!"self".contains(player.getName())) {
-                    list.add(player);
+            List<PlayerData1> playerDatas = new ArrayList<PlayerData1>();
+            playerDatas = gson.fromJson(json, new TypeToken<List<PlayerData1>>() {
+            }.getType());
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData1 playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData1> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData1.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData1.class, "name=?", playerData.getName());
+                        }
+                        playerData.save();
+                        if(!playerData.getName().equals("self"))
+                        list.add(playerData);
+                        List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
+                        if (userNames1.size() == 0) {
+                            UserName un = new UserName();
+                            un.name = playerData.getName();
+                            un.save();
+                        }
+                    }
                 }
             }
         } else if (winIdx == 2) {
-            List<PlayerData2> playerData1s = DataSupport.where("not name=?", "self").find(PlayerData2.class);
-            for (PlayerData player : playerData1s) {
-                if (!"self".contains(player.getName())) {
-                    list.add(player);
+            List<PlayerData2> playerDatas = new ArrayList<PlayerData2>();
+            playerDatas = gson.fromJson(json, new TypeToken<List<PlayerData2>>() {
+            }.getType());
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData2 playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData2> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData2.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData2.class, "name=?", playerData.getName());
+                        }
+                        playerData.save();
+                        if(!playerData.getName().equals("self"))
+                        list.add(playerData);
+                        List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
+                        if (userNames1.size() == 0) {
+                            UserName un = new UserName();
+                            un.name = playerData.getName();
+                            un.save();
+                        }
+                    }
                 }
             }
         } else if (winIdx == 3) {
-            List<PlayerData3> playerData1s = DataSupport.where("not name=?", "self").find(PlayerData3.class);
-            for (PlayerData player : playerData1s) {
-                if (!"self".contains(player.getName())) {
-                    list.add(player);
+            List<PlayerData3> playerDatas = new ArrayList<PlayerData3>();
+            playerDatas = gson.fromJson(json, new TypeToken<List<PlayerData3>>() {
+            }.getType());
+            if (playerDatas != null) {
+                for (int i = 0; i < playerDatas.size(); i++) {
+                    PlayerData3 playerData = playerDatas.get(i);
+                    if (playerData != null) {
+                        List<PlayerData3> datas = DataSupport.where("name=?", playerData.getName()).find(PlayerData3.class);
+                        if (datas.size() > 0) {
+                            DataSupport.deleteAll(PlayerData3.class, "name=?", playerData.getName());
+                        }
+                        playerData.save();
+                        if(!playerData.getName().equals("self"))
+                        list.add(playerData);
+                        List<UserName> userNames1 = DataSupport.where("name=?", playerData.getName()).find(UserName.class);
+                        if (userNames1.size() == 0) {
+                            UserName un = new UserName();
+                            un.name = playerData.getName();
+                            un.save();
+                        }
+                    }
                 }
             }
+        }
+
+    }
+    public void findData(boolean isClear) {//在数据库获取当天赢的钱最多的玩家得信息
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        if(isClear){
+            list.clear();
         }
         if (adapter == null) {
             adapter = new PlayerViewAdapter(activity, list);
             adapter.setOnItemListener(new PlayerViewAdapter.OnItemClickListener() {
                 @Override
-                public void onClick(int position) {
+                public void onClick(final int position) {
                     View view = LayoutInflater.from(context).inflate(R.layout.layout_window, null, false);
                     PlayerViewHolder pvh = new PlayerViewHolder(view);
                     PlayerData player = list.get(position);
+                    pvh.note.setVisibility(View.GONE);
                     pvh.item.setBackgroundColor(context.getResources().getColor(R.color.white));
                     pvh.pos1.setText(player.getName() + Constant.getPercent(player, Constant.TYPE_HAND));
                     pvh.pos2.setText(Constant.percentTypes[1] + "(" + Constant.getPercent(player, Constant.TYPE_VPIP) + "%)");
@@ -279,13 +353,46 @@ public class PlayerFragment extends Fragment {
                     pvh.pos11.setText(Constant.percentTypes[10] + "(" + Constant.getPercent(player, Constant.TYPE_FFLOP) + "%)");
                     pvh.pos12.setText(Constant.percentTypes[11] + "(" + Constant.getPercent(player, Constant.TYPE_FTURN) + "%)");
                     pvh.pos13.setText(Constant.percentTypes[12] + "(" + Constant.getPercent(player, Constant.TYPE_FRIVER) + "%)");
+                    pvh.pos14.setText(Constant.percentTypes[13] + "(" + Constant.getPercent(player, Constant.TYPE_WTSD) + "%)");
+                    pvh.pos15.setText(Constant.percentTypes[14] + "(" + Constant.getPercent(player, Constant.TYPE_WWSD) + "%)");
                     final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder .setView(view)
                             .setCancelable(false)
-                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            .setNegativeButton("返回", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.cancel();
+                                }
+                            })
+                            .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    final PlayerData playerData = list.get(position);
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                    builder.setMessage("是否删除这条记录?");
+                                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if(winIdx==0){
+                                                DataSupport.deleteAll(PlayerData.class, "name=?", playerData.getName());
+                                            }else if(winIdx==1){
+                                                DataSupport.deleteAll(PlayerData1.class, "name=?", playerData.getName());
+                                            }else if(winIdx==2){
+                                                DataSupport.deleteAll(PlayerData2.class, "name=?", playerData.getName());
+                                            }else if(winIdx==3){
+                                                DataSupport.deleteAll(PlayerData3.class, "name=?", playerData.getName());
+                                            }
+                                            DataSupport.deleteAll(UserName.class,"name=? and plattype=?",playerData.getName(),winIdx+"");
+                                            list.remove(position);
+                                            adapter.notifyDataSetChanged();
+                                            Message msg = new Message();
+                                            msg.arg1 = 2;
+                                            msg.obj = playerData.getName();
+                                            handler.sendMessage(msg);
+                                        }
+                                    });
+                                    builder.setNegativeButton("取消", null);
+                                    builder.show();
                                 }
                             })
                             .show();
@@ -293,21 +400,7 @@ public class PlayerFragment extends Fragment {
 
                 @Override
                 public void onLongClick(final int position) {
-                    final PlayerData playerData = list.get(position);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage("是否删除这条记录?");
-                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            DataSupport.deleteAll(PlayerData.class, "name=?", playerData.getName());
-                            list.remove(position);
-                            adapter.notifyDataSetChanged();
-//                            AssetsCopyUtil.copyDataBaseToSD(getActivity());
-                            Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    builder.setNegativeButton("取消", null);
-                    builder.show();
+
                 }
             });
             vh.playerList.setAdapter(adapter);
@@ -315,12 +408,37 @@ public class PlayerFragment extends Fragment {
             adapter.notifyDataSetChanged();
         }
     }
+     /*删除某平台下的数据*/
+    public void deleteNameData(List<String> names){
+        ReqData data = new ReqData();
+        ReqDelUser rdu = new ReqDelUser();
+        rdu.setPlattype(winIdx);
+        rdu.setUsernames(names);
+        data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
+        data.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
+        data.setParam(new Gson().toJson(rdu));
+        HttpUtil.sendPostRequestData("reqdeluser", new Gson().toJson(data), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+//                Toast.makeText(context,"服务器未响应",Toast.LENGTH_SHORT).show();
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                MyLog.e(getClass().getName()+"response(reqdeluser)",response.toString());
+            }
+        });
+    }
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.arg1 == 1) {
-                findData();
+                findData(false);
+            }else if(msg.arg1 == 2){/*删除服务器某玩家的数据*/
+                String name  = (String)msg.obj;
+               List<String> list = new  ArrayList<>();
+                list.add(name);
+                deleteNameData(list);
             }
         }
     };
@@ -331,8 +449,8 @@ public class PlayerFragment extends Fragment {
         context = getActivity();
     }
 
-    public void notifyDataSetChaged() {
-        queryUserData();
+    public void notifyDataSetChaged(boolean isClear) {
+        queryUserData(isClear);
     }
 
 
@@ -384,6 +502,8 @@ public class PlayerFragment extends Fragment {
         TextView pos15;
         @BindView(R.id.item)
         LinearLayout item;
+        @BindView(R.id.note)
+        TextView note;
 
         PlayerViewHolder(View view) {
             ButterKnife.bind(this, view);

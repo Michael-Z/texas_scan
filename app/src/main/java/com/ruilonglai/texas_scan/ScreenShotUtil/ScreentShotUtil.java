@@ -4,10 +4,10 @@ package com.ruilonglai.texas_scan.ScreenShotUtil;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.Surface;
 
 import com.ruilonglai.texas_scan.util.FileIOUtil;
+import com.ruilonglai.texas_scan.util.MyLog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,13 +51,13 @@ public class ScreentShotUtil {
 		shell.Init(true);
 	}
 	public static Bitmap screenShot(int width, int height) {
-		Log.i(TAG, "android.os.Build.VERSION.SDK : "
+		MyLog.i(TAG, "android.os.Build.VERSION.SDK : "
 				+ android.os.Build.VERSION.SDK_INT);
 		Class<?> surfaceClass = null;
 		Method method = null;
 		try {
-			Log.i(TAG, "width : " + width);
-			Log.i(TAG, "height : " + height);
+			MyLog.i(TAG, "width : " + width);
+			MyLog.i(TAG, "height : " + height);
 			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
 				surfaceClass = Class.forName(CLASS1_NAME);
@@ -70,15 +70,15 @@ public class ScreentShotUtil {
 			Bitmap bitmap = (Bitmap)method.invoke(null, width, height);
 			return  bitmap;
 		} catch (NoSuchMethodException e) {
-			Log.e(TAG, e.toString());
+			MyLog.e(TAG, e.toString());
 		} catch (IllegalArgumentException e) {
-			Log.e(TAG, e.toString());
+			MyLog.e(TAG, e.toString());
 		} catch (IllegalAccessException e) {
-			Log.e(TAG, e.toString());
+			MyLog.e(TAG, e.toString());
 		} catch (InvocationTargetException e) {
-			Log.e(TAG, e.toString());
+			MyLog.e(TAG, e.toString());
 		} catch (ClassNotFoundException e) {
-			Log.e(TAG, e.toString());
+			MyLog.e(TAG, e.toString());
 		}
 		return null;
 	}
@@ -123,14 +123,14 @@ public class ScreentShotUtil {
 				file.getParentFile().mkdir();
 				file.getParentFile().createNewFile();
 			} catch (IOException e) {
-				Log.e(TAG, e.toString());
+				MyLog.e(TAG, e.toString());
 			}
 		} else {
 			try {
 				file.getParentFile().delete();
 				file.getParentFile().createNewFile();
 			} catch (IOException e) {
-				Log.e(TAG, e.toString());
+				MyLog.e(TAG, e.toString());
 			}
 		}
 		FileOutputStream stream = null;
@@ -141,22 +141,22 @@ public class ScreentShotUtil {
 			}
 			stream.flush();
 		} catch (FileNotFoundException e) {
-			Log.i(TAG, e.toString());
+			MyLog.i(TAG, e.toString());
 		} catch (IOException e) {
-			Log.i(TAG, e.toString());
+			MyLog.i(TAG, e.toString());
 		} finally {
 			if (is != null) {
 				try {
 					is.close();
 				} catch (IOException e) {
-					Log.i(TAG, e.toString());
+					MyLog.i(TAG, e.toString());
 				}
 			}
 			if (stream != null) {
 				try {
 					stream.close();
 				} catch (IOException e) {
-					Log.i(TAG, e.toString());
+					MyLog.i(TAG, e.toString());
 				}
 			}
 		}

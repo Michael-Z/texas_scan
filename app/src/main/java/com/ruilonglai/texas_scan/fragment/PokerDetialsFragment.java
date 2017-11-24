@@ -2,6 +2,7 @@ package com.ruilonglai.texas_scan.fragment;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +38,7 @@ import com.ruilonglai.texas_scan.util.CardUtil;
 import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.GsonUtil;
 import com.ruilonglai.texas_scan.util.HttpUtil;
+import com.ruilonglai.texas_scan.util.MyLog;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 
 import org.angmarch.views.NiceSpinner;
@@ -78,13 +79,14 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
     public static final String DATEPICKER_TAG = "datepicker";
     String[] cards = {"A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"};
     List<String> strings = Arrays.asList("今天", "全部", "3天", "一周", "15天", "一个月", "三个月");
+    List<String> platTypes = Arrays.asList("德扑圈","德友圈","扑克部落Mtt","扑克部落SNG");
     private int[] eightColors = {R.color.hui, R.color.win_4, R.color.win_3, R.color.win_2, R.color.win_1, R.color.los_1, R.color.los_2, R.color.los_3, R.color.los_4};
     private int[] eightTextColors = {android.R.color.black, android.R.color.white, android.R.color.white, android.R.color.black, android.R.color.black, android.R.color.black, android.R.color.black, android.R.color.black, android.R.color.white};
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_poker_detail, null, false);
+        View view = inflater.inflate(R.layout.fragment_poker_detail, null, false);
         vh = new ViewHolder(view);
         return view;
     }
@@ -106,9 +108,14 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
         vh.title.setText("手牌详情");
         vh.niceSpinner.setTextColor(Color.RED);
         vh.niceSpinner.setBackgroundColor(noColor);
+        vh.plats.setTextColor(Color.RED);
+        vh.plats.setBackgroundColor(noColor);
         LinkedList<String> data = new LinkedList<>(strings);
         vh.niceSpinner.attachDataSource(data);
         vh.niceSpinner.addOnItemClickListener(this);
+        LinkedList<String> data1 = new LinkedList<>(platTypes);
+        vh.plats.attachDataSource(data1);
+        vh.plats.addOnItemClickListener(this);
         vh.btnDate.setOnClickListener(this);
         vh.btnLastDay.setOnClickListener(this);
         vh.btnNextDay.setOnClickListener(this);
@@ -135,6 +142,8 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
         vh.cardList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_poker, null, false);
+                DialogViewHolder dvh = new DialogViewHolder(dialogView);
                 TextView card = (TextView) view.findViewById(R.id.card);
                 List<MyData> myDatas = DataSupport.where("pokerName=?", card.getText().toString()).find(MyData.class);
                 MyData myData = null;
@@ -157,9 +166,18 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
                         .append("最大盈利:").append(Constant.getDoubleString(1, maxBBCount)).append("bb#")
                         .append("最大损失:").append(Constant.getDoubleString(1, minBBCount)).append("bb");
                 String[] split = sb.toString().split("#");
+                dvh.totalBBcount.setText(split[0]);
+                dvh.totalPlayCount.setText(split[1]);
+                dvh.maxBBcount.setText(split[2]);
+                dvh.minBBCount.setText(split[3]);
                 new AlertDialog.Builder(context)
-                        .setItems(split, null)
-                        .setPositiveButton("确定", null)
+                        .setView(dialogView)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
                         .show();
             }
         });
@@ -268,10 +286,14 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_last_day:
-                showOneDayData(--dayC);
+                --dayC;
+                long l = dayC * 24 * 3600 * 1000L;
+                searchPokerInServer(TimeUtil.getCurrentDateToDay(new Date(System.currentTimeMillis() + l)),null,0);
                 break;
             case R.id.btn_next_day:
-                showOneDayData(++dayC);
+                ++dayC;
+                long l1 = dayC * 24 * 3600 * 1000L;
+                searchPokerInServer(TimeUtil.getCurrentDateToDay(new Date(System.currentTimeMillis() + l1)),null,0);
                 break;
             case R.id.btn_date:
                 datePickerDialog.setVibrate(false);
@@ -283,7 +305,8 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
     }
 
     public void showOneDayData(int dayCount) {
-        Date date = new Date(System.currentTimeMillis() + dayCount * 24 * 3600 * 1000);
+        long l = dayCount * 24 * 3600 * 1000L;
+        Date date = new Date(System.currentTimeMillis() + l);
         String dateToDay = TimeUtil.getCurrentDateToDay(date);
         vh.btnDate.setText(TimeUtil.changeDateToShow(dateToDay));
         getCardsInData(date);
@@ -294,61 +317,89 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
         Calendar instance = Calendar.getInstance();
         instance.set(year, month, day);
         long dayCount = (instance.getTimeInMillis() - System.currentTimeMillis()) / (24 * 3600 * 1000);
-        showOneDayData((int) dayCount);
         dayC = (int) dayCount;
+        searchPokerInServer(TimeUtil.getCurrentDateToDay(new Date(System.currentTimeMillis()+dayC*24*3600*1000L)),null,0);
     }
 
-    int[] times = new int[]{0, 0, 3, 7, 15, 30, 90};
-
+    int[] times = new int[]{0, 180, 3, 7, 15, 30, 90};
+    int timePos = 0;
+    int winIdx = 0;
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-        ReqData reqData = new ReqData();
-        QueryPokerData data = new QueryPokerData();
-        data.plattype = context.winIndex;
-        data.userid = context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", "");
-        if (TextUtils.isEmpty(data.userid))
-            return;
-        data.startdate = TimeUtil.getCurrentDateToDay(new Date(System.currentTimeMillis() - times[position] * 24 * 3600 * 1000));
-        data.enddate = TimeUtil.getCurrentDateToDay(new Date());
-        Gson gson = new Gson();
-        String json = gson.toJson(data);
-        reqData.setParam(json);
-        reqData.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
-        reqData.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
-        HttpUtil.sendPostRequestData("querypokerdata", gson.toJson(reqData), new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("PokerDetialActivity", "获取手牌记录失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String json = response.body().string();
-                Result result = GsonUtil.parseJsonWithGson(json, Result.class);
-                Map<String, String> map = result.getRets();
-                String pokers = map.get("listmydata");
-                List<MyData> myDatas = new ArrayList<MyData>();
-                Type listType = new TypeToken<List<MyData>>() {}.getType();
-                myDatas = new Gson().fromJson(pokers, listType);
-                if(myDatas!=null && myDatas.size()>0){
-                    DataSupport.deleteAll(MyData.class);
-                    for (int i = 0; i < myDatas.size(); i++) {
-                        MyData myData = myDatas.get(i);
-                        if(TextUtils.isEmpty(myData.getPokerName())){
-                            myData.setPokerName(CardUtil.getPokerName(myData.getCard0(),myData.getCard1()));
-                        }
-                        myData.save();
-                    }
-                }
-                Message msg = new Message();
-                msg.arg1 = 1;
-                msg.arg2 = position;
-                handler.sendMessage(msg);
-            }
-        });
+        if(parent.getId()==R.id.niceSpinner){
+            timePos = position;
+        }else if(parent.getId()==R.id.plattypes){
+            winIdx = position;
+        }
+        int i = times[timePos];
+        long l = i * 24 * 3600 * 1000L;
+        searchPokerInServer(TimeUtil.getCurrentDateToDay(new Date(System.currentTimeMillis() - l)),
+                TimeUtil.getCurrentDateToDay(new Date()),-1);
     }
+     public void searchPokerInServer(String begintime, String endTime, final int oneDay){
+         ReqData reqData = new ReqData();
+         QueryPokerData data = new QueryPokerData();
+         data.plattype = winIdx;
+         data.userid = context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", "");
+         if (TextUtils.isEmpty(data.userid))
+             return;
+         data.startdate =begintime;
+         if(oneDay==0)
+         data.enddate = begintime;
+         else
+         data.enddate = endTime;
+         Gson gson = new Gson();
+         String json = gson.toJson(data);
+         reqData.setParam(json);
+         reqData.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
+         reqData.setReqid(context.getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
+         HttpUtil.sendPostRequestData("querypokerdata", gson.toJson(reqData), new Callback() {
+             @Override
+             public void onFailure(Call call, IOException e) {
+                 MyLog.e("PokerDetialActivity", "获取手牌记录失败");
+                 DataSupport.deleteAll(MyData.class);
+                 Message msg = new Message();
+                 msg.arg1 = 1;
+                 if(oneDay==-1){
+                     msg.arg2 = winIdx;
+                 }else{
+                     msg.arg2 = -1;
+                 }
+                 handler.sendMessage(msg);
+             }
 
-    public void showPoker(int position){
+             @Override
+             public void onResponse(Call call, Response response) throws IOException {
+                 String json = response.body().string();
+                 Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+                 Map<String, String> map = result.getRets();
+                 String pokers = map.get("listmydata");
+                 List<MyData> myDatas = new ArrayList<MyData>();
+                 Type listType = new TypeToken<List<MyData>>() {
+                 }.getType();
+                 myDatas = new Gson().fromJson(pokers, listType);
+                 DataSupport.deleteAll(MyData.class);
+                 if (myDatas != null && myDatas.size() > 0) {
+                     for (int i = 0; i < myDatas.size(); i++) {
+                         MyData myData = myDatas.get(i);
+                         if (TextUtils.isEmpty(myData.getPokerName())) {
+                             myData.setPokerName(CardUtil.getPokerName(myData.getCard0(), myData.getCard1()));
+                         }
+                         myData.save();
+                     }
+                 }
+                 Message msg = new Message();
+                 msg.arg1 = 1;
+                 if(oneDay==-1){
+                     msg.arg2 = timePos;
+                 }else{
+                    msg.arg2 = -1;
+                 }
+                 handler.sendMessage(msg);
+             }
+         });
+     }
+    public void showPoker(int position) {
         switch (position) {
             case 0:
                 getCardsInData(new Date());
@@ -386,14 +437,17 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
         }
     }
 
-    Handler handler = new Handler(){
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-           if(msg.arg1==1){
-               showPoker(msg.arg2);
-           }
+            if (msg.arg1 == 1 && msg.arg2!=-1) {
+                showPoker(msg.arg2);
+            }else if(msg.arg2==-1){
+                showOneDayData(dayC);
+            }
         }
     };
+
     static class ViewHolder {
         @BindView(R.id.title)
         TextView title;
@@ -407,12 +461,29 @@ public class PokerDetialsFragment extends Fragment implements View.OnClickListen
         TextView note;
         @BindView(R.id.niceSpinner)
         NiceSpinner niceSpinner;
+        @BindView(R.id.plattypes)
+        NiceSpinner plats;
         @BindView(R.id.linearLayout)
         LinearLayout linearLayout;
         @BindView(R.id.cardList)
         GridView cardList;
 
         ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    class DialogViewHolder {
+        @BindView(R.id.totalBBcount)
+        TextView totalBBcount;
+        @BindView(R.id.totalPlayCount)
+        TextView totalPlayCount;
+        @BindView(R.id.maxBBcount)
+        TextView maxBBcount;
+        @BindView(R.id.minBBCount)
+        TextView minBBCount;
+
+        DialogViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }

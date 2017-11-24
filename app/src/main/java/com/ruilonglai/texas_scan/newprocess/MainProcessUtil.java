@@ -2,7 +2,7 @@ package com.ruilonglai.texas_scan.newprocess;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.util.Log;
+import com.ruilonglai.texas_scan.util.MyLog;
 
 import com.ruilonglai.texas_scan.ScreenShotUtil.ShellUtils;
 import com.ruilonglai.texas_scan.models.AndroidProcess;
@@ -43,11 +43,11 @@ public class MainProcessUtil {
     public void createMainProcess(String packageName,boolean isPhone,boolean outoScanName){
         shell.Init(true);
        if(!isExistMainProcess){
-           Log.e("command","启动main进程");
+           MyLog.e("command","启动main进程");
            shell.execCommand("adb shell");
            shell.execCommand("export CLASSPATH="+packageName+"/base.apk");
            packageName += "#"+isPhone + "#" +outoScanName;
-           shell.execCommand("exec app_process32 /system/bin com.ruilonglai.texas_scan.newprocess.Main '"+packageName+"'");
+           shell.execCommand("exec app_process /system/bin com.ruilonglai.texas_scan.newprocess.Main '"+packageName+"'");
        }
     }
 
@@ -57,12 +57,12 @@ public class MainProcessUtil {
         for (int i = rp.size()-1; i > 0; i--) {
             AndroidProcess aap = rp.get(i);
             if(aap.name.contains("com.ruilonglai.texas_scan.newprocess.Main")){
-                Log.e(TAG,"name:"+aap.name+"  pid:"+aap.pid);
+                MyLog.e(TAG,"name:"+aap.name+"  pid:"+aap.pid);
                 try{
                     shell.Init(true);
                     shell.execCommand("kill -9 "+aap.pid);
                 }catch (Exception e){
-                    Log.e(TAG,"指令出错了。。。");
+                    MyLog.e(TAG,"指令出错了。。。");
                 }
             }
         }

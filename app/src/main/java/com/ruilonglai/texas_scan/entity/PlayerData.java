@@ -41,6 +41,8 @@ public class PlayerData extends DataSupport {
     private int FoldRiverCount;
     private int foldCbCount;
     private int faceCbCount;
+    private int turnRiverCount;
+    private int winTurnRiverCount;
 
     public String getSeatFlag() {
         return seatFlag;
@@ -304,5 +306,21 @@ public class PlayerData extends DataSupport {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public int getTurnRiverCount() {
+        return turnRiverCount;
+    }
+
+    public void setTurnRiverCount(int turnRiverCount) {
+        this.turnRiverCount = turnRiverCount;
+    }
+
+    public int getWinTurnRiverCount() {
+        return winTurnRiverCount;
+    }
+
+    public void setWinTurnRiverCount(int winTurnRiverCount) {
+        this.winTurnRiverCount = winTurnRiverCount;
     }
 }

@@ -1,5 +1,7 @@
 package com.ruilonglai.texas_scan.entity;
 
+import com.ruilonglai.texas_scan.util.Constant;
+
 /**
  * Created by Administrator on 2017/5/27.
  */
@@ -20,6 +22,7 @@ public class GameUser {
     private boolean isPFR;   //翻牌前加注
     private boolean isFaceOpen; //是否面临一次加注
     private boolean isFace3Bet; //是否面临3bet
+    private boolean isFold3Bet; //fold3bet
     private boolean isFaceSTL; //是否面临偷盲
     private boolean isStlPosition; //是否是偷盲位
     private int callCount;   //跟注次数
@@ -29,8 +32,9 @@ public class GameUser {
     private boolean isFoldCB; //面对翻牌再加注弃牌
     private boolean isFaceCB; //是否面对翻牌再加注
     private int lastActionRound;//最后一个动作的圈数
-    private int level = -1;//玩家标记的颜色  -1表示不改变该玩家的level 0表示不用颜色  1~8表示8种颜色
-    private String remark;//不为空时，覆盖玩家得笔记
+    private boolean isTurn; //是否摊牌
+    private boolean isWinTurn; //摊牌获胜
+
 
     public int getSeatIdx() {
         return seatIdx;
@@ -224,19 +228,86 @@ public class GameUser {
         this.lastActionRound = lastActionRound;
     }
 
-    public int getLevel() {
-        return level;
+    public boolean isFold3Bet() {
+        return isFold3Bet;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public void setFold3Bet(boolean fold3Bet) {
+        isFold3Bet = fold3Bet;
     }
 
-    public String getRemark() {
-        return remark;
+    public boolean isTurn() {
+        return isTurn;
     }
 
-    public void setRemark(String remark) {
-        this.remark = remark;
+    public void setTurn(boolean turn) {
+        isTurn = turn;
+    }
+
+    public boolean isWinTurn() {
+        return isWinTurn;
+    }
+
+    public void setWinTurn(boolean winTurn) {
+        isWinTurn = winTurn;
+    }
+
+    @Override
+    public String toString() {
+        return "GameUser{" +
+                "seatIdx=" + seatIdx +
+                ", seatFlag='" + seatFlag + '\'' +
+                '}';
+    }
+    public String toString(boolean istrue) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("[名字=").append(userName).append("]\n");
+        sb.append("[changeMoney=").append(endMoney-beginMoney).append("]\n");
+        sb.append("[").append(seatFlag).append("]\n");
+        if(isJoin)
+            sb.append("[").append("入池").append("]\n");
+        if(isPFR)
+            sb.append("[").append("翻牌前加注").append("]\n");
+        if(isFaceOpen)
+            sb.append("[").append("3Bet机会").append("]\n");
+        if(is3Bet)
+            sb.append("[").append("3Bet").append("]\n");
+        if(isFace3Bet)
+            sb.append("[").append("面对3bet").append("]\n");
+        if(isFold3Bet)
+            sb.append("[").append("面对3bet弃牌").append("]\n");
+        if(isStlPosition)
+            sb.append("[").append("偷盲机会").append("]\n");
+        if(isSTL)
+            sb.append("[").append("偷盲").append("]\n");
+       if(isFaceSTL)
+            sb.append("[").append("面对偷盲").append("]\n");
+        if(isFoldSTL)
+            sb.append("[").append("fold偷盲").append("]\n");
+        if(isPreFlopLastRaise)
+            sb.append("[").append("cb机会").append("]\n");
+        if(isCB)
+            sb.append("[").append("CB").append("]\n");
+        if(isFaceCB)
+            sb.append("[").append("面对CB").append("]\n");
+        if(isFoldCB)
+            sb.append("[").append("面对CB弃牌").append("]\n");
+        if(isTurn)
+            sb.append("[").append("翻牌").append("]\n");
+        if(isWinTurn)
+            sb.append("[").append("翻牌获胜").append("]\n");
+        if(raiseCount>0){
+            sb.append("[").append("翻牌后加注次数:"+raiseCount).append("]\n");
+        }
+        if(callCount>0){
+            sb.append("[").append("翻牌后跟注次数:"+callCount).append("]\n");
+        }
+        sb.append("[").append("记录最后动作在 "+Constant.ROUND[lastActionRound]).append("]\n");
+        if(foldRound>-1)
+        sb.append("[").append("弃牌在 "+Constant.ROUND[foldRound]).append("]");
+        else
+        sb.append("[").append("弃牌没有记录").append("]");
+        return sb.toString();
     }
 }

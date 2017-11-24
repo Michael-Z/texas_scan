@@ -5,7 +5,6 @@ import com.ruilonglai.texas_scan.util.TimeUtil;
 
 import org.litepal.crud.DataSupport;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,17 +21,13 @@ public class MyDataUtil {
     }
 
     public static List<MyData> getSomeDayMyData(int daySize){
-        List<MyData> list = new ArrayList<MyData>();
-        for (int i = 0; i <= daySize; i++) {
-            String currentDateToDay = TimeUtil.getCurrentDateToDay(new Date(System.currentTimeMillis() - i * 24 * 3600 * 1000));
-            List<MyData> myDatas = DataSupport.where("date=?", currentDateToDay).find(MyData.class);
-            list.addAll(myDatas);
-        }
-        return list;
+            List<MyData> myDatas = DataSupport.findAll(MyData.class);
+        return myDatas;
     }
 
     public static List<MyData> getOneDayMyData(Date date){
 
-        return DataSupport.where("date=?", TimeUtil.getCurrentDateToDay(date)).find(MyData.class);
+        List<MyData> myDatas = DataSupport.where("date=?", TimeUtil.getCurrentDateToDay(date)).find(MyData.class);
+        return myDatas;
     }
 }

@@ -48,6 +48,9 @@ public class HandLogAdapter extends RecyclerView.Adapter<HandLogAdapter.HandLogV
     @Override
     public void onBindViewHolder(HandLogViewHolder holder, final int position) {
          holder.log.setText(list.get(position));
+        if(position%2==0){
+            holder.layout.setBackgroundColor(context.getResources().getColor(R.color.hui));
+        }
         if(mOnItemClickListener!=null){
             holder.layout.setOnClickListener(new View.OnClickListener() {
                 @Override

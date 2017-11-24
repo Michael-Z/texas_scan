@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ruilonglai.texas_scan.R;
+import com.zhy.autolayout.utils.AutoUtils;
 
 /**
  * Created by wangshaui on 2017/5/16.
@@ -85,6 +86,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppHolder> {
         LinearLayout layout;
         public AppHolder(View itemView) {
             super(itemView);
+            AutoUtils.autoSize(itemView);
             appName = (TextView) itemView.findViewById(R.id.appName);
             appIcon = (ImageView) itemView.findViewById(R.id.appIcon);
             layout = (LinearLayout) itemView.findViewById(R.id.item_layout);

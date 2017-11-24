@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.entity.PlayerData;
+import com.zhy.autolayout.utils.AutoUtils;
 
 import java.util.List;
 
@@ -43,7 +44,6 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.My
 
     @Override
     public int getItemCount() {
-
         return players.size();
     }
 
@@ -122,6 +122,7 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.My
 
         View view = inflater.inflate(R.layout.item_other_player,parent, false);
         MyViewHolder holder= new MyViewHolder(view);
+
         return holder;
     }
 
@@ -141,6 +142,7 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.My
 
         public MyViewHolder(View view) {
             super(view);
+            AutoUtils.autoSize(view);
             item = (LinearLayout) view.findViewById(R.id.item);
             name=(TextView) view.findViewById(R.id.playerName);
             totalPlayAndBBCount=(TextView) view.findViewById(R.id.totalPlayAndBBCount);
@@ -154,6 +156,5 @@ public class PlayerViewAdapter extends RecyclerView.Adapter<PlayerViewAdapter.My
             cBPercent=(TextView) view.findViewById(R.id.cBPercent);
             aFPercent=(TextView) view.findViewById(R.id.aFPercent);
         }
-
     }
 }

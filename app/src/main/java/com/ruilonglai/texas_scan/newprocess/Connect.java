@@ -1,9 +1,9 @@
 package com.ruilonglai.texas_scan.newprocess;
 
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.ruilonglai.texas_scan.util.Constant;
+import com.ruilonglai.texas_scan.util.MyLog;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,9 +68,9 @@ public class Connect {
             tRecv.start();
             Thread.sleep(2000);
         } catch (UnknownHostException e) {
-            Log.e(TAG,"未知端口异常");
+            MyLog.e(TAG,"未知端口异常");
         }catch (Exception e){
-            Log.e(TAG,e.toString());
+            MyLog.e(TAG,e.toString());
         }
     }
 
@@ -89,7 +89,7 @@ public class Connect {
             byte[] bytes = msg.getBytes();
             send(bytes);
         } catch (Exception e) {
-           Log.e(TAG,"发送数据失败");
+           MyLog.e(TAG,"发送数据失败");
         }
     }
     public static void send(int type,String content){
@@ -104,7 +104,7 @@ public class Connect {
             outStr.write(s.getBytes());
             outStr.write(bytes);
         } catch (IOException e) {
-            Log.e(TAG,"bytes发送数据失败");
+            MyLog.e(TAG,"bytes发送数据失败");
         }
     }
     public void setCallback(CallBack callback){
@@ -136,7 +136,7 @@ public class Connect {
     private static class RecvThread implements Runnable {
         public void run() {
             try {
-                Log.e("begin","==============开始接收数据===============");
+                MyLog.e("begin","==============开始接收数据===============");
                 while (true) {
                     byte[] b = new byte[8];
                     int r = inStr.read(b);

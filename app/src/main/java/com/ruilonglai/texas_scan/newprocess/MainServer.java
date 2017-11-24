@@ -1,21 +1,15 @@
 package com.ruilonglai.texas_scan.newprocess;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.Gson;
-import com.ruilonglai.texas_scan.MainActivity;
-import com.ruilonglai.texas_scan.util.Constant;
-import com.ruilonglai.texas_scan.util.TimeUtil;
+import com.ruilonglai.texas_scan.util.MyLog;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Date;
 
 import static com.ruilonglai.texas_scan.newprocess.Connect.changeTo;
 
@@ -80,7 +74,7 @@ public class MainServer {
             outStr.write(s.getBytes());
             outStr.write(bytes);
         } catch (IOException e) {
-            Log.e(TAG,"Main发送数据失败");
+            MyLog.e(TAG,"Main发送数据失败");
             MainProcessUtil.getInstance().exit(context);
         }
     }
@@ -100,7 +94,7 @@ public class MainServer {
                         }else{
                             String s = new String(bytes);
                             if("heart!".equals(s)){
-                                Log.e(TAG,"收到心跳！！！！！！！");
+                                MyLog.e(TAG,"收到心跳！！！！！！！");
                                 beginTime=System.currentTimeMillis();
                             }else{
                                 callBack.recMsg(s);

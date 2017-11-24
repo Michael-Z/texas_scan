@@ -3,7 +3,7 @@ package com.ruilonglai.texas_scan.newprocess;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
-import android.util.Log;
+import com.ruilonglai.texas_scan.util.MyLog;
 
 import com.ruilonglai.texas_scan.ScanTool;
 import com.ruilonglai.texas_scan.ScreenShotUtil.ScreentShotUtil;
@@ -31,7 +31,7 @@ public class Main {
         String[] split = str.split("#");
         String packagename = split[0];
         if(!TextUtils.isEmpty(packagename)&& Boolean.valueOf(split[1])){
-            Log.e("main",packagename);
+            MyLog.e("main",packagename);
             System.load(packagename+"/lib/arm64/libleptonica.so");
             System.load(packagename+"/lib/arm64/liblibtesseract.so");
             System.load(packagename+"/lib/arm64/libopencv_info.so");
@@ -56,7 +56,7 @@ public class Main {
                         int type =  pkg.getType();
                         String content = pkg.getContent();
                         if(type==Constant.SOCKET_PLATFORM_TEXASPOKER || type==Constant.SOCKET_PLATFORM_POKERFISHS || type==Constant.SOCKET_PLATFORM_NUTSPOKER || type==Constant.SOCKET_PLATFORM_NUTSPOKER_SNG) {
-                            Log.e("Main", "设置的模板" + type);
+                            MyLog.e("Main", "设置的模板" + type);
                             ScanTool.SetTemplate(Constant.PLATFORM[type - 8]);
                             flag = type - 8;
                         }
@@ -67,11 +67,11 @@ public class Main {
                         else if(type == Constant.SOCKET_UPDATE_NAME)
                         {//更新名字
                             try {
-                                Log.e(TAG,"修改名字:"+content);
+                                MyLog.e(TAG,"修改名字:"+content);
                                 JSONObject obj = new JSONObject(content);
                                 instance.changeName(obj.getInt("seatIdx"),obj.getString("name"),obj.getString("remark"),obj.getInt("level"));
                             } catch (JSONException e) {
-                               Log.e(TAG,"更新名字失败");
+                               MyLog.e(TAG,"更新名字失败");
                             }
                         }else if(type == Constant.SOCKET_UPDATE_REMARK){
 
@@ -99,7 +99,7 @@ public class Main {
 //                bitmap = null;
 //                System.gc();
 //            }
-//            Log.e("Main","获取bitmap时间 "+(System.currentTimeMillis()-beginTime) + "ms"+"bitmap字节数:"+bytes.length);
+//            MyLog.e("Main","获取bitmap时间 "+(System.currentTimeMillis()-beginTime) + "ms"+"bitmap字节数:"+bytes.length);
 //            try {
 //                bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length, opts);
 //            } catch (OutOfMemoryError e) {
@@ -111,21 +111,25 @@ public class Main {
 //            }
             if(bitmap!=null){
                 long beginTime2 = System.currentTimeMillis();
-                instance.analysisBitmap(bitmap, flag);
+                try {
+                    instance.analysisBitmap(bitmap, flag);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 long time = System.currentTimeMillis() - beginTime;
-                Log.e("Main","解析时间 "+ time + "ms");
-                Log.e("Main","----------------------------------------------");
+                MyLog.e("Main","解析时间 "+ time + "ms");
+                MyLog.e("Main","----------------------------------------------");
                 try {
                     if(1000-time>0)
                         Thread.sleep(1000-time);
                 }catch (Exception e){
-                    Log.e("Main","线程出错"+e.toString());
+                    MyLog.e("Main","线程出错"+e.toString());
                 }
             }else{
-                Log.e("MainActivity","bitmap为空");
+                MyLog.e("MainActivity","bitmap为空");
             }
         }
-        Log.e("Main","main进程结束");
+        MyLog.e("Main","main进程结束");
         System.exit(0);
     }
 

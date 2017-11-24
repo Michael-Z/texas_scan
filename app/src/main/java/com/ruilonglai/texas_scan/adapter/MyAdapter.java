@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.entity.PlayerData;
+import com.zhy.autolayout.utils.AutoUtils;
 
 import java.util.List;
 
@@ -74,6 +75,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         public MyViewHolder(View view) {
             super(view);
+            AutoUtils.autoSize(view);
             item = (LinearLayout) view.findViewById(R.id.item);
             seatFlag=(TextView) view.findViewById(R.id.name);
             winMoney=(TextView) view.findViewById(R.id.abc);

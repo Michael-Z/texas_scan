@@ -21,7 +21,6 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ruilonglai.texas_scan.MainActivity;
 import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.config.SystemParams;
 import com.ruilonglai.texas_scan.download.DownLoadUtils;
@@ -33,6 +32,7 @@ import com.ruilonglai.texas_scan.view.CustomDialog;
 import com.tendcloud.tenddata.TCAgent;
 
 import org.json.JSONObject;
+import org.litepal.tablemanager.Connector;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +54,7 @@ public class LaunchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+        Connector.getDatabase();//创建数据库
         MainProcessUtil.getInstance().exit(LaunchActivity.this);
         Map<String,String> map = SystemInfoUtil.collectDeviceInfo(this);
         String cpu_abi = map.get("CPU_ABI");
@@ -269,6 +270,7 @@ public class LaunchActivity extends AppCompatActivity {
                      .putInt("height",metrics.heightPixels)
                      .putFloat("xdpi",metrics.xdpi)
                      .putFloat("ydpi",metrics.ydpi)
+                     .putInt("dpi",metrics.densityDpi)
                      .apply();
     }
 }

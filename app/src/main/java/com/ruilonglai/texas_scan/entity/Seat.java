@@ -11,6 +11,7 @@ public class Seat {
     int hidecard;
     int card1;
     int card2;
+    int action;
 
     public int getEmpty() {
         return empty;
@@ -60,6 +61,14 @@ public class Seat {
         this.card2 = card2;
     }
 
+    public int getAction() {
+        return action;
+    }
+
+    public void setAction(int action) {
+        this.action = action;
+    }
+
     @Override
     public String toString() {
         return "Seat{" +
@@ -69,6 +78,7 @@ public class Seat {
                 ", hidecard=" + hidecard +
                 ", card1=" + card1 +
                 ", card2=" + card2 +
+                ", action=" + action +
                 '}';
     }
 }

@@ -1,7 +1,7 @@
 package com.ruilonglai.texas_scan.newprocess;
 
 import android.text.TextUtils;
-import android.util.Log;
+import com.ruilonglai.texas_scan.util.MyLog;
 
 import com.google.gson.Gson;
 import com.ruilonglai.texas_scan.entity.Boards;
@@ -18,10 +18,12 @@ public class JsonTool {
     public static String getJsonName(String json,String key){
         String name = null;
         try {
+            MyLog.e(TAG,"解析名字字符串:"+key+" "+json);
             JSONObject jsonObject = new JSONObject(json);
             name = jsonObject.getString(key);
+            MyLog.e(TAG,"解析名字:"+key+" "+name);
         } catch (JSONException e) {
-            Log.e(TAG,"解析名字出错");
+            MyLog.e(TAG,"解析名字出错");
         }
         return name;
     }
@@ -32,9 +34,9 @@ public class JsonTool {
             try {
                 JSONObject jsonObject = new JSONObject(json);
                 anInt = jsonObject.getInt(key);
-                Log.e(TAG,key+"-->"+anInt);
+                MyLog.e(TAG,key+"-->"+anInt);
             } catch (JSONException e) {
-                Log.e(TAG,key+"解析出错");
+                MyLog.e(TAG,key+"解析出错");
             }
         }
         return anInt;
@@ -45,7 +47,7 @@ public class JsonTool {
         if(TextUtils.isEmpty(json))
             return null;
         Boards boards = gson.fromJson(json, Boards.class);
-        Log.e(TAG,json);
+        MyLog.e(TAG,json);
         return boards;
     }
 }

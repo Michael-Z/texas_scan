@@ -8,10 +8,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.ruilonglai.texas_scan.config.SystemParams;
+import com.ruilonglai.texas_scan.util.MyLog;
 
 import java.io.File;
 
@@ -59,7 +59,7 @@ public class DownloadApk {
                 //下载失败,重新下载
                 start(context, url, title,appName);
             }else {
-                Log.d(context.getPackageName(), "apk is already downloading");
+                MyLog.d(context.getPackageName(), "apk is already downloading");
             }
         } else {
             //不存在downloadId，没有下载过APK
@@ -168,7 +168,7 @@ public class DownloadApk {
                 //删除之前先判断用户是否已经安装了，安装了才删除。
                 if(!compare(getApkInfo(context,filePath),context)) {
                     downloadFile.delete();
-                    Log.e("----", "已删除");
+                    MyLog.e("----", "已删除");
                 }
             }
         }

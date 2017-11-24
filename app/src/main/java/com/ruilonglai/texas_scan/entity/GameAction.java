@@ -1,5 +1,7 @@
 package com.ruilonglai.texas_scan.entity;
 
+import com.ruilonglai.texas_scan.util.Constant;
+
 /**
  * Created by Administrator on 2017/5/27.
  */
@@ -12,6 +14,7 @@ public class GameAction {
     int	 bet;	//下注大小
     int addMoney = -1;
     int  action = -1;     //动作类型,0-check,1-call,2-bet,3-fold,4-allin
+    boolean isallin = false;
 
     public String getUserName() {
         return userName;
@@ -69,6 +72,14 @@ public class GameAction {
         this.addMoney = addMoney;
     }
 
+    public boolean getIsallin() {
+        return isallin;
+    }
+
+    public void setIsallin(boolean isallin) {
+        this.isallin = isallin;
+    }
+
     @Override
     public String toString() {
         return "GameAction{" +
@@ -79,6 +90,17 @@ public class GameAction {
                 ", bet=" + bet +
                 ", addMoney=" + addMoney +
                 ", action=" + action +
+                ", isallin=" + isallin +
                 '}';
+    }
+
+    public String toString(int i) {
+        return "[" +
+                 userName + '\'' +
+                "]\n" + seatFlag + '\'' +
+                "]\n["+round+"一"+Constant.ROUND[round] +
+                "]\n[下注量=" + bet +
+                "]\n[改变的钱=" + addMoney +
+                ']';
     }
 }

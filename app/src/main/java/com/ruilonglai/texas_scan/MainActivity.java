@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.widget.ListView;
@@ -23,6 +22,9 @@ import com.google.gson.reflect.TypeToken;
 import com.ruilonglai.texas_scan.activity.LoginActivity;
 import com.ruilonglai.texas_scan.adapter.TabFragmentAdapter;
 import com.ruilonglai.texas_scan.entity.PlayerData;
+import com.ruilonglai.texas_scan.entity.PlayerData1;
+import com.ruilonglai.texas_scan.entity.PlayerData2;
+import com.ruilonglai.texas_scan.entity.PlayerData3;
 import com.ruilonglai.texas_scan.entity.QueryUserName;
 import com.ruilonglai.texas_scan.entity.ReqData;
 import com.ruilonglai.texas_scan.entity.Result;
@@ -40,12 +42,12 @@ import com.ruilonglai.texas_scan.util.AssetsCopyUtil;
 import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.GsonUtil;
 import com.ruilonglai.texas_scan.util.HttpUtil;
+import com.ruilonglai.texas_scan.util.MyLog;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 import com.ruilonglai.texas_scan.util.WindowTool;
 import com.ruilonglai.texas_scan.view.TabContainerView;
 
 import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.Connector;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -132,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     public String password = "";
 
+    public String count = "";
+
     private boolean haveOpenWindow;
 
     private Handler handler = new Handler() {
@@ -176,9 +180,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 case Constant.SOCKET_KNOW_NAME:
                     String json = (String) msg.obj;
                     SparseArray array = GsonUtil.parseJsonWithGson(json, SparseArray.class);
+                    names.clear();
                     for (int i = 0; i < array.size(); i++) {
                         int seatIdx = array.keyAt(i);
-                        names.put(seatIdx,(String)array.get(seatIdx));
+                        Object name = array.get(seatIdx);
+                        if(name!=null)
+                        names.put(seatIdx, name.toString());
                     }
                     wt.createNinePointWindow(winIndex, seatCount, names,isWatch);
                     break;
@@ -202,9 +209,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         String[] msgs = bundle.getStringArray("user");
         phone = msgs[0];
         password = msgs[1];
+        count = msgs[2];
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Connector.getDatabase();//创建数据库
         initViews();
         SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
         boolean isUpdateDB = share.getBoolean("isUpdateDB", false);
@@ -218,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mainServer.setCallBack(new MainServer.CallBack() {
             @Override
             public void recMsg(String json) {
-                Log.e("response",""+json);
+                MyLog.e("response",""+json);
                 Gson gson = new Gson();
                 Package pkg = gson.fromJson(json, Package.class);
                 Message msg  = new Message();
@@ -233,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                         handler.sendMessage(msg);
                         break;
                     case Constant.SOCKET_ONE_HAND_LOG://一手详情，异步处理
+                        wt.handCount++;
                         new ActionsTool().disposeAction(pkg.getContent(),null,phone);
                         msg.arg1 = Constant.SOCKET_ONE_HAND_LOG;
                         handler.sendMessage(msg);
@@ -269,55 +277,19 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 }
             }
         });
-        for (int i = 0; i < Constant.APPNAMES.length; i++) {
-            ReqData data = new ReqData();
-            QueryUserName queryUserName = new QueryUserName();
-            queryUserName.setPlattype(i);
-            String param = new Gson().toJson(queryUserName);
-            data.setParam(param);
-            data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
-            data.setReqid(getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
-            HttpUtil.sendPostRequestData("queryusernames", new Gson().toJson(data), new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e("WindowTool", "response:(error)" + e.toString());
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String json = response.body().string();
-                    Log.e("MineFragment", "response:" + json);
-                    try {
-                        Result result = GsonUtil.parseJsonWithGson(json, Result.class);
-                        Map<String, String> map = result.getRets();
-                        String players = map.get("listnames");
-                        List<String> names = new ArrayList<String>();
-                        Type listType = new TypeToken<List<String>>() {
-                        }.getType();
-                        names = new Gson().fromJson(players, listType);
-                        if (names != null) {
-                            for (int j = 0; j < names.size(); j++) {
-                                UserName userName = new UserName();
-                                List<UserName> userNames = DataSupport.where("name=?", names.get(j)).find(UserName.class);
-                                if(userNames.size()==0){
-                                    userName.name = names.get(j);
-                                    userName.saveIfNotExist("name=?",names.get(j));
-                                }
-                            }
-                        }
-                    } catch (JsonSyntaxException e) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-//                                Toast.makeText(MainActivity.this,"更新数据异常",Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                }
-            });
-        }
-
-
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DataSupport.deleteAll(PlayerData.class);
+                DataSupport.deleteAll(PlayerData1.class);
+                DataSupport.deleteAll(PlayerData2.class);
+                DataSupport.deleteAll(PlayerData3.class);
+                updateNames(0);
+                updateNames(1);
+                updateNames(2);
+                updateNames(3);
+            }
+        }).start();
 //        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 //                .detectDiskReads().detectDiskWrites().detectNetwork()
 //                .penaltyLog().build());
@@ -343,6 +315,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mTabLayout.setViewPager(mPager);
         //设置第一个显示的界面(碎片)
         mPager.setCurrentItem(getIntent().getIntExtra("tab",2));
+        initSelfData();
+        wt = WindowTool.getInstance();
+        wt.init(MainActivity.this,winIndex,phone);
+        fragmentManager = getSupportFragmentManager();
+    }
+    public void initSelfData(){
         for (int i = 0; i < 9; i++) {
             PlayerData player = new PlayerData();
             player.setSeatFlag(Constant.seatFlags[i]);
@@ -353,10 +331,88 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 player.save();
             }
         }
+        for (int i = 0; i < 9; i++) {
+            PlayerData1 player = new PlayerData1();
+            player.setSeatFlag(Constant.seatFlags[i]);
+            player.setName("self");
+            List<PlayerData1> self = where("name=? and seatFlag=?", "self", Constant.seatFlags[i]).find(PlayerData1.class);
+            if (self.size() == 0) {//不存在则创建一个
+                player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                player.save();
+            }
+        }
+        for (int i = 0; i < 9; i++) {
+            PlayerData2 player = new PlayerData2();
+            player.setSeatFlag(Constant.seatFlags[i]);
+            player.setName("self");
+            List<PlayerData2> self = where("name=? and seatFlag=?", "self", Constant.seatFlags[i]).find(PlayerData2.class);
+            if (self.size() == 0) {//不存在则创建一个
+                player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                player.save();
+            }
+        }
+        for (int i = 0; i < 9; i++) {
+            PlayerData3 player = new PlayerData3();
+            player.setSeatFlag(Constant.seatFlags[i]);
+            player.setName("self");
+            List<PlayerData3> self = where("name=? and seatFlag=?", "self", Constant.seatFlags[i]).find(PlayerData3.class);
+            if (self.size() == 0) {//不存在则创建一个
+                player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                player.save();
+            }
+        }
+    }
+    /*更新名字*/
+    public void updateNames(final int platType){
+        ReqData data = new ReqData();
+        QueryUserName queryUserName = new QueryUserName();
+        queryUserName.setPlattype(platType);
+        String param = new Gson().toJson(queryUserName);
+        data.setParam(param);
+        data.setReqno(TimeUtil.getCurrentDateToMinutes(new Date()) + ActionsTool.disposeNumber());
+        data.setReqid(getSharedPreferences(LoginActivity.PREF_FILE, Context.MODE_PRIVATE).getString("name", ""));
+        HttpUtil.sendPostRequestData("queryusernames", new Gson().toJson(data), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                MyLog.e("WindowTool", "response:(error)" + e.toString());
+            }
 
-        wt = WindowTool.getInstance();
-        wt.init(MainActivity.this,winIndex,phone);
-        fragmentManager = getSupportFragmentManager();
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                MyLog.e("MineFragment", "response:" + json);
+                try {
+                    Result result = GsonUtil.parseJsonWithGson(json, Result.class);
+                    Map<String, String> map = result.getRets();
+                    String players = map.get("listnames");
+                    List<String> names = new ArrayList<String>();
+                    Type listType = new TypeToken<List<String>>() {
+                    }.getType();
+                    names = new Gson().fromJson(players, listType);
+                    if (names != null) {
+                        DataSupport.deleteAll(UserName.class,"platType=?",platType+"");
+                        for (int j = 0; j < names.size(); j++) {
+                            UserName userName = new UserName();
+                            List<UserName> userNames = DataSupport.where("name=? and platType=?", names.get(j),platType+"").find(UserName.class);
+                            if(userNames.size()==0){
+                                userName.name = names.get(j);
+                                userName.plattype = platType;
+                                userName.saveIfNotExist("name=? and platType=?", names.get(j),platType+"");
+                            }
+                        }
+                    }else{
+                        DataSupport.deleteAll(UserName.class,"platType=?",platType+"");
+                    }
+                } catch (JsonSyntaxException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                                Toast.makeText(MainActivity.this,"更新数据异常",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
     }
     /*设置解析模板*/
     public void setTemplate(int type){
@@ -385,7 +441,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             fragments[index].onHiddenChanged(index != position);
         }
         if(position==0){
-            messageFragment.notifyDataSetChaged();
+            messageFragment.notifyDataSetChaged(true);
+        }else if(position==1){
+            mineFragment.querySelfData();
+        }else if(position==3){
+            pokerDetialsFragment.searchPokerInServer(TimeUtil.getCurrentDateToDay(new Date()),null,0);
         }
         fragIdx = position;
     }
@@ -398,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 0 && resultCode == 1){
             String result = data.getStringExtra("result");
-            Log.e(TAG,"设置页面response:"+result);
+            MyLog.e(TAG,"设置页面response:"+result);
             if(wt!=null)
             wt.clearPercents();
         }
@@ -411,10 +471,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         haveOpenWindow = false;
         if(fragIdx==0){
             /*刷新玩家列表*/
-            messageFragment.notifyDataSetChaged();
+            messageFragment.notifyDataSetChaged(true);
         }else if(fragIdx == 1){
             /*刷新个人列表*/
-            mineFragment.getSelfSeatsData();
+            mineFragment.querySelfData();
         }
     }
     @Override

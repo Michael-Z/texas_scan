@@ -2,10 +2,12 @@ package com.ruilonglai.texas_scan.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -22,6 +24,7 @@ import com.ruilonglai.texas_scan.R;
 import com.ruilonglai.texas_scan.entity.JsonBean;
 import com.ruilonglai.texas_scan.entity.PokerUser;
 import com.ruilonglai.texas_scan.util.HttpUtil;
+import com.ruilonglai.texas_scan.util.MyLog;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 
 import java.io.IOException;
@@ -87,8 +90,8 @@ public class LoginActivity extends AppCompatActivity {
         cbremember=(CheckBox)findViewById(R.id.rember);
         btjihuo=(Button)findViewById(R.id.btjihuo);
         // 获取手机IMEI
-//        TelephonyManager TelephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-//        szImei = TelephonyMgr.getDeviceId();
+        TelephonyManager TelephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        szImei = TelephonyMgr.getSubscriberId();
     }
     /* 注册按钮 */
     public void Register() {
@@ -97,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setClass(LoginActivity.this, RegActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,1);
             }
         });
     }
@@ -141,17 +144,26 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        int version = 0;
+                        try {
+                            PackageManager manager = getPackageManager();
+                            PackageInfo packageInfo = manager.getPackageInfo(getPackageName(), 0);
+                            version = packageInfo.versionCode;
+                        } catch (PackageManager.NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
                         PokerUser pu = new PokerUser();
                         pu.id = phone;
                         pu.passwd = password;
                         pu.curmachine = szImei;
+                        pu.setVersion(version);
                         pu.setSendtime(TimeUtil.getCurrentDateToSecond(new Date()));
                         Gson gson = new Gson();
                         String jsonstr = gson.toJson(pu);
                         HttpUtil.sendPostRequestData("login", jsonstr, new okhttp3.Callback() {
                             @Override
                             public void onFailure(Call call, IOException e) {
-                                 Log.d("失败：", e.toString());
+                                 MyLog.d("失败：", e.toString());
                                 isMember = false;
                                 runOnUiThread(new Runnable() {
                                     public void run() {
@@ -162,15 +174,15 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onResponse(Call call, Response response) throws IOException {
                                 String responseDate = response.body().string();
-                                Log.d("返回的数据：", responseDate);
+                                MyLog.d("返回的数据：", responseDate);
                                 Gson gson = new Gson();
                                 Type type = new TypeToken<JsonBean>() {}.getType();
                                 final JsonBean jsonBean = gson.fromJson(responseDate, type);
-                                String resp = jsonBean.result;
+                                final String resp = jsonBean.result;
                                 if (resp.equals("true")) {
                                     runOnUiThread(new Runnable() {
                                         public void run() {
-                                            Toast.makeText(getApplicationContext(), "登录成功!", Toast.LENGTH_SHORT).show();
+//                                            Toast.makeText(getApplicationContext(), "登录成功!", Toast.LENGTH_SHORT).show();
                                             if (cbremember.isChecked()) { //判断是否有选择记住密码
                                                 SharedPreferences preferences = getSharedPreferences(PREF_FILE, MODE_PRIVATE);
                                                 preferences.edit().putBoolean("login", true)
@@ -188,9 +200,11 @@ public class LoginActivity extends AppCompatActivity {
                                                 finish();
                                             }
                                             savehistory(phone);
+                                            String msg = jsonBean.msg;
+                                            String count = msg.substring(msg.indexOf("[")+1, msg.indexOf("]"));
                                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                             Bundle bundle = new Bundle();
-                                            bundle.putStringArray("user",new String[]{phone,password});
+                                            bundle.putStringArray("user",new String[]{phone,password,count});
                                             intent.putExtra("user",bundle);
                                             startActivity(intent);
                                         }

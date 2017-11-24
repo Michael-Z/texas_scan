@@ -9,12 +9,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -34,6 +32,7 @@ import com.ruilonglai.texas_scan.util.ActionsTool;
 import com.ruilonglai.texas_scan.util.Constant;
 import com.ruilonglai.texas_scan.util.GsonUtil;
 import com.ruilonglai.texas_scan.util.HttpUtil;
+import com.ruilonglai.texas_scan.util.MyLog;
 import com.ruilonglai.texas_scan.util.TimeUtil;
 
 import org.litepal.crud.DataSupport;
@@ -50,8 +49,6 @@ import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-
-import static org.litepal.crud.DataSupport.where;
 
 /**
  * 　　　　　　　　┏┓　　　┏┓
@@ -81,7 +78,7 @@ public class MineFragment extends Fragment {
     private View view;
     private MyAdapter myAdapter;
     private List<PlayerData> seatList;
-
+    List<PlayerData> dataList = new ArrayList<>();
     private MainActivity activity = null;
     public int winIndex = 0;
     private ViewHolder vh = null;
@@ -124,7 +121,6 @@ public class MineFragment extends Fragment {
             @Override
             public void onClick(int position) {
                 winIndex = position;
-                Toast.makeText(activity, Constant.APPNAMES[position] + "数据", Toast.LENGTH_SHORT).show();
                 int count = appAdapter.getItemCount();
                 for (int i = 0; i < count; i++) {
                     View child = vh.appList.getChildAt(i);
@@ -147,17 +143,6 @@ public class MineFragment extends Fragment {
         });
         vh.appList.setAdapter(appAdapter);
         seatList = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            PlayerData player = new PlayerData();
-            player.setSeatFlag(seatFlags[i]);
-            player.setName("self");
-            List<PlayerData> self = DataSupport.where("name=? and seatFlag=?", "self", seatFlags[i]).find(PlayerData.class);
-            if (self.size() == 0) {//不存在则创建一个
-                player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
-                player.save();
-            }
-            seatList.add(player);
-        }
         querySelfData();
     }
     public void querySelfData(){
@@ -172,13 +157,13 @@ public class MineFragment extends Fragment {
         HttpUtil.sendPostRequestData("queryself", new Gson().toJson(data), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("WindowTool", "response:(error)" + e.toString());
+                MyLog.e("WindowTool", "response:(error)" + e.toString());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String json = response.body().string();
-                Log.e("MineFragment", "response:" + json);
+                MyLog.e("MineFragment", "response:" + json);
                 Result result = GsonUtil.parseJsonWithGson(json, Result.class);
                 Map<String, String> map = result.getRets();
                 String listself = map.get("listself");
@@ -191,20 +176,28 @@ public class MineFragment extends Fragment {
     }
 
     public void saveSelfData(String json){
+        seatList.clear();
         if(winIndex==0){//德扑圈
             List<PlayerData> playerDatas = new ArrayList<PlayerData>();
             Type listType = new TypeToken<List<PlayerData>>() {
             }.getType();
             playerDatas = new Gson().fromJson(json, listType);
             if (playerDatas != null) {
-                for (int i = 0; i < playerDatas.size(); i++) {
-                    PlayerData playerData = playerDatas.get(i);
-                    if (playerData != null) {
-                        List<PlayerData> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData.class);
-                        if (datas.size() > 0) {
-                            DataSupport.deleteAll(PlayerData.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
+                if(playerDatas.size()!=0){
+                    for (int i = 0; i < playerDatas.size(); i++) {
+                        PlayerData playerData = playerDatas.get(i);
+                        if (playerData != null) {
+                            seatList.add(playerData);
                         }
-                        playerData.save();
+                    }
+                }else{
+                    DataSupport.deleteAll(PlayerData.class,"name=?","self");
+                    for (int i = 0; i < 9; i++) {
+                        PlayerData player = new PlayerData();
+                        player.setSeatFlag(seatFlags[i]);
+                        player.setName("self");
+                        player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                        seatList.add(player);
                     }
                 }
             }
@@ -214,14 +207,19 @@ public class MineFragment extends Fragment {
             }.getType();
             playerDatas = new Gson().fromJson(json, listType);
             if (playerDatas != null) {
-                for (int i = 0; i < playerDatas.size(); i++) {
-                    PlayerData1 playerData = playerDatas.get(i);
-                    if (playerData != null) {
-                        List<PlayerData1> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData1.class);
-                        if (datas.size() > 0) {
-                            DataSupport.deleteAll(PlayerData1.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
-                        }
-                        playerData.save();
+                if(playerDatas.size()!=0){
+                    for (int i = 0; i < playerDatas.size(); i++) {
+                        PlayerData1 playerData = playerDatas.get(i);
+                        seatList.add(playerData);
+                    }
+                }else{
+                    DataSupport.deleteAll(PlayerData1.class,"name=?","self");
+                    for (int i = 0; i < 9; i++) {
+                        PlayerData1 player = new PlayerData1();
+                        player.setSeatFlag(seatFlags[i]);
+                        player.setName("self");
+                        player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                        seatList.add(player);
                     }
                 }
             }
@@ -231,14 +229,19 @@ public class MineFragment extends Fragment {
             }.getType();
             playerDatas = new Gson().fromJson(json, listType);
             if (playerDatas != null) {
-                for (int i = 0; i < playerDatas.size(); i++) {
-                    PlayerData2 playerData = playerDatas.get(i);
-                    if (playerData != null) {
-                        List<PlayerData2> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData2.class);
-                        if (datas.size() > 0) {
-                            DataSupport.deleteAll(PlayerData.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
-                        }
-                        playerData.save();
+                if(playerDatas.size()!=0){
+                    for (int i = 0; i < playerDatas.size(); i++) {
+                        PlayerData2 playerData = playerDatas.get(i);
+                        seatList.add(playerData);
+                    }
+                }else{
+                    DataSupport.deleteAll(PlayerData2.class,"name=?","self");
+                    for (int i = 0; i < 9; i++) {
+                        PlayerData2 player = new PlayerData2();
+                        player.setSeatFlag(seatFlags[i]);
+                        player.setName("self");
+                        player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                        seatList.add(player);
                     }
                 }
             }
@@ -248,14 +251,19 @@ public class MineFragment extends Fragment {
             }.getType();
             playerDatas = new Gson().fromJson(json, listType);
             if (playerDatas != null) {
-                for (int i = 0; i < playerDatas.size(); i++) {
-                    PlayerData3 playerData = playerDatas.get(i);
-                    if (playerData != null) {
-                        List<PlayerData3> datas = DataSupport.where("name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag()).find(PlayerData3.class);
-                        if (datas.size() > 0) {
-                            DataSupport.deleteAll(PlayerData3.class, "name=? and seatFlag=?", playerData.getName(), playerData.getSeatFlag());
-                        }
-                        playerData.save();
+                if(playerDatas.size()!=0){
+                    for (int i = 0; i < playerDatas.size(); i++) {
+                        PlayerData3 playerData = playerDatas.get(i);
+                        seatList.add(playerData);
+                    }
+                }else {
+                    DataSupport.deleteAll(PlayerData3.class,"name=?","self");
+                    for (int i = 0; i < 9; i++) {
+                        PlayerData3 player = new PlayerData3();
+                        player.setSeatFlag(seatFlags[i]);
+                        player.setName("self");
+                        player.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                        seatList.add(player);
                     }
                 }
             }
@@ -271,71 +279,58 @@ public class MineFragment extends Fragment {
         }
     };
     public void getSelfSeatsData() {//获取个人在每个位置的玩家数据
-        List<PlayerData> dataList = new ArrayList<>();
-        if(winIndex==0){
-            List<PlayerData> playerDatas = where("name=?", "self").find(PlayerData.class);
-            for (int i = 0; i < playerDatas.size(); i++) {
-                dataList.add(playerDatas.get(i));
-            }
-        }else if(winIndex==1){
-            List<PlayerData1> playerDatas = where("name=?", "self").find(PlayerData1.class);
-            for (int i = 0; i < playerDatas.size(); i++) {
-                dataList.add(playerDatas.get(i));
-            }
-        }else if(winIndex==2){
-            List<PlayerData2> playerDatas = where("name=?", "self").find(PlayerData2.class);
-            for (int i = 0; i < playerDatas.size(); i++) {
-                dataList.add(playerDatas.get(i));
-            }
-        }else if(winIndex==3){
-            List<PlayerData3> playerDatas = where("name=?", "self").find(PlayerData3.class);
-            for (int i = 0; i < playerDatas.size(); i++) {
-                dataList.add(playerDatas.get(i));
+        if(dataList.size()==0){
+            for (int i = 0; i < 9; i++) {
+                PlayerData playerData = new PlayerData();
+                playerData.setSeatFlag(seatFlags[i]);
+                playerData.setName("self");
+                playerData.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                dataList.add(i,playerData);
             }
         }
-        for (int i = 0; i < dataList.size(); i++) {
-            PlayerData playerData = dataList.get(i);
+        for (int i = 0; i < seatList.size(); i++) {
+            PlayerData playerData = seatList.get(i);
             switch (playerData.getSeatFlag()) {
                 case "BTN":
-                    seatList.set(0, playerData);
+                    dataList.set(0, playerData);
                     break;
                 case "SB":
-                    seatList.set(1, playerData);
+                    dataList.set(1, playerData);
                     break;
                 case "BB":
-                    seatList.set(2, playerData);
+                    dataList.set(2, playerData);
                     break;
                 case "HJ":
-                    seatList.set(3, playerData);
+                    dataList.set(3, playerData);
                     break;
                 case "CO":
-                    seatList.set(4, playerData);
+                    dataList.set(4, playerData);
                     break;
                 case "UTG":
-                    seatList.set(5, playerData);
+                    dataList.set(5, playerData);
                     break;
                 case "UTG+1":
-                    seatList.set(6, playerData);
+                    dataList.set(6, playerData);
                     break;
                 case "MP":
-                    seatList.set(7, playerData);
+                    dataList.set(7, playerData);
                     break;
                 case "MP+1":
-                    seatList.set(8, playerData);
+                    dataList.set(8, playerData);
                     break;
                 default:
                     break;
             }
         }
         if (myAdapter == null) {
-            myAdapter = new MyAdapter(activity, seatList);
+            myAdapter = new MyAdapter(activity, dataList);
             vh.selfDataRecyclerView.setAdapter(myAdapter);
         } else {
             myAdapter.notifyDataSetChanged();
         }
         PlayerData self = new PlayerData();
-        for (int i = 0; i < seatList.size(); i++) {
-            PlayerData playerData = seatList.get(i);
+        for (int i = 0; i < dataList.size(); i++) {
+            PlayerData playerData = dataList.get(i);
             self.setPlayCount(self.getPlayCount()+playerData.getPlayCount());
             self.setLoseCount(self.getLoseCount()+playerData.getLoseCount());
             self.setWinCount(self.getWinCount()+playerData.getWinCount());
