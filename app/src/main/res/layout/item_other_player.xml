@@ -7,101 +7,111 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="5px"
         android:gravity="center_vertical">
         <TextView
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="5px"
             android:id="@+id/playerName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="玩家昵称"
-            android:textSize="22sp"/>
+            android:textSize="24px"/>
         <TextView
             android:id="@+id/totalPlayAndBBCount"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="10px"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="24px"
             android:text="(-/-bb)"/>
     </LinearLayout>
     <LinearLayout
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="5px"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical">
         <TextView
             android:id="@+id/winLoseCount"
-            android:layout_width="0dp"
-            android:paddingLeft="5dp"
+            android:layout_width="0px"
+            android:paddingLeft="5px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="20px"
             android:text="W/L(-/-)"/>
         <TextView
             android:id="@+id/vpipPercent"
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="20px"
             android:text="VPIP(-%)"/>
         <TextView
             android:id="@+id/bet3Percent"
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="20px"
             android:text="3BET(-%)"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp">
+        android:layout_marginBottom="5px"
+        android:layout_marginTop="5px">
         <TextView
             android:id="@+id/pfrPercent"
-            android:layout_width="0dp"
-            android:paddingLeft="5dp"
+            android:layout_width="0px"
+            android:paddingLeft="5px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="20px"
             android:text="PFR(-%)"/>
 
         <TextView
             android:id="@+id/stlPercent"
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="20px"
             android:text="STL(-%)" />
 
         <TextView
             android:id="@+id/foldStlPercent"
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="20px"
             android:text="Fold STL(-%)"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp">
+        android:layout_marginBottom="5px"
+        android:layout_marginTop="5px">
         <TextView
             android:id="@+id/fold3BetPercent"
-            android:layout_width="0dp"
-            android:paddingLeft="5dp"
+            android:layout_width="0px"
+            android:paddingLeft="5px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="20px"
             android:text="Fold 3Bet(-%)"/>
 
         <TextView
             android:id="@+id/cBPercent"
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="20px"
             android:text="CB(-%)" />
 
         <TextView
             android:id="@+id/aFPercent"
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="20px"
             android:text="AF(-)"/>
     </LinearLayout>
 </LinearLayout>

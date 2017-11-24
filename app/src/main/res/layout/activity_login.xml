@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:padding="20px"
     android:background="@color/statusBarColor"
     android:fitsSystemWindows="true">
     <RelativeLayout
@@ -12,25 +12,25 @@
         android:layout_weight="1">
         <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200px"
+        android:layout_height="200px"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8px"
         android:adjustViewBounds="true"
         android:background="@drawable/icon_128" />
         <TextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/imageView2"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_marginTop="26dp"
+            android:layout_marginTop="20px"
             android:gravity="center"
             android:text="德扑数据大师"
-            android:textSize="24sp" />
+            android:textSize="30px" />
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -40,13 +40,14 @@
             android:id="@+id/etusername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20px"
+            android:layout_marginRight="20px"
+            android:layout_marginTop="20px"
             android:drawableLeft="@drawable/username"
-            android:drawablePadding="14dp"
+            android:drawablePadding="14px"
             android:maxLength="11"
             android:hint="手机号:"
+            android:textSize="24px"
             android:inputType="textPersonName"
             android:textColorHint="#918d8d"
           />
@@ -59,26 +60,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/password"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:drawablePadding="13dp"
+            android:layout_marginLeft="20px"
+            android:layout_marginRight="20px"
+            android:drawablePadding="13px"
             android:ems="10"
             android:maxLength="10"
             android:inputType="textPassword"
             android:hint="密码:"
+            android:textSize="24px"
             android:textColorHint="#918d8d"
             android:layout_alignTop="@+id/Imgeyes"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
         <CheckBox
             android:id="@+id/Imgeyes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:button="@drawable/eyestrue"
-            android:layout_marginRight="20dp"
+            android:layout_width="40px"
+            android:layout_height="20px"
+            android:background="@drawable/eyestrue"
+            android:button="@null"
+            android:layout_marginRight="30px"
             android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -90,21 +92,21 @@
             android:text="记住密码"
             android:textColor="#85c6e1"
             android:id="@+id/rember"
-            android:textSize="20sp"
+            android:textSize="28px"
             android:background="#00000000"
-            android:layout_marginLeft="25dp"
+            android:layout_marginLeft="25px"
             android:layout_centerVertical="true" />
         <Button
             android:id="@+id/btfindmima"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_height="45px"
             android:layout_gravity="end"
             android:background="#00000000"
-            android:layout_marginRight="25dp"
+            android:layout_marginRight="25px"
             android:text="找回密码?"
             android:gravity="center"
             android:textColor="#cc9966"
-            android:textSize="20sp"
+            android:textSize="28px"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
@@ -117,19 +119,18 @@
     <Button
         android:id="@+id/btlogin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="5dp"
+        android:layout_height="60px"
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px"
+        android:layout_marginTop="5px"
         android:background="@drawable/buttonstyle"
         android:text="登 录"
-        android:textSize="21sp" />
+        android:textSize="30px" />
 </LinearLayout>
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="20dp"
-    android:layout_marginTop="0dp"
+    android:layout_marginBottom="20px"
     android:layout_weight="1">
     <Button
         android:id="@+id/btzhuce"
@@ -139,14 +140,14 @@
         android:background="#00000000"
         android:text="快速注册"
         android:layout_gravity="center"
-        android:textSize="20dp"
+        android:textSize="28px"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="0px"
         android:layout_weight="1">
         <Button
             android:id="@+id/btjihuo"
@@ -156,7 +157,7 @@
             android:background="#00000000"
             android:text="激活软件"
             android:layout_gravity="center"
-            android:textSize="20dp"
+            android:textSize="24px"
             android:textColor="#cc9966"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />

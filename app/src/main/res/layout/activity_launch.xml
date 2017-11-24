@@ -3,18 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/poker2"
+    android:background="@mipmap/qidongye"
     android:fitsSystemWindows="true">
 
     <TextView
         android:id="@+id/versionName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="55dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginBottom="100px"
         android:textColor="@android:color/white"
-        android:text="版本号"
-        android:textSize="14sp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+        android:layout_centerInParent="true"
+        android:text="版本号v2.0.3"
+        android:textSize="24px"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

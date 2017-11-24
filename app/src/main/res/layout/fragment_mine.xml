@@ -8,169 +8,184 @@
     <include layout="@layout/activity_head_title"/>
       <LinearLayout
           android:layout_width="match_parent"
-          android:layout_height="0dp"
+          android:layout_height="0px"
           android:layout_weight="1.2"
           android:orientation="vertical"
           android:background="@color/title_bg_color">
           <TextView
               android:layout_width="match_parent"
-              android:layout_height="1dp"
+              android:layout_height="1px"
               android:background="@color/black_overlay"
-              android:layout_marginLeft="10dp"
-              android:layout_marginRight="10dp"/>
+              android:layout_marginLeft="10px"
+              android:layout_marginRight="10px"/>
 
           <LinearLayout
               android:layout_width="match_parent"
-              android:layout_height="0dp"
+              android:layout_height="0px"
               android:layout_weight="1">
               <TextView
                   android:id="@+id/totalPlayCount"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:gravity="center"
                   android:layout_height="match_parent"
                   android:text="总手数:0"
+                  android:textSize="24px"
                   android:textColor="@color/white"
                   android:layout_weight="1"/>
 
               <TextView
                   android:id="@+id/winLoseCount"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:layout_weight="1"
                   android:textColor="@color/white"
                   android:text="胜负比例:0/0"
+                  android:textSize="24px"
                   android:gravity="center" />
 
               <TextView
                   android:id="@+id/totalBBCount"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:gravity="center"
                   android:textColor="@color/white"
                   android:text="总战绩:0.0bb"
+                  android:textSize="24px"
                   android:layout_weight="1"/>
           </LinearLayout>
           <LinearLayout
               android:layout_width="match_parent"
-              android:layout_height="0dp"
+              android:layout_height="0px"
               android:layout_weight="1">
               <TextView
                   android:id="@+id/self_vpipPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:gravity="center"
                   android:layout_height="match_parent"
                   android:textColor="@color/white"
                   android:text="VPIP(-%)"
+                  android:textSize="24px"
                   android:layout_weight="1"/>
 
               <TextView
                   android:id="@+id/self_pfrPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:gravity="center"
                   android:textColor="@color/white"
                   android:text="PFR(-%)"
+                  android:textSize="24px"
                   android:layout_weight="1"/>
               <TextView
                   android:id="@+id/self_bet3Percent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:layout_weight="1"
                   android:text="3Bet(-%)"
+                  android:textSize="24px"
                   android:textColor="@color/white"
                   android:gravity="center" />
           </LinearLayout>
           <LinearLayout
               android:layout_width="match_parent"
-              android:layout_height="0dp"
+              android:layout_height="0px"
               android:layout_weight="1">
               <TextView
                   android:id="@+id/totalStlPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:gravity="center"
                   android:layout_height="match_parent"
                   android:text="STL(-%)"
+                  android:textSize="24px"
                   android:textColor="@color/white"
                   android:layout_weight="1"/>
 
               <TextView
                   android:id="@+id/totalFStlPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:layout_weight="1"
                   android:text="FSTL(-%)"
+                  android:textSize="24px"
                   android:textColor="@color/white"
                   android:gravity="center" />
 
               <TextView
                   android:id="@+id/totalF3BetPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:gravity="center"
                   android:text="F3Bet(-%)"
+                  android:textSize="24px"
                   android:textColor="@color/white"
                   android:layout_weight="1"/>
           </LinearLayout>
            <LinearLayout
               android:layout_width="match_parent"
-              android:layout_height="0dp"
+              android:layout_height="0px"
               android:layout_weight="1">
               <TextView
                   android:id="@+id/totalCBPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:gravity="center"
                   android:layout_height="match_parent"
                   android:textColor="@color/white"
                   android:text="CB(-%)"
+                  android:textSize="24px"
                   android:layout_weight="1"/>
 
               <TextView
                   android:id="@+id/totalFCBPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:layout_weight="1"
                   android:textColor="@color/white"
                   android:text="FCB(-%)"
+                  android:textSize="24px"
                   android:gravity="center" />
 
               <TextView
                   android:id="@+id/totalAFPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:gravity="center"
                   android:textColor="@color/white"
                   android:text="AF(-%)"
+                  android:textSize="24px"
                   android:layout_weight="1"/>
           </LinearLayout>
           <LinearLayout
               android:layout_width="match_parent"
-              android:layout_height="0dp"
+              android:layout_height="0px"
               android:layout_weight="1">
               <TextView
                   android:id="@+id/totalFFlopPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:gravity="center"
                   android:layout_height="match_parent"
                   android:textColor="@color/white"
                   android:text="FFlop(-%)"
+                  android:textSize="24px"
                   android:layout_weight="1"/>
 
               <TextView
                   android:id="@+id/totalFTurnPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:layout_weight="1"
                   android:textColor="@color/white"
                   android:text="FTurn(-%)"
+                  android:textSize="24px"
                   android:gravity="center" />
 
               <TextView
                   android:id="@+id/totalFRiverPercent"
-                  android:layout_width="0dp"
+                  android:layout_width="0px"
                   android:layout_height="match_parent"
                   android:gravity="center"
                   android:textColor="@color/white"
                   android:text="FRiver(-%)"
+                  android:textSize="24px"
                   android:layout_weight="1"/>
           </LinearLayout>
 
@@ -178,55 +193,55 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/appList"
         android:layout_width="match_parent"
-        android:paddingLeft="20dp"
         android:background="@color/white"
-        android:layout_height="50dp"/>
+        android:paddingLeft="40px"
+        android:layout_height="60px"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40px"
         android:background="#DBDBDB">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:text="位置"
             android:textColor="#414040"
-            android:textSize="18sp" />
+            android:textSize="24px" />
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:text="牌的手数"
             android:textColor="#414040"
-            android:textSize="18sp" />
+            android:textSize="24px" />
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:text="胜率"
             android:textColor="#414040"
-            android:textSize="18sp" />
+            android:textSize="24px" />
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:text="战绩"
             android:textColor="#414040"
-            android:textSize="18sp" />
+            android:textSize="24px" />
     </LinearLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/selfDataRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="0px"
         android:layout_weight="3.3"
         android:background="@color/huiBai"
         android:clickable="false"/>

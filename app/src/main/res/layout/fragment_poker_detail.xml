@@ -8,111 +8,125 @@
     android:fitsSystemWindows="true">
     <include layout="@layout/activity_head_title"></include>
     <LinearLayout
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="32px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center">
         <Button
             android:id="@+id/btn_last_day"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginRight="30dp"
-            android:background="@mipmap/last"/>
+            android:layout_width="21px"
+            android:layout_height="28px"
+            android:layout_marginRight="30px"
+            android:background="@mipmap/left_arrow"/>
         <Button
             android:id="@+id/btn_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
+            android:textSize="24px"
             android:text="2017/6/6"/>
         <Button
             android:id="@+id/btn_next_day"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginLeft="30dp"
-            android:background="@mipmap/next"/>
+            android:layout_width="21px"
+            android:layout_height="28px"
+            android:layout_marginLeft="30px"
+            android:background="@mipmap/right_arrow"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp">
+        android:layout_marginTop="10px"
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:gravity="center_vertical|right"
+            android:textSize="24px"
             android:text="输最多"/>
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="5"
             android:gravity="center">
             <TextView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32px"
+                android:layout_height="32px"
                 android:background="@color/win_4"/>
             <TextView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32px"
+                android:layout_height="32px"
                 android:background="@color/win_3"/>
             <TextView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32px"
+                android:layout_height="32px"
                 android:background="@color/win_2"/>
             <TextView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32px"
+                android:layout_height="32px"
                 android:background="@color/win_1"/>
             <TextView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32px"
+                android:layout_height="32px"
                 android:background="@color/los_1"/>
             <TextView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32px"
+                android:layout_height="32px"
                 android:background="@color/los_2"/>
             <TextView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32px"
+                android:layout_height="32px"
                 android:background="@color/los_3"/>
             <TextView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32px"
+                android:layout_height="32px"
                 android:background="@color/los_4"/>
         </LinearLayout>
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:gravity="center_vertical|left"
+            android:textSize="24px"
             android:text="赢最多"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="32px"
         android:gravity="center"
         android:id="@+id/linearLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="平台"/>
+        <org.angmarch.views.NiceSpinner
+            android:id="@+id/plattypes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         <TextView
             android:id="@+id/note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textSize="24px"
+            android:layout_marginLeft="20px"
             android:text="选择时段"/>
         <org.angmarch.views.NiceSpinner
             android:id="@+id/niceSpinner"
-            android:layout_width="110dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <GridView
         android:id="@+id/cardList"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="1dp"
-        android:layout_width="wrap_content"
+        android:layout_marginTop="10px"
+        android:layout_marginLeft="1px"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:scrollbars="none"
-        android:horizontalSpacing="0dp"
-        android:verticalSpacing="2dp"
+        android:horizontalSpacing="0px"
+        android:verticalSpacing="4px"
         android:numColumns="13"
         tools:ignore="RtlHardcoded" />
 </LinearLayout>

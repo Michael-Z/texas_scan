@@ -6,34 +6,34 @@
     <include android:id="@+id/main_title" layout="@layout/activity_head_title" />
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="0px"
         android:orientation="vertical"
         android:gravity="center"
         android:background="@color/title_bg_color"
-        android:layout_weight=".618">
+        android:layout_weight="0.618">
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="1px"
             android:background="@color/black_overlay"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginLeft="10px"
+            android:layout_marginRight="10px"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="0px"
             android:layout_weight="1.6"
             android:gravity="center">
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="10px"
                 android:orientation="vertical">
                 <ImageView
                     android:id="@+id/head"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_margin="10dp"
+                    android:layout_width="80px"
+                    android:layout_height="80px"
+                    android:layout_margin="10px"
                     android:layout_centerHorizontal="true"
                     android:background="@drawable/icon_128"/>
                 <TextView
@@ -43,45 +43,26 @@
                     android:layout_centerHorizontal="true"
                     android:layout_below="@+id/head"
                     android:text="135555555555"
-                    android:textSize="20sp"
-                    android:padding="5dp"/>
+                    android:textSize="32px"
+                    android:padding="5px"/>
             </LinearLayout>
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="0px"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="30dp">
-                    <TextView
-                        android:id="@+id/textView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical|right"
-                        android:text="已登录:"
-                        android:textColor="@color/white" />
-                    <TextView
-                        android:id="@+id/have_login"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="6"
-                        android:textColor="@color/white" />
-                </LinearLayout>
                <LinearLayout
                    android:layout_width="match_parent"
-                   android:layout_height="0dp"
+                   android:layout_height="0px"
                    android:layout_weight="0.6"
-                   android:layout_marginLeft="30dp">
+                   android:layout_marginLeft="30px">
                    <TextView
                        android:id="@+id/textView2"
                        android:layout_width="wrap_content"
                        android:layout_height="match_parent"
                        android:gravity="center"
                        android:text="还可登陆:"
+                       android:textSize="22px"
                        android:textColor="@color/white" />
                    <TextView
                        android:id="@+id/remain_login"
@@ -89,72 +70,51 @@
                        android:layout_height="match_parent"
                        android:gravity="center"
                        android:text="7"
+                       android:textSize="22px"
                        android:textColor="@color/white" />
                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="30dp">
-
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-
-                        android:gravity="center"
-                        android:text="序列号数量:"
-                        android:textColor="@color/white" />
-
-                    <TextView
-                        android:id="@+id/serical_num"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:text="8"
-                        android:textColor="@color/white" />
-                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginRight="10dp"
+            android:layout_height="0px"
+            android:layout_marginRight="10px"
             android:layout_weight="1"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/best_hand"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="0px"
                 android:gravity="center_horizontal|bottom"
                 android:textColor="@color/white"
+                android:textSize="22px"
                 android:text="最佳手牌:无  盈利：0.0bb  排名:0"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
 
             <TextView
                 android:id="@+id/bad_hand"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="0px"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:textSize="22px"
                 android:text="最差手牌:无  盈利：0.0bb  排名:0"
                 android:textColor="@color/white" />
         </LinearLayout>
-
     </LinearLayout>
 
     <GridView
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20px"
         android:id="@+id/performList"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="0px"
         android:scrollbars="none"
         android:gravity="center"
-        android:horizontalSpacing="10dp"
-        android:verticalSpacing="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:horizontalSpacing="20px"
+        android:verticalSpacing="20px"
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px"
         android:numColumns="2"
         android:layout_weight="1"/>
 </LinearLayout>

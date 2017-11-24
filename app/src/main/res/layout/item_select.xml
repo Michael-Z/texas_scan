@@ -2,46 +2,47 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp"
+
     android:id="@+id/layout"
     android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10px"
         android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="0px"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
             android:layout_weight="1"
+            android:layout_marginRight="20px"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/percentType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
+                android:textSize="24px"
                 android:text="概率类型"/>
             <TextView
                 android:id="@+id/percentContent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
+                android:textSize="20px"
                 android:text="概率介绍..."/>
         </LinearLayout>
         <CheckBox
             android:id="@+id/isSelect"
-            android:layout_marginLeft="10dp"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60px"
+            android:layout_height="60px"
             android:clickable="false"
+            android:layout_marginRight="20px"
             android:gravity="center"/>
     </LinearLayout>
 
 <TextView
     android:layout_width="match_parent"
-    android:layout_height="2dp"
-    android:layout_marginLeft="5dp"
-    android:layout_marginRight="5dp"
+    android:layout_height="2px"
+    android:layout_marginLeft="5px"
+    android:layout_marginRight="5px"
     android:background="#c9c5c5"/>
 </LinearLayout>

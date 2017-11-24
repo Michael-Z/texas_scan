@@ -2,157 +2,332 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="300px"
     android:background="@drawable/buttonstyle2">
     <Button
-        android:id="@+id/close"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
+        android:id="@+id/sure"
+        android:layout_width="32px"
+        android:layout_height="32px"
+        android:layout_marginTop="10px"
+        android:layout_marginRight="20px"
         android:background="@drawable/icon_ok"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
+    <Button
+        android:id="@+id/close"
+        android:layout_width="32px"
+        android:layout_height="32px"
+        android:layout_toLeftOf="@id/sure"
+        android:background="@drawable/close32"
+        android:layout_marginTop="10px"
+        android:layout_marginRight="20px"/>
     <TextView
         android:id="@+id/seatIdx"
         android:layout_width="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="20px"
         android:gravity="center_vertical"
-        android:layout_height="40dp"
-        android:textSize="16sp"
+        android:layout_height="50px"
+        android:textSize="20px"
         android:textColor="@color/colorAccent"
         android:textColorHint="#c9c9c9"/>
     <TextView
         android:id="@+id/level"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
+        android:layout_width="32px"
+        android:layout_height="32px"
+        android:layout_marginTop="10px"
+        android:layout_toLeftOf="@id/close"
+        android:layout_marginRight="20px"
         android:background="@color/numbers_text_color"/>
     <TextView
         android:id="@+id/line"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1px"
         android:layout_below="@id/seatIdx"
         android:textColor="#000000"/>
     <LinearLayout
         android:id="@+id/entry"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="260px"
         android:orientation="horizontal"
         android:layout_below="@id/line">
         <LinearLayout
             android:id="@+id/select_colors"
             android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:visibility="gone"
+            android:orientation="vertical"
+            android:visibility="visible"
             android:gravity="center"
-            android:layout_height="50dp">
-            <TextView
-                android:id="@+id/color1"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@color/color1"/>
-         <TextView
-                android:id="@+id/color2"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-             android:layout_marginLeft="10dp"
-             android:layout_marginRight="10dp"
-                android:background="@color/color2"/>
-         <TextView
-                android:id="@+id/color3"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-             android:layout_marginLeft="10dp"
-             android:layout_marginRight="10dp"
-                android:background="@color/color3"/>
-         <TextView
-                android:id="@+id/color4"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-             android:layout_marginLeft="10dp"
-             android:layout_marginRight="10dp"
-                android:background="@color/color4"/>
-         <TextView
-                android:id="@+id/color5"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                 android:layout_marginLeft="10dp"
-                 android:layout_marginRight="10dp"
-                android:background="@color/color5"/>
-         <TextView
-                android:id="@+id/color6"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-             android:layout_marginLeft="10dp"
-             android:layout_marginRight="10dp"
-                android:background="@color/color6"/>
-         <TextView
-                android:id="@+id/color7"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-             android:layout_marginLeft="10dp"
-             android:layout_marginRight="10dp"
-                android:background="@color/color7"/>
-         <TextView
-                android:id="@+id/color8"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-             android:layout_marginLeft="10dp"
-             android:layout_marginRight="10dp"
-                android:background="@color/color8"/>
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:visibility="visible"
+                android:gravity="center"
+                android:layout_height="80px">
+
+                <TextView
+                    android:id="@+id/color0"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:background="@color/numbers_text_color"/>
+                <TextView
+                    android:id="@+id/color1"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:background="@color/color1"/>
+                <TextView
+                    android:id="@+id/color2"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:background="@color/color2"/>
+                <TextView
+                    android:id="@+id/color3"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:background="@color/color3"/>
+                <TextView
+                    android:id="@+id/color4"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:background="@color/color4"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:visibility="visible"
+                android:gravity="center"
+                android:layout_height="80px">
+                <TextView
+                    android:id="@+id/color5"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:background="@color/color5"/>
+                <TextView
+                    android:id="@+id/color6"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:background="@color/color6"/>
+                <TextView
+                    android:id="@+id/color7"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:background="@color/color7"/>
+                <TextView
+                    android:id="@+id/color8"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:background="@color/color8"/>
+                <TextView
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="10px"
+                    android:visibility="invisible"
+                    android:background="@color/color8"/>
+            </LinearLayout>
         </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/search_name_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/line">
         <EditText
             android:id="@+id/name"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="60px"
             android:layout_weight="1"
             android:textColor="@color/colorAccent"
             android:hint="请输入新的名字"
             android:maxLines="1"
             android:maxLength="100"
-            android:textSize="14sp"
+            android:textSize="16px"
             android:textColorHint="#c9c9c9"/>
-        <EditText
-            android:id="@+id/remarkContent"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:textColor="@color/colorAccent"
-            android:hint="请输入您的笔记"
-            android:maxLines="1"
-            android:maxLength="100"
-            android:textSize="14sp"
-            android:visibility="gone"
-            android:textColorHint="#c9c9c9"/>
+        <ListView
+            android:id="@+id/nameList"
+            android:layout_width="match_parent"
+            android:layout_marginRight="10px"
+            android:layout_marginLeft="10px"
+            android:layout_marginBottom="10px"
+            android:background="#FFDBDBDB"
+            android:layout_height="200px" />
     </LinearLayout>
+   <LinearLayout
+       android:id="@+id/remark_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+       android:layout_below="@+id/line"
+       android:visibility="visible"
+       android:layout_alignParentStart="true">
+       <EditText
+           android:id="@+id/remarkContent"
+           android:layout_width="match_parent"
+           android:layout_height="60px"
+           android:layout_weight="1"
+           android:textColor="@color/colorAccent"
+           android:hint="请输入您的笔记"
+           android:maxLines="1"
+           android:maxLength="100"
+           android:textSize="16px"
+           android:visibility="visible"
+           android:textColorHint="#c9c9c9"/>
 
-    <ListView
-        android:id="@+id/nameList"
-        android:layout_below="@+id/entry"
-        android:layout_width="match_parent"
-        android:minHeight="0dp"
-        android:layout_height="150dp" />
-    <TextView
-        android:id="@+id/remark"
-        android:padding="5dp"
-        android:layout_below="@id/entry"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:visibility="gone"/>
+       <TextView
+           android:id="@+id/remark"
+           android:layout_width="match_parent"
+           android:layout_height="200px"
+           android:padding="10px"
+           android:visibility="visible" />
+   </LinearLayout>
+   <LinearLayout
+       android:id="@+id/turn_cards"
+       android:layout_width="match_parent"
+       android:layout_height="200px"
+       android:layout_marginTop="60px"
+       android:gravity="center"
+       android:orientation="vertical"
+       android:layout_below="@id/line">
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="0dp"
+           android:gravity="center"
+           android:layout_weight="2">
+           <ImageView
+               android:id="@+id/card1"
+               android:layout_marginLeft="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card2"
+               android:layout_marginRight="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+            <ImageView
+               android:id="@+id/card3"
+               android:layout_marginLeft="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+                android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card4"
+               android:layout_marginRight="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+            <ImageView
+               android:id="@+id/card5"
+               android:layout_marginLeft="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+                android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card6"
+               android:layout_marginRight="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+            <ImageView
+               android:id="@+id/card7"
+               android:layout_marginLeft="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+                android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card8"
+               android:layout_marginRight="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+       </LinearLayout>
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="0dp"
+           android:gravity="center_horizontal"
+           android:layout_weight="4">
+           <ImageView
+               android:id="@+id/card9"
+               android:layout_marginLeft="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card10"
+               android:layout_marginRight="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card11"
+               android:layout_marginLeft="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card12"
+               android:layout_marginRight="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card13"
+               android:layout_marginLeft="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card14"
+               android:layout_marginRight="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card15"
+               android:layout_marginLeft="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+           <ImageView
+               android:id="@+id/card16"
+               android:layout_marginRight="5px"
+               android:layout_width="30px"
+               android:layout_height="46px"
+               android:background="@drawable/paibg"/>
+
+       </LinearLayout>
+
+   </LinearLayout>
     <TextView
         android:id="@+id/changeEntry"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="100dp"
+        android:layout_width="40px"
+        android:layout_height="40px"
+        android:layout_marginRight="20px"
+        android:layout_marginTop="200px"
         android:gravity="center"
+        android:textSize="14px"
         android:layout_alignParentRight="true"
         android:background="@drawable/background_yuan"
-        android:layout_below="@id/entry"
+        android:layout_below="@id/line"
         android:textColor="@color/white"
         android:text="笔记"/>
 </RelativeLayout>

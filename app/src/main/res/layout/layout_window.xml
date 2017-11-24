@@ -1,166 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:id="@+id/item"
     android:orientation="vertical"
-    android:background="@drawable/buttonstyle_false"
+    android:background="@drawable/buttonstyle2"
     android:layout_height="wrap_content">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:gravity="center_vertical">
-        <TextView
-            android:layout_marginLeft="5dp"
-            android:id="@+id/pos1"
-            android:layout_width="0dp"
+        android:id="@+id/item"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="-"
-            android:textSize="14sp"/>
+            android:layout_marginBottom="10px"
+            android:layout_marginTop="15px"
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/pos2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="VPIP(-%)" />
+            <TextView
+                android:id="@+id/pos1"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5px"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="-"
+                android:textSize="18px" />
 
-        <TextView
-            android:id="@+id/pos3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="5dp"
-            android:gravity="center"
-            android:text="PFR(-%)" />
+            <TextView
+                android:id="@+id/pos2"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="VPIP(-%)" />
 
+            <TextView
+                android:id="@+id/pos3"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="5px"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="PFR(-%)" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="10px"
+            android:layout_marginTop="10px">
+
+            <TextView
+                android:id="@+id/pos4"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="3BET(-%)" />
+
+            <TextView
+                android:id="@+id/pos5"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="CB(-%)" />
+
+            <TextView
+                android:id="@+id/pos6"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="AF(-)" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="10px"
+            android:layout_marginTop="10px">
+
+            <TextView
+                android:id="@+id/pos7"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="F3BET(-%)" />
+
+            <TextView
+                android:id="@+id/pos8"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="STL(-%)" />
+
+            <TextView
+                android:id="@+id/pos9"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="FSTL(-%)"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10px"
+            android:layout_marginTop="10px"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/pos10"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="FCB(-%)" />
+
+            <TextView
+                android:id="@+id/pos11"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="FFLOP(-%)" />
+
+            <TextView
+                android:id="@+id/pos12"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="FTURN(-%)" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10px"
+            android:layout_marginTop="10px"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/pos13"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="FRIVER(-%)" />
+
+            <TextView
+                android:id="@+id/pos14"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/pos15"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18px"
+                android:text="" />
+
+        </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-        android:layout_marginTop="5dp"
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical">
-
-        <TextView
-            android:id="@+id/pos4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="3BET(-%)" />
-
-        <TextView
-            android:id="@+id/pos5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="CB(-%)" />
-
-        <TextView
-            android:id="@+id/pos6"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="AF(-)" />
-
-    </LinearLayout>
-    <LinearLayout
+        android:layout_height="1px"
+        android:background="@color/colorPrimaryDark"/>
+    <TextView
+        android:id="@+id/note"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp">
-
-        <TextView
-            android:id="@+id/pos7"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="F3BET(-%)" />
-
-        <TextView
-            android:id="@+id/pos8"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="STL(-%)" />
-
-        <TextView
-            android:id="@+id/pos9"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="FSTL(-%)"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center_vertical">
-
-        <TextView
-            android:id="@+id/pos10"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="FCB(-%)" />
-
-        <TextView
-            android:id="@+id/pos11"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="FFLOP(-%)" />
-
-        <TextView
-            android:id="@+id/pos12"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="FTURN(-%)" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center_vertical">
-
-        <TextView
-            android:id="@+id/pos13"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="FRIVER(-%)" />
-
-        <TextView
-            android:id="@+id/pos14"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/pos15"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        android:text="笔记:\n无"
+        android:gravity="center"
+        android:textSize="18px"
+        android:padding="10px"/>
 </LinearLayout>

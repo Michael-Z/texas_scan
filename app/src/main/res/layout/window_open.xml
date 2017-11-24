@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center">
     <TextView
         android:id="@+id/open"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="5dp"/>
+        android:textSize="16px"
+        android:padding="10px"/>
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1px"
+        android:textSize="28px"
         android:background="@color/white"/>
     <TextView
         android:id="@+id/avgVpip"
@@ -19,5 +21,6 @@
         android:layout_height="wrap_content"
         android:textColor="@color/colorAccent"
         android:gravity="center"
-        android:padding="5dp"/>
+        android:textSize="16px"
+        android:padding="10px"/>
 </LinearLayout>

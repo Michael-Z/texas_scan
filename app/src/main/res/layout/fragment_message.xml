@@ -13,95 +13,104 @@
         android:orientation="vertical">
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="1px"
             android:background="@color/black_overlay"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginLeft="10px"
+            android:layout_marginRight="10px"/>
 
         <LinearLayout
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp">
+            android:layout_marginTop="20px"
+            android:layout_marginBottom="10px">
            <TextView
-               android:layout_width="0dp"
+               android:layout_width="0px"
                android:layout_height="wrap_content"
                android:layout_weight="1"
                android:textColor="@color/white"
                android:gravity="center"
-               android:text="W/L(胜/负)"/>
+               android:textSize="20px"
+               android:text="W/L/ALL(胜/负/总手数)"/>
            <TextView
-               android:layout_width="0dp"
+               android:layout_width="0px"
                android:layout_height="wrap_content"
                android:layout_weight="1"
+               android:textSize="20px"
                android:textColor="@color/white"
                android:gravity="center"
                android:text="3BET(翻牌前再加注率)"/>
 
             <TextView
                 android:id="@+id/textView5"
-                android:layout_width="0dp"
+                android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:paddingLeft="5dp"
+                android:paddingLeft="5px"
+                android:textSize="20px"
                 android:textColor="@color/white"
                 android:text="AF(翻牌后Call/Raise概率)" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp">
+            android:layout_marginTop="10px"
+            android:layout_marginBottom="10px">
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="@color/white"
                 android:gravity="center"
+                android:textSize="20px"
                 android:text="VPIP(入局率)"/>
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:textSize="20px"
                 android:textColor="@color/white"
                 android:text="STL(偷盲率)"/>
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:textSize="20px"
                 android:textColor="@color/white"
                 android:text="Fold STL(被偷盲率)"/>
         </LinearLayout>
         <LinearLayout
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp">
+            android:layout_marginTop="10px"
+            android:layout_marginBottom="20px">
            <TextView
-               android:layout_width="0dp"
+               android:layout_width="0px"
                android:layout_height="wrap_content"
                android:layout_weight="1"
                android:gravity="center"
+               android:textSize="20px"
                android:textColor="@color/white"
                android:text="PFR(翻前加注率)"/>
            <TextView
-               android:layout_width="0dp"
+               android:layout_width="0px"
                android:layout_height="wrap_content"
                android:layout_weight="1"
                android:gravity="center"
                android:textColor="@color/white"
+               android:textSize="20px"
                android:text="F3BET(面对3Bet弃牌率)"/>
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:paddingLeft="5dp"
+                android:paddingLeft="5px"
                 android:textColor="@color/white"
+                android:textSize="20px"
                 android:text="CB(翻牌圈继续下注率)" />
         </LinearLayout>
     </LinearLayout>
@@ -109,15 +118,15 @@
         android:id="@+id/playerAppList"
         android:layout_width="match_parent"
         android:background="@color/white"
-        android:paddingLeft="20dp"
-        android:layout_height="50dp"/>
+        android:paddingLeft="40px"
+        android:layout_height="60px"/>
 
     <com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:tr_bottom_height="50dp"
-        app:tr_head_height="50dp">
+        app:tr_bottom_height="50px"
+        app:tr_head_height="50px">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/playerList"
             android:layout_width="match_parent"
