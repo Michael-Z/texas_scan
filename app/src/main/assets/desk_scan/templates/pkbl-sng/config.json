@@ -1,6 +1,14 @@
 {
 "seatcheckvalue":300000,
 
+
+ "boxflagvalue":5000000,
+       "seatposesflagvalue":3000000,
+ "othercardflagposesflagvalue":1000000,
+ 
+ "actionflagvalue":2500000,
+  "actioncount":5,
+
 "seat9flag1x":4,
 "seat9flag1y":1241,
 "seat9flag1width":37,
@@ -57,10 +65,12 @@
 "rightbottomflagheight":68,
 "rightbottomx":651,
 "rightbottomy":1095,
-"deskinfox":245,
-"deskinfoy":782,
+
+"deskinfox":250,
+"deskinfoy":783,
 "deskinfowidth":220,
 "deskinfoheight":28,
+
 "deskinfoAntex":272,
 "deskinfoAntey":877,
 "deskinfoAntewidth":170,
@@ -72,11 +82,7 @@
 "isdeskinfonagtive":1,
 "betflagwidth":33,
 "betflagheight":33,
-"boxflagvalue":5000000,
-"seatposesflagvalue":3000000,
-"othercardflagposesflagvalue":1000000,
-
-  "seat9":{
+"seat9":{
   "namewidth":130,
   "nameheight":26,
   "nameposes":[
@@ -444,7 +450,7 @@
     [605,513],
     [605,859],
     [305,1173]
-    ],
+  ],
   "boardcardwidth":74,
   "boardcardheight":103,
   "boardcards":[
@@ -504,13 +510,25 @@
   "seatwidth":93,
   "seatheight":93,
   "seatposes":[
-    [315,1074],
+    [89,1141],
     [13,758],
     [13,413],
     [313,53],
     [614,413],
     [614,758],
     [315,1074]
+    ],
+
+    "actionwidth":80,
+    "actionheight":30,
+    "actionposes":[
+      [92,1143],
+      [72,747],
+      [72,402],
+      [372,41],
+      [568,402],
+      [568,747],
+      [372,1063]
     ],
   "othercardwidth":41,
   "othercardheight":56,

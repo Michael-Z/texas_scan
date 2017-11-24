@@ -1,6 +1,8 @@
 {
 "seatcheckvalue":3000000,
 
+"actioncount":9,
+
 "seat9flag1x":175,
 "seat9flag1y":80,
 "seat9flag1width":79,
@@ -67,11 +69,12 @@
 "isdeskinfonagtive":1,
 "betflagwidth":30,
 "betflagheight":30,
-"boxflagvalue":5000000,
-"seatposesflagvalue":3000000,
-"othercardflagposesflagvalue":1000000,
+  "boxflagvalue":5000000,
+      "seatposesflagvalue":7000000,
+ "othercardflagposesflagvalue":1000000,
 
-  "seat9":{
+"actionflagvalue":2500000, 
+"seat9":{
   "namewidth":130,
   "nameheight":26,
   "nameposes":[
@@ -167,6 +170,20 @@
     [594,496],
     [594,755],
     [310,946]
+    ],
+    "actionwidth":51,
+    "actionheight":26,
+    "actionposes":[
+      [186,1087],
+      [107,754],
+      [107,495],
+      [107,247],
+      [166,85],
+      [503,85],
+      [562,247],
+      [562,495],
+      [562,754],
+      [391,943]
     ],
   "othercardwidth":51,
   "othercardheight":75,
@@ -288,6 +305,20 @@
     [594,755],
     [310,946]
     ],
+
+    "actionwidth":51,
+    "actionheight":26,
+    "actionposes":[
+      [186,1087],
+      [107,754],
+      [107,495],
+      [107,247],
+      [278,85],
+      [562,247],
+      [562,495],
+      [562,754],
+      [391,943]
+    ],
   "othercardwidth":51,
   "othercardheight":75,
   "othercardposes":[
@@ -402,6 +433,18 @@
     [592,700],
     [310,970]
     ],
+    "actionwidth":51,
+    "actionheight":26,
+    "actionposes":[
+      [186,1087],
+      [107,698],
+      [107,304],
+      [166,85],
+      [503,85],
+      [562,304],
+      [562,698],
+      [391,943]
+    ],
   "othercardwidth":51,
   "othercardheight":75,
   "othercardposes":[
@@ -507,6 +550,17 @@
     [592,700],
     [310,970]
     ],
+    "actionwidth":51,
+    "actionheight":26,
+    "actionposes":[
+      [186,1087],
+      [107,698],
+      [107,304],
+      [278,85],
+      [562,304],
+      [562,698],
+      [391,943]
+    ],
   "othercardwidth":51,
   "othercardheight":75,
   "othercardposes":[
@@ -583,6 +637,13 @@
     [100,100],
     [310,88],
     [310,946]
+    ],
+    "actionwidth":51,
+    "actionheight":26,
+    "actionposes":[
+      [186,1087],
+      [278,85],
+      [391,943]
     ],
   "othercardwidth":51,
   "othercardheight":75,

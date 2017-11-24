@@ -42,10 +42,10 @@
     [290,1133],
     [370,1133]
   ],
-  "lefttopflagwidth":40,
-  "lefttopflagheight":55,
-  "lefttopx":8,
-  "lefttopy":70,
+  "lefttopflagwidth":30,
+  "lefttopflagheight":50,
+  "lefttopx":35,
+  "lefttopy":37,
   "righttopflagwidth":48,
   "righttopflagheight":39,
   "righttopx":656,
@@ -75,9 +75,12 @@
 
   "betflagwidth":31,
   "betflagheight":31,
-  "boxflagvalue":5000000,
-  "seatposesflagvalue":3000000,
+
+  "boxflagvalue":3400000,
+  "seatposesflagvalue":350000,
   "othercardflagposesflagvalue":1000000,
+  "actionflagvalue":3000000,
+  "actioncount":6,
 
   "seat9":{
     "namewidth":117,
@@ -162,19 +165,33 @@
       [655,887],
       [350,1114]
     ],
-    "seatwidth":88,
-    "seatheight":88,
+    "seatwidth":35,
+    "seatheight":22,
     "seatposes":[
-      [315,980],
-      [10,753],
-      [10,514],
-      [10,283],
-      [193,99],
-      [438,99],
-      [620,283],
-      [620,514],
-      [620,753],
-      [315,980]
+      [342,1079],
+      [39,853],
+      [39,615],
+      [39,383],
+      [223,199],
+      [466,199],
+      [648,383],
+      [648,615],
+      [648,853],
+      [342,1079]
+    ],
+    "actionwidth":54,
+    "actionheight":24,
+    "actionposes":[
+      [457,1132],
+      [95,750],
+      [95,513],
+      [95,280],
+      [277,96],
+      [522,96],
+      [571,281],
+      [571,513],
+      [571,750],
+      [400,977]
     ],
     "othercardwidth":41,
     "othercardheight":56,
@@ -284,18 +301,32 @@
       [655,887],
       [350,1114]
     ],
-    "seatwidth":88,
-    "seatheight":88,
+    "seatwidth":35,
+    "seatheight":22,
     "seatposes":[
-      [315,980],
-      [10,753],
-      [10,514],
-      [10,283],
-      [315,75],
-      [620,283],
-      [620,514],
-      [620,753],
-      [315,980]
+      [342,1097],
+      [39,853],
+      [39,615],
+      [39,383],
+      [342,173],
+      [648,383],
+      [648,615],
+      [648,853],
+      [347,1097]
+    ],
+
+    "actionwidth":54,
+    "actionheight":24,
+    "actionposes":[
+      [457,1132],
+      [95,750],
+      [95,513],
+      [95,281],
+      [400,70],
+      [571,281],
+      [571,513],
+      [571,750],
+      [400,977]
     ],
     "othercardwidth":41,
     "othercardheight":56,
@@ -398,17 +429,30 @@
       [655,861],
       [350,1114]
     ],
-    "seatwidth":88,
-    "seatheight":88,
+    "seatwidth":35,
+    "seatheight":22,
     "seatposes":[
-      [315,980],
-      [10,728],
-      [10,340],
-      [193,99],
-      [438,99],
-      [620,340],
-      [620,728],
-      [315,980]
+      [342,1079],
+      [39,827],
+      [39,440],
+      [223,199],
+      [466,199],
+      [648,440],
+      [648,827],
+      [342,1079]
+    ],
+
+    "actionwidth":54,
+    "actionheight":24,
+    "actionposes":[
+      [457,1132],
+      [95,724],
+      [95,337],
+      [277,96],
+      [522,96],
+      [571,337],
+      [571,724],
+      [400,977]
     ],
     "othercardwidth":41,
     "othercardheight":56,
@@ -504,16 +548,29 @@
       [655,878],
       [350,1114]
     ],
-    "seatwidth":88,
-    "seatheight":88,
+    "seatwidth":35,
+    "seatheight":22,
     "seatposes":[
-      [315,980],
-      [10,744],
-      [10,335],
-      [315,75],
-      [620,335],
-      [620,744],
-      [315,980]
+      [342,1079],
+      [39,844],
+      [39,434],
+      [342,173],
+      [648,434],
+      [648,844],
+      [342,1079]
+    ],
+
+
+    "actionwidth":54,
+    "actionheight":24,
+    "actionposes":[
+      [457,1132],
+      [95,741],
+      [95,331],
+      [400,70],
+      [571,331],
+      [571,741],
+      [400,977]
     ],
     "othercardwidth":41,
     "othercardheight":56,
@@ -587,12 +644,19 @@
       [350,207],
       [350,1114]
     ],
-    "seatwidth":88,
-    "seatheight":88,
+    "seatwidth":35,
+    "seatheight":22,
     "seatposes":[
-      [315,980],
-      [315,75],
-      [315,980]
+      [342,1079],
+      [342,173],
+      [342,1079]
+    ],
+    "actionwidth":54,
+    "actionheight":24,
+    "actionposes":[
+      [457,1132],
+      [400,70],
+      [400,977]
     ],
     "othercardwidth":41,
     "othercardheight":56,
