@@ -3,9 +3,11 @@ package com.ruilonglai.texas_scan.util;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.ruilonglai.texas_scan.entity.GameAction;
 import com.ruilonglai.texas_scan.entity.GameUser;
 import com.ruilonglai.texas_scan.entity.MyData;
 import com.ruilonglai.texas_scan.entity.PlayerData;
+import com.ruilonglai.texas_scan.entity.PlayerPoker;
 import com.ruilonglai.texas_scan.entity.PokerRecord;
 import com.ruilonglai.texas_scan.entity.ReqData;
 import com.ruilonglai.texas_scan.entity.SaveRecordParam;
@@ -157,6 +159,29 @@ public class SaveDataUtil {
                     if(user.isFoldCB()){
                         playerData.setFoldCbCount(playerData.getFoldCbCount()+1);
                     }
+                    if(user.isTurn() && user.getCard1()!=-1 && user.getCard2()!=-1){
+                        playerData.setTurnCount(playerData.getTurnCount()+1);
+                        PlayerPoker playerPoker = new PlayerPoker();
+                        playerPoker.setName(playerData.getName());
+                        playerPoker.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                        playerPoker.setCard1(user.getCard1());
+                        playerPoker.setCard2(user.getCard2());
+                        int[] boards = playerPoker.getBoards();
+                        int[] flop = pokerRecord.getFlop();
+                        boards[0] = flop[0];
+                        boards[1] = flop[1];
+                        boards[2] = flop[2];
+                        boards[3] = pokerRecord.getTurn();
+                        boards[4] = pokerRecord.getRiver();
+                        if(user.isWinTurn()){
+                            playerData.setWinTurnRiverCount(playerData.getWinTurnRiverCount()+1);
+                            playerPoker.setWin(true);
+                        }
+                        if(playerPoker.getCard1()!=-1 && user.getFoldRound()!=-1 && (pokerRecord.getRiver()!=-1 || getPlayerAllinCount(pokerRecord.getActions())>0)){//自己没弃牌
+                            //此处保存到表
+//                            playerPoker.save();
+                        }
+                    }
                     if(playerDatas.size()>0){
                         playerData.updateAll("seatflag=? and name=?", seatFlag, "self");
                     }else{
@@ -171,7 +196,7 @@ public class SaveDataUtil {
             if("self".equals(gamer.getUserName()) || "E".equals(gamer.getUserName()) || "玲".equals(gamer.getUserName())
                     || "玟".equals(gamer.getUserName()) || "C".equals(gamer.getUserName()) || "c".equals(gamer.getUserName())
                     || "5".equals(gamer.getUserName()) || "2".equals(gamer.getUserName()) ||"河".equals(gamer.getUserName())
-                    ||"招".equals(gamer.getUserName())||"[".equals(gamer.getUserName())){
+                    ||"招".equals(gamer.getUserName())||"[".equals(gamer.getUserName())) {
                 continue;
             }
             int gamerBeginMoney = gamer.getBeginMoney();
@@ -252,6 +277,29 @@ public class SaveDataUtil {
                 if(gamer.isFoldCB()){
                     playerData.setFoldCbCount(playerData.getFoldCbCount()+1);
                 }
+                if(gamer.isTurn() && gamer.getCard1()!=-1 && gamer.getCard2()!=-1){
+                    playerData.setTurnRiverCount(playerData.getTurnRiverCount()+1);
+                    PlayerPoker playerPoker = new PlayerPoker();
+                    playerPoker.setName(playerData.getName());
+                    playerPoker.setDate(TimeUtil.getCurrentDateToDay(new Date()));
+                    playerPoker.setCard1(gamer.getCard1());
+                    playerPoker.setCard2(gamer.getCard2());
+                    int[] boards = playerPoker.getBoards();
+                    int[] flop = pokerRecord.getFlop();
+                    boards[0] = flop[0];
+                    boards[1] = flop[1];
+                    boards[2] = flop[2];
+                    boards[3] = pokerRecord.getTurn();
+                    boards[4] = pokerRecord.getRiver();
+                    if(gamer.isWinTurn()){
+                        playerData.setWinTurnRiverCount(playerData.getWinTurnRiverCount()+1);
+                        playerPoker.setWin(true);
+                    }
+                    if(playerPoker.getCard1()!=-1 && gamer.getFoldRound()==-1 && (pokerRecord.getRiver()!=-1 || getPlayerAllinCount(pokerRecord.getActions())>0)){//玩家没弃牌，并且到河牌
+                        //此处保存到表
+//                        playerPoker.save();
+                    }
+                }
                 if(datas.size()>0){
                     playerData.updateAll("name=?",name);
                 }else{
@@ -304,5 +352,20 @@ public class SaveDataUtil {
             player.setTurnCount(player.getTurnCount()+1);
             player.setRiverCount(player.getRiverCount()+1);
         }
+    }
+    /*获取allin的人数*/
+    public int getPlayerAllinCount(List<GameAction> actions){
+        int allinTimes = 0;
+        for (int i = 0; i < actions.size(); i++) {
+            GameAction action = actions.get(i);
+            if(action.getAction()==Constant.ACTION_ALLIN){
+               allinTimes++;
+            }
+        }
+        return allinTimes;
+    }
+    /*补充摊牌漏记的玩家*/
+    public void disposePlayersTurnRiver(){
+
     }
 }

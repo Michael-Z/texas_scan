@@ -2,7 +2,6 @@ package com.ruilonglai.texas_scan.util;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,11 +25,11 @@ public class AssetsCopyUtil {
         long begin = System.currentTimeMillis();
         boolean ret = copyFiles(context, inPath, outPath);
         long end = System.currentTimeMillis();
-        Log.i(TAG, "copyAssetsFilesToData() elapsedTime:" + (end-begin));
+        MyLog.i(TAG, "copyAssetsFilesToData() elapsedTime:" + (end-begin));
         return ret;
     }
     public static boolean copyFiles(Context context, String inPath, String outPath) {
-        Log.i(TAG, "copyFiles() inPath:" + inPath + ", outPath:" + outPath);
+        MyLog.i(TAG, "copyFiles() inPath:" + inPath + ", outPath:" + outPath);
         String[] fileNames = null;
         try {// 获得Assets一共有几多文件
             fileNames = context.getAssets().list(inPath);
@@ -43,12 +42,12 @@ public class AssetsCopyUtil {
             if(fileOutDir.isFile()){
                 boolean ret = fileOutDir.delete();
                 if(!ret){
-                    Log.e(TAG, "delete() FAIL:" + fileOutDir.getAbsolutePath());
+                    MyLog.e(TAG, "delete() FAIL:" + fileOutDir.getAbsolutePath());
                 }
             }
             if (!fileOutDir.exists()) { // 如果文件路径不存在
                 if (!fileOutDir.mkdirs()) { // 创建文件夹
-                    Log.e(TAG, "mkdirs() FAIL:" + fileOutDir.getAbsolutePath());
+                    MyLog.e(TAG, "mkdirs() FAIL:" + fileOutDir.getAbsolutePath());
                     return false;
                 }
             }
@@ -67,12 +66,12 @@ public class AssetsCopyUtil {
                 if(fileOut.exists()) {
                     boolean ret = fileOut.delete();
                     if(!ret){
-                        Log.e(TAG, "delete() FAIL:" + fileOut.getAbsolutePath());
+                        MyLog.e(TAG, "delete() FAIL:" + fileOut.getAbsolutePath());
                     }
                 }
                 boolean ret = fileOut.createNewFile();
                 if(!ret){
-                    Log.e(TAG, "createNewFile() FAIL:" + fileOut.getAbsolutePath());
+                    MyLog.e(TAG, "createNewFile() FAIL:" + fileOut.getAbsolutePath());
                 }
                 FileOutputStream fos = new FileOutputStream(fileOut);
                 InputStream is = context.getAssets().open(inPath);
@@ -200,7 +199,7 @@ public class AssetsCopyUtil {
     public static String getPackageName(Context context){
         String packageResourcePath = context.getApplicationContext().getPackageCodePath();
         int end = packageResourcePath.lastIndexOf("/");
-        Log.e(TAG,"包名:"+packageResourcePath);
+        MyLog.e(TAG,"包名:"+packageResourcePath);
         return packageResourcePath.substring(0,end);
     }
 }

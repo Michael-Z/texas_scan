@@ -1,7 +1,6 @@
 package com.ruilonglai.texas_scan.util;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.gson.Gson;
@@ -86,7 +85,7 @@ public class AnalysisImgUtil {
             try {
                data = GsonUtil.parseJsonWithGson(json, BackData.class);//解析json数据
            }catch (Exception e){
-                Log.e("texas_scan","gson解析异常"+e.toString());
+                MyLog.e("texas_scan","gson解析异常"+e.toString());
                 return;
             }
             List<Integer> boards = data.getBoards();
@@ -1595,7 +1594,7 @@ public class AnalysisImgUtil {
                 FileIOUtil.writeLine();
             }
         }).start();
-        new SaveDataUtil().disposeHandLog(json);
+//        new SaveDataUtil().disposeHandLog(json);
     }
     public String disposeNumber(){//11---->000011
         String s = new Integer(seq).toString();

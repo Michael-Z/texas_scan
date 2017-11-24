@@ -2,9 +2,7 @@ package com.ruilonglai.texas_scan.util;
 
 import android.graphics.Bitmap;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 
 import com.google.gson.Gson;
 import com.ruilonglai.texas_scan.ScanTool;
@@ -49,16 +47,19 @@ public class PokerAnalysisTool {
     private int ante = -1;
     private int blinds = -1;
     private int seatCount = -1;
+    private int firstSeatCount = -1;
     private int dichi = -1;
     private int curDichi = -1;
     private int playerCount = -1;
     private boolean isBegin = false;
     private boolean canAddAction = false;
+    private boolean noNeedPic = false;
     private SparseArray<String> seatNames;//每个位置解析的名字
     private ExecutorService service;
     private List<Integer> boards;
     private int curRoundIdx = -1;
     private int changeMoney = -1;
+    private int lastRoundChangeMoney = -1;
     private boolean newBtnIdx;
     private boolean needSendBoards;
     private boolean sendCloseWindow;
@@ -67,8 +68,10 @@ public class PokerAnalysisTool {
     private int flag;
     private boolean allOnline;
     private boolean havePoker;
+    private boolean noHideCard;
+    boolean haveTurnRiver = false;
     private SparseArray<Seat> seats;//每个位置的信息
-    private SparseIntArray lastSeats;//上一条记录各位置的钱
+    private SparseArray<Seat> lastSeats;//上一条记录各位置的钱
     public TableRecord tableRecord;
     private PokerRecord pokerRecord;
     private List<GameAction> actions;//每个玩家得动作
@@ -97,6 +100,10 @@ public class PokerAnalysisTool {
         seats.clear();
         playSeats.clear();
         changeMoney = -1;
+        lastRoundChangeMoney = -1;
+        straddleIdx = 0;
+        noHideCard = false;
+        haveTurnRiver = false;
     }
 
     public void analysisBitmap(Bitmap bitmap,int flag)
@@ -106,7 +113,7 @@ public class PokerAnalysisTool {
             return;
         }
         int isImgOK = ScanTool.IsImgOK(bitmap);
-        Log.e(TAG,isImgOK+"");
+        MyLog.e(TAG,isImgOK+"");
         if(isImgOK==1)
         {
             if(sendCloseWindow){
@@ -120,33 +127,17 @@ public class PokerAnalysisTool {
             {
                 saveLastEndMoney(bitmap);
                 saveLastHandData();
-                Log.e("GameAction","--------------------一手记录的动作begin-------------------");
-                for (int i = 0; i < actions.size(); i++)
-                {
-                    GameAction gameAction = actions.get(i);
-                    Log.e("GameAction",gameAction.toString());
-                }
-                Log.e("GameAction","--------------------一手记录的动作end---------------------");
+                printAction();
                 initView();
             }
             getBaseMessage(bitmap);
-            Log.e(TAG,"canAddAction "+canAddAction);
+            if(noNeedPic)
+                return;
+            MyLog.e(TAG,"canAddAction "+canAddAction);
             if(!canAddAction)
             {
-                canAddAction = haveHalfBlindsAndBlinds();
-                if(canAddAction){
-                    for (int i = 0; i < seats.size(); i++)
-                    {
-                        int seatIdx = seats.keyAt(i);
-                        Seat seat = seats.get(seatIdx);
-                        lastSeats.put(seatIdx,seat.getMoney());
-                        GameUser user = gamers.get(seatIdx);
-                        if(user != null)
-                        {
-                            user.setBeginMoney(seat.getMoney()+seat.getBet());
-
-                        }
-                    }
+//                canAddAction = haveHalfBlindsAndBlinds();
+                if(!canAddAction){
                     if(straddle>0)
                     {
                         changeMoney = straddle;
@@ -155,29 +146,15 @@ public class PokerAnalysisTool {
                     {
                         changeMoney = blinds;
                     }
+                    canAddAction = true;
                 }
             }
             disposeMoney();//记录钱的变化
-            if(newBtnIdx)
-            {//解析名字
-                if(nextHandScanName){
-                    try {
-                        bitmaps.add(bitmap);
-//                        nextHandScanName = false;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            else
-            {
-                bitmap.recycle();
-                bitmap = null;
-                System.gc();
-            }
+            disposeBitmap(bitmap);
         }
         else
         {
+            //不是模板图
             if(!sendCloseWindow)
             {
                 Package pkg = new Package();
@@ -187,6 +164,36 @@ public class PokerAnalysisTool {
             }
         }
     }
+    /*处理bitmap*/
+    public void disposeBitmap(Bitmap bitmap){
+        if(newBtnIdx)
+        {//解析名字
+            if(nextHandScanName){
+                try {
+                    bitmaps.add(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else
+        {
+            bitmap.recycle();
+            bitmap = null;
+            System.gc();
+        }
+    }
+    /*打印动作*/
+    private void printAction(){
+        MyLog.e("GameAction","--------------------一手记录的动作begin-------------------");
+        for (int i = 0; i < actions.size(); i++)
+        {
+            GameAction gameAction = actions.get(i);
+            MyLog.e("GameAction",gameAction.toString());
+        }
+        MyLog.e("GameAction","--------------------一手记录的动作end---------------------");
+    }
+    /*保存玩家show的牌*/
     private void saveOtherPlayerCards(){
         for (int j = 0; j < playSeats.size(); j++) {
             int seatIdx = playSeats.keyAt(j);
@@ -195,11 +202,20 @@ public class PokerAnalysisTool {
             int card2 = seat.getCard2();
             if(card1!=-1 && card2!=-1){
                 GameUser gameUser = gamers.get(seatIdx);
+                MyLog.e(TAG,"haveTurnRiver:"+haveTurnRiver+" card1:"+card1+" card2:"+card2+" "+gameUser);
                 if(gameUser!=null){
                     gameUser.setCard1(card1);
                     gameUser.setCard2(card2);
+                    if(seatIdx!=0){
+                        gameUser.setTurn(true);
+                        haveTurnRiver = true;
+                    }
                 }
             }
+        }
+        GameUser user = gamers.get(0);
+        if(user !=null && haveTurnRiver && !user.isTurn()){
+            user.setTurn(true);
         }
     }
     //接收外部接口解析名字
@@ -211,33 +227,23 @@ public class PokerAnalysisTool {
         synchronized(seatNames){
             if(seatIdx==-1){
                 initView();
+                instance = new PokerAnalysisTool();
             }else{
                 if(!TextUtils.isEmpty(name))
                 seatNames.put(seatIdx,name);
             }
         }
-        synchronized (gamers){
-            if(seatIdx!=-1){
-                GameUser gameUser = gamers.get(seatIdx);
-                if(gameUser!=null){
-                    if(!TextUtils.isEmpty(remark)){
-                        gameUser.setRemark(remark);
-                    }
-                    if(level!=-1){
-                        gameUser.setLevel(level);
-                    }
-                }
-            }
+        for (int i = 0; i < seatNames.size(); i++) {
+            String seatname = seatNames.valueAt(i);
+            if(seatname!=null)
+            MyLog.e(TAG, seatname);
         }
         String json = new Gson().toJson(seatNames);
+        MyLog.e(TAG, "发送的名字1"+json);
         Package pkg = new Package();
         pkg.setType(Constant.SOCKET_KNOW_NAME);
         pkg.setContent(json);
         Connect.send(pkg);
-    }
-    /*接收外部接口修改笔记和标记*/
-    public void changeRemark(int seatIdx,String remark,int level){
-
     }
     /*从图片获取位置名字*/
     private void getSeatNames(Bitmap bitmap)
@@ -246,18 +252,17 @@ public class PokerAnalysisTool {
             return;
         if(seatCount<=0)
             return;
-        synchronized (gamers)
+        for (int i = isWatch; i < seatCount+isWatch; i++)
         {
-            for (int i = isWatch; i < seatCount+isWatch; i++)
-            {
-                int seatIdx = i;
+            int seatIdx = i;
+            if(playSeats.get(seatIdx)!=null){
                 String oldName = seatNames.get(seatIdx);
-                if(TextUtils.isEmpty(oldName)){
+                if("".equals(oldName)){
                     String name = getJsonName(ScanTool.ScanSeatName(bitmap, seatIdx, 0), "name");
-                    Log.e("name",seatIdx+"  "+name);
+                    MyLog.e("name",seatIdx+"  "+name);
                     String userName = FileIOUtil.replaceBlank(name);
                     userName.replace("\\n","");
-                    Log.e(TAG,"重新识别"+seatIdx+"号位名字:"+userName);
+                    MyLog.e(TAG,"重新识别"+seatIdx+"号位名字:"+userName);
                     if(!TextUtils.isEmpty(userName)){
                         seatNames.put(seatIdx,userName);
                     }
@@ -267,13 +272,26 @@ public class PokerAnalysisTool {
                     }
                 }
             }
-            String json = new Gson().toJson(seatNames);
-            Package pkg = new Package();
-            pkg.setType(Constant.SOCKET_KNOW_NAME);
-            pkg.setContent(json);
-            Connect.send(pkg);
         }
+        for (int i = 0; i < seatNames.size(); i++) {
+            String seatname = seatNames.valueAt(i);
+            if(seatname!=null)
+                MyLog.e(TAG, seatname);
+        }
+        String json = new Gson().toJson(seatNames);
+        MyLog.e(TAG, "发送的名字2"+json);
+        Package pkg = new Package();
+        pkg.setType(Constant.SOCKET_KNOW_NAME);
+        pkg.setContent(json);
+        Connect.send(pkg);
     }
+    /*删除数字*/
+    public static String changeName(String name){
+        if(name.contains("\n") && name.indexOf("\n")!=0)
+            name = name.substring(0,name.indexOf("\n"));
+        return name;
+    }
+    /*替换数字*/
     public static String removeDigital(String value){
         Pattern p = Pattern.compile("[\\d]");
         Matcher matcher = p.matcher(value);
@@ -283,45 +301,37 @@ public class PokerAnalysisTool {
     /*一手只需识别一次的数据*/
     private void getBaseMessage(Bitmap bitmap)
     {
-        try {
-            Log.e("seatCount","识别座位数");
+//        try {
+            MyLog.e("seatCount","识别座位数");
             String json = ScanTool.ScanSeatCount(bitmap);
             int count = getJsonMes(json,"seatcount");
             if(seatCount==-1){
                 if(count!=-1){
                   seatCount = count;
-                  isWatch = getJsonMes(json,"iswatch");
-                  Package pkg = new Package();
-                  pkg.setType(Constant.SOCKET_SEATCOUNT);
-                  pkg.setContent(json);
-                  Connect.send(pkg);
+                    if(firstSeatCount==-1)
+                  firstSeatCount  = seatCount;
+                  if(firstSeatCount==seatCount){
+                      isWatch = getJsonMes(json,"iswatch");
+                      Package pkg = new Package();
+                      pkg.setType(Constant.SOCKET_SEATCOUNT);
+                      pkg.setContent(json);
+                      Connect.send(pkg);
+                  }
+                  if(firstSeatCount!=-1 && firstSeatCount!=seatCount){
+                    seatCount = firstSeatCount;
+                      MyLog.e(TAG,"几人桌识别错误");
+                  }
                 }
-            }else{
-//                if(seatCount != count)
-//                {//不同几人桌
-//                    btnIdx = -1;
-//                    seatNames.clear();
-//                    nextHandScanName = true;
-//                    Package pkg = new Package();
-//                    pkg.setType(Constant.SOCKET_SEATCOUNT_CHANGE);
-//                    pkg.setContent(json);
-//                    Connect.send(pkg);
-//                    initView();
-//                    return;
-//                }
             }
-            json = ScanTool.ScanCurDichi(bitmap);
-            curDichi = getJsonMes(json,"curdichi ");
-//            json = ScanTool.ScanDichi(bitmap);
-//            Log.e(TAG,json);
-//            dichi = getJsonMes(json,"dichi");
-            json = ScanTool.ScanAnte(bitmap);
-            Log.e(TAG,json);
-            ante = getJsonMes(json,"ante");
+//            json = ScanTool.ScanCurDichi(bitmap);
+//            curDichi = getJsonMes(json,"curdichi ");
+//            json = ScanTool.ScanAnte(bitmap);
+//            MyLog.e(TAG,json);
+//            ante = getJsonMes(json,"ante");
             if(blinds < 0)
             {
                 json = ScanTool.ScanBlinds(bitmap);
-                Log.e("blindsjson",json);
+                MyLog.e("blindsjson",json);
                 straddle = getJsonMes(json,"straddle");
                 if(flag!=1){
                     blinds =  getJsonMes(json,"half-blinds")*2;
@@ -337,19 +347,36 @@ public class PokerAnalysisTool {
                 }
             }
             boards = JsonTool.getBoards(ScanTool.ScanBoardCards(bitmap)).getBoards();
-            if(boards.size()>curRoundIdx && (boards.size()==0 || boards.size()==3 || boards.size()==4 || boards.size()==5 ))
+            if(boards.size()>=3 && pokerRecord.getFlop()[2]==-1)
+            {
+                pokerRecord.setFlop(new int[]{boards.get(0),boards.get(1),boards.get(2)});
+            }
+            if(boards.size()>=4 && pokerRecord.getTurn()==-1)
+            {
+                pokerRecord.setTurn(boards.get(3));
+            }
+            if(boards.size()==5 && pokerRecord.getRiver()==-1)
+            {
+                pokerRecord.setRiver(boards.get(4));
+            }
+            int size = boards.size();
+            if(size>0 && size<3)
+                size = 3;
+            if(size >curRoundIdx && (size ==0 || size==3 || size==4 || size==5 ))
             {
                 sendWinPercent();
                 needSendBoards = true;
-                curRoundIdx = boards.size();
+                curRoundIdx = size;
+                lastRoundChangeMoney = changeMoney;
                 changeMoney = -1;
             }else{
                 needSendBoards = false;
             }
+            if(firstSeatCount==seatCount)
             getSeats(bitmap);
-        } catch (Exception e) {
-            Log.e("error","getBaseMessage  "+e.toString());
-        }
+//        } catch (Exception e) {
+//            MyLog.e("error","getBaseMessage  "+e.toString());
+//        }
     }
 
     public void getSeats(Bitmap bitmap){
@@ -361,28 +388,24 @@ public class PokerAnalysisTool {
             {
                 String json = ScanTool.ScanSeat(bitmap, i);
                 Seat seat = gson.fromJson(json, Seat.class);
-                Log.e(TAG,i+"号位"+seat.toString());
-                if((seat.getMoney() > 0 && seat.getMoney()<1000000) || i == btnIdx || seat.getHidecard()==1)
+                MyLog.e(TAG,i+"号位"+seat.toString());
+                if((seat.getEmpty()==0 && ((seat.getMoney()!=0 ||seat.getBet()>0)))
+                        || i==btnIdx || ((seat.getEmpty()==1 &&seat.getMoney()!=0)))
                 {
                     playSeats.put(i,i);
-                }else{
-                    if(seat.getMoney()==0 && seat.getBet()==0)
-                    {//出现空位名字初始化为空
-                        Log.e(TAG,i+"号位名字重新识别");
-                        seatNames.put(i,"");
-                    }
                 }
                 seats.put(i,seat);
             }
             playerCount = playSeats.size();
         }else{
+            boolean haveEmpty = false;
             for (int i = isWatch; i < seatCount+isWatch; i++)
             {
                 if(playSeats.get(i) != null)
                 {
                     String json = ScanTool.ScanSeat(bitmap, i);
                     Seat seat = gson.fromJson(json, Seat.class);
-                    Log.e(TAG,i+"号位"+seat.toString());
+                    MyLog.e(TAG,i+"号位"+seat.toString());
                     if(i==0 && !havePoker)
                     {
                         if(seat.getCard1()!=-1 && seat.getCard2()!=-1)
@@ -390,31 +413,56 @@ public class PokerAnalysisTool {
                             havePoker = true;
                             card1 = seat.getCard1();
                             card2 = seat.getCard2();
-                            Log.e(TAG,"解析出手牌");
+                            MyLog.e(TAG,"解析出手牌");
                             sendWinPercent();
                         }else{
                             havePoker = false;
                         }
                     }
+                    String name = seatNames.get(i);
+                    if(seat.getEmpty()==1 && (seat.getMoney()==0 || seat.getMoney()>10000000)){
+                        if(!TextUtils.isEmpty(name)){
+                            haveEmpty = true;
+                            MyLog.e(TAG,"清除"+i+"位置的名字");
+                            seatNames.delete(i);
+                        }
+                    }else{
+                        if(name==null && seat.getEmpty()==0 && seat.getMoney()>0){
+                            haveEmpty = true;
+                            String newName = getJsonName(ScanTool.ScanSeatName(bitmap, i, 0), "name");
+                            newName = FileIOUtil.replaceBlank(newName);
+                            newName.replace("\\n","");
+                            if(flag>=2){
+                                //扑克部落名字要去掉回车换行后的数字
+                                newName = changeName(newName);
+                            }
+                            seatNames.put(i,newName);
+                            MyLog.e(TAG,"重新识别名字seatNames-->"+seatNames.toString());
+                        }
+                    }
+                    if(seat.getHidecard()==0){
+                        if(i==seatCount+isWatch-1){
+                            noHideCard = true;//最后结账状态
+                        }
+                    }else{
+                        noHideCard = false;
+                    }
                     seats.put(i,seat);
                 }
             }
-            /*删除旁观*/
-            if(havePoker && playSeats.get(seatCount)!=null)
-            {
-                playSeats.delete(seatCount);
-                List<GameAction> newActions = new ArrayList<>();
-                for (int i = 0; i < actions.size(); i++)
-                {
-                    GameAction action = actions.get(i);
-                    int seatIdx = action.getSeatIdx();
-                    if(seatIdx!=seatCount)
-                    {
-                       newActions.add(action);
-                    }
+            if(haveEmpty){
+                for (int i = 0; i < seatNames.size(); i++) {
+                    String seatname = seatNames.valueAt(i);
+                    if(seatname!=null)
+                        MyLog.e(TAG,seatNames.keyAt(i)+"--"+seatname);
                 }
-                actions.clear();
-                actions.addAll(newActions);
+                String json = new Gson().toJson(seatNames);
+                MyLog.e(TAG, "发送的名字3"+json);
+                Package pkg = new Package();
+                pkg.setType(Constant.SOCKET_KNOW_NAME);
+                pkg.setContent(json);
+                Connect.send(pkg);
+                haveEmpty = false;
             }
         }
         saveOtherPlayerCards();//保存玩家show牌的牌型
@@ -444,18 +492,25 @@ public class PokerAnalysisTool {
      private boolean isNewBtnIdx(Bitmap bitmap)
      {
          int curBtnIdx = getJsonMes(ScanTool.ScanBtn(bitmap),"btnIdx");
-         if(curBtnIdx==-1)
+         if(curBtnIdx==-1){
+             noNeedPic = true;
              return false;
+         }else{
+             noNeedPic = false;
+         }
          if(btnIdx==-1)
          {
              btnIdx = curBtnIdx;
          }else{
              if(curBtnIdx != btnIdx)
              {
-                 isBegin = true;
-                 pokerRecord.setButton(btnIdx);
-                 btnIdx = curBtnIdx;
-                 return true;
+                 int seatcount = getJsonMes(ScanTool.ScanSeatCount(bitmap), "seatcount");
+                 if(seatcount==firstSeatCount){
+                     isBegin = true;
+                     pokerRecord.setButton(btnIdx);
+                     btnIdx = curBtnIdx;
+                     return true;
+                 }
              }
          }
          return false;
@@ -480,7 +535,7 @@ public class PokerAnalysisTool {
              os.flush();
              os.close();
          } catch (IOException e) {
-             Log.e(TAG,"保存图片失败！");
+             MyLog.e(TAG,"保存图片失败！");
          }
      }
      private void saveLastEndMoney(Bitmap bitmap)
@@ -490,12 +545,18 @@ public class PokerAnalysisTool {
          {
              String json = ScanTool.ScanSeat(bitmap, i);
              Seat seat = gson.fromJson(json, Seat.class);
-             Log.e(TAG,i+"号位endMoney-->"+seat.getMoney() + " bet-->"+seat.getBet());
+             MyLog.e(TAG,i+"号位endMoney-->"+seat.getMoney() + " bet-->"+seat.getBet());
              GameUser user = gamers.get(i);
-             if(seat.getMoney()<0 || seat.getMoney()>1000000)
-                 seat.setMoney(0);
+
              if(user!=null){
-                 user.setEndMoney(seat.getMoney()+seat.getBet());
+                 if(seat.getMoney()>0 && seat.getMoney()<1000000){
+                     user.setEndMoney(seat.getMoney()+seat.getBet());
+                 }else if(seat.getMoney()==0){
+                     user.setEndMoney(lastSeats.get(i).getMoney());
+                 }else if(seat.getMoney()<0 || seat.getMoney()>1000000){
+                     user.setBeginMoney(0);
+                     user.setEndMoney(0);
+                 }
              }
          }
      }
@@ -517,20 +578,8 @@ public class PokerAnalysisTool {
         tableRecord.setStraddle(straddle);
         tableRecord.setBlindType(blinds);
         tableRecord.setMaxPlayCount(seatCount);
-        Log.e("button",btnIdx+"");
+        MyLog.e("button",btnIdx+"");
         pokerRecord.setPoker(new int[]{card1,card2});
-        if(boards.size()>=3)
-        {
-            pokerRecord.setFlop(new int[]{boards.get(0),boards.get(1),boards.get(2)});
-        }
-        if(boards.size()>=4)
-        {
-            pokerRecord.setTurn(boards.get(3));
-        }
-        if(boards.size()==5)
-        {
-            pokerRecord.setRiver(boards.get(4));
-        }
         pokerRecord.setUsers(users);
         pokerRecord.setActions(actions);
         SaveRecordParam param = new SaveRecordParam();
@@ -546,7 +595,7 @@ public class PokerAnalysisTool {
     }
     public void disposeMoney()
     {
-        Log.e(TAG,"allOnLine-->"+allOnline);
+        MyLog.e(TAG,"allOnLine-->"+allOnline);
         if(!allOnline)
         {
             for (int i = 0; i < playSeats.size(); i++)
@@ -557,6 +606,12 @@ public class PokerAnalysisTool {
                 {
                     break;
                 }
+                GameUser user = gamers.get(seatIdx);
+                if(user != null && (seat.getMoney()<1000000 && seat.getMoney()>0) && (seat.getBet()>0 && seat.getBet()<1000000))
+                {
+                    user.setBeginMoney(seat.getMoney()+seat.getBet());
+                    MyLog.e(TAG,i+"修改beginMoney"+user.getBeginMoney());
+                }
                 if(i==playSeats.size()-1)
                 {
                     allOnline = true;
@@ -564,21 +619,48 @@ public class PokerAnalysisTool {
             }
         }
         if(newBtnIdx){
-            Log.e(TAG,"money初始化");
+            MyLog.e(TAG,"money初始化");
+            gamers.clear();
             for (int i = isWatch; i < seatCount+isWatch; i++)
             {
                 Seat seat = seats.get(i);
                 if(seat!=null && seat.getMoney()>=0)
                 {
                     /*上一手的最后一条记录*/
-                    if(seat.getMoney()>0 || seat.getHidecard()==1){
+                    if((seat.getEmpty()==0 && (seat.getBet()!=0 || seat.getMoney()!=0)) || i==btnIdx
+                            || ((seat.getEmpty()==1 &&(seat.getMoney()>0 && seat.getMoney()<1000000)))){
                         GameUser gamer = new GameUser();
-                        gamer.setBeginMoney(lastSeats.get(i));
+                        gamer.setBeginMoney(seat.getMoney()+seat.getBet());
+                        MyLog.e(TAG,"初始化beginMoney"+gamer.getBeginMoney());
                         gamer.setSeatIdx(i);
                         gamers.put(i,gamer);
+                        if(seatNames.get(i)==null){
+                            seatNames.put(i,"");
+                        }
+                    }else{
+                        if(seat.getEmpty()==1 && seat.getMoney()==0 && seatNames.get(i)!=null){
+                            seatNames.delete(i);
+                        }
                     }
-                    lastSeats.put(i,seat.getMoney());
+                    lastSeats.put(i,seat);
                 }
+            }
+            int btnKeyIdx = gamers.indexOfKey(btnIdx);
+            if(gamers.size()>0){
+                for (int i = btnKeyIdx+1; i < gamers.size()+btnKeyIdx+1; i++) {
+                    int idx = 0;
+                    GameUser gameUser = null;
+                    if(i<gamers.size()){
+                        gameUser = gamers.valueAt(i);
+                    }else{
+                        gameUser = gamers.valueAt(i%gamers.size());
+                    }
+                    if(gameUser!=null){
+                        gameUser.setSeatFlag(CardUtil.getSeatFlag(gamers.size(),i-btnKeyIdx-1));
+                        MyLog.e(TAG,gameUser.toString());
+                    }
+                }
+
             }
         }else{
             if(btnIdx!=-1)
@@ -586,12 +668,15 @@ public class PokerAnalysisTool {
                 if(!canAddAction) {
                     return;
                 }
-                int indexOfValue = playSeats.indexOfValue(btnIdx);
-                for (int i = indexOfValue; i < playSeats.size()+indexOfValue; i++)
+                MyLog.e(TAG,"playseats-->"+playSeats.toString());
+                int beginIdx = playSeats.indexOfKey(btnIdx);
+                int size = boards.size();
+                if(size>0 && size<3)
+                    size = 3;
+                for (int i = beginIdx+1; i < playSeats.size()+beginIdx+1; i++)
                 {
                     int seatIdx = -1;
-                    if(i<playSeats.size())
-                    {
+                    if(i<playSeats.size()){
                         seatIdx = playSeats.valueAt(i);
                     }else{
                         seatIdx = playSeats.valueAt(i%playSeats.size());
@@ -599,112 +684,353 @@ public class PokerAnalysisTool {
                     if(seatIdx==-1)
                         continue;
                     GameUser user = gamers.get(seatIdx);
-                    if(user!=null && TextUtils.isEmpty(user.getSeatFlag()))
-                    {
-                        user.setSeatFlag(CardUtil.getSeatFlag(playSeats.size(),i-indexOfValue));
-                    }
-                    int lastMoney = lastSeats.get(seatIdx);
+                    if(user==null)
+                        continue;
+                    int lastMoney = lastSeats.get(seatIdx).getMoney();
                     Seat seat = seats.get(seatIdx);
                     int money = seat.getMoney();
-                    Log.e(TAG,"seatIdx--"+seatIdx+"  money-->"+money+"  lastMoney-->"+lastMoney);
-                    if(seat.getBet()>lastMoney)
-                    {
+                    MyLog.e(TAG,"seatIdx--"+seatIdx+"  money-->"+money+"  lastMoney-->"+lastMoney);
+                    if(money>1000000){//钱识别错误
                         break;
                     }
-                    if(money>300000){//钱识别错误
-                        break;
-                    }
-                    if(money<lastMoney)
-                    {
-                        int addMoney = lastMoney - money;
-                        if(money>0)
-                        {
-                            GameAction action = new  GameAction();
-                            action.setSeatIdx(seatIdx);
-                            action.setRound(boards.size());
-                            action.setBet(seat.getBet());
-                            action.setAddMoney(addMoney);
-                            Log.e(TAG,"roundIdx--"+boards.size()+" seatIdx--"+seatIdx + "  blinds-->"+blinds+"  lastMoney--"+lastMoney +"  money--"+money+"  bet--"
-                                    +seat.getBet()+"  addMoney-->"+addMoney);
-                            if(seat.getBet()!=0 && addMoney>seat.getBet()){
-                                action.setAddMoney(seat.getBet());
-                                Log.e(TAG,"roundIdx--"+boards.size()+" seatIdx--"+seatIdx + "  blinds-->"+blinds+"  lastMoney--"+lastMoney +"  money--"+money+"  bet--"
-                                        +seat.getBet()+"  addMoney（使用bet作为addMoney）-->"+seat.getBet());
-                            }
-                            actions.add(action);
-                            lastSeats.put(seatIdx,money);
-                            if(seat.getHidecard()==0){
-                                actions.remove(actions.size()-1);  //排除ante动作
-                                Log.e(TAG,"addMoney--->删除前一个位置"+seatIdx + " 动作");
-                                continue;
-                            }
-                            deleteBeforeFoldAction(seatIdx);
-                        }else if(money==0)
-                        {//判断ALLIN 还有手牌，而且下的bet是上一条记录的钱
-                            if(seat.getHidecard()==1 && seat.getBet()==lastMoney)
-                            {
-                                Log.e(TAG,"roundIdx（allIn addMoney）--"+boards.size()+" seatIdx--"+seatIdx+"  lastMoney--"+lastMoney +"  money--"+money+"---changeMoney-->"+(lastMoney-money));
-                                GameAction action = new  GameAction();
-                                action.setSeatIdx(seatIdx);
-                                action.setRound(boards.size());
-                                action.setBet(seat.getBet());
-                                action.setAddMoney(addMoney);
-                                action.setAction(Constant.ACTION_ALLIN);
-                                actions.add(action);
-                                if((actions.size()!=0 && boards.size()<actions.get(actions.size()-1).getRound())){
-                                    actions.remove(actions.size()-1);  //当前所在街不会小于上一条动作的街
-                                }
-                                lastSeats.put(seatIdx,money);
-                            }
-                        }
-                    }else
-                        {
-                        if(allOnline)
-                        {
-                            if((seat.getHidecard()==0 && seatIdx!=0) || (seat.getHidecard()== 0 && seatIdx ==0))
-                            {
-                                if(user!=null && user.getFoldRound()==-1)
-                                {
-                                    if(playerCount>1)
-                                    {
-                                        if(actions.size()!=0){
-                                            GameAction lastAction = actions.get(actions.size() - 1);
-                                            if((lastAction.getRound()==boards.size()) && lastAction.getSeatIdx()==seatIdx){
-                                                //跟最后记录的动作同一个位置不记录fold牌
-                                                continue;
-                                            }
-                                        }
-                                        playerCount--;
-                                        Log.e(TAG,"addMoney seatIdx（changeMoney）-->"+seatIdx + "号位  弃牌");
-                                        GameAction action = new  GameAction();
-                                        action.setSeatIdx(seatIdx);
-                                        action.setRound(boards.size());
-                                        action.setAction(Constant.ACTION_FOLD);
-                                        actions.add(action);
-                                        if(actions.size()!=0 && boards.size()<actions.get(actions.size()-1).getRound()){
-                                            actions.remove(actions.size()-1);  //当前所在街不会小于上一条动作的街
-                                            continue;
-                                        }
-                                        user.setFoldRound(boards.size());
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    saveAction(seat,user,seatIdx,money,lastMoney);
+                    lastSeats.put(seatIdx,seat);
                 }
             }
         }
     }
-    public void deleteBeforeFoldAction(int seatIdx){
-        for (int i = actions.size()-1; i >= 0; i--) {
+    int straddleIdx = 0;
+    /*保存一个动作*/
+    public void saveAction(Seat seat,GameUser user,int seatIdx,int money,int lastMoney){
+        GameAction action = new  GameAction();
+        action.setSeatIdx(seatIdx);
+        int size = boards.size();
+        if(size>0 && size<3)
+            size = 3;
+        action.setRound(size);
+            action.setBet(seat.getBet());
+            if(flag==1){
+                switch (seat.getAction()){
+                    case Constant.ACTION_DYQ_STRADDLE:
+                        if(!haveAddStraddleAction(seatIdx)){
+                            action.setAction(Constant.ACTION_STRADDLE);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dyq(straddle) "+action.toString());
+                            actions.add(action);
+                            straddleIdx++;
+                            changeMoney = blinds*straddleIdx*2;
+                        }
+                        break;
+                    case Constant.ACTION_DYQ_CHECK://看牌
+                        if(!haveAddCheckAction(seatIdx)){
+                            action.setAction(Constant.ACTION_CHECK);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dyq(看牌) "+action.toString());
+                            if(size == 0|| size==3||size==4||size==5)
+                            actions.add(action);
+                        }
+                        break;
+                    case Constant.ACTION_DYQ_CALL://跟注
+                        if(money<lastMoney){
+                            action.setAction(Constant.ACTION_CALL);
+                            action.setAddMoney(lastMoney-money);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dyq(跟注) "+action.toString());
+                            actions.add(action);
+                        }
+                        break;
+                    case Constant.ACTION_OPEN:
+                        if(money!=lastMoney){
+                            action.setAction(Constant.ACTION_OPEN);
+                            action.setAddMoney(lastMoney-money);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dyq(Open) "+action.toString());
+                            if(seat.getBet()<= changeMoney){
+                                changeMoney = seat.getBet()+lastMoney-money;
+                            }else {
+                                changeMoney = seat.getBet();
+                            }
+                            action.setBet(changeMoney);
+                            actions.add(action);
+                        }
+                        break;
+                    case Constant.ACTION_3Bet:
+                        if(money!=lastMoney){
+                            action.setAction(Constant.ACTION_3Bet);
+                            action.setAddMoney(lastMoney-money);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dyq(3Bet) "+action.toString());
+                            if(seat.getBet()<= changeMoney){
+                                changeMoney = seat.getBet()+lastMoney-money;
+                            }else {
+                                changeMoney = seat.getBet();
+                            }
+                            action.setBet(changeMoney);
+                            actions.add(action);
+                        }
+                        break;
+                    case Constant.ACTION_DYQ_RAISE://加注
+                         if(money!=lastMoney){
+                             action.setAction(Constant.ACTION_RAISE);
+                             action.setAddMoney(lastMoney-money);
+                             MyLog.e(TAG,seatIdx+"号位记录动作dyq(加注) "+action.toString());
+                             if(seat.getBet()<= changeMoney){
+                                 changeMoney = seat.getBet()+lastMoney-money;
+                             }else {
+                                 changeMoney = seat.getBet();
+                             }
+                             action.setBet(changeMoney);
+                             actions.add(action);
+                         }
+                        break;
+                    case Constant.ACTION_DYQ_BET:
+                        if(money!=lastMoney){
+                            action.setAction(Constant.ACTION_BET);
+                            action.setAddMoney(lastMoney-money);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dyq(下注) "+action.toString());
+                            if(seat.getBet()<= changeMoney){
+                                changeMoney = seat.getBet()+lastMoney-money;
+                            }else {
+                                changeMoney = seat.getBet();
+                            }
+                            action.setBet(changeMoney);
+                            actions.add(action);
+                        }
+                        break;
+                    case Constant.ACTION_DYQ_ALLIN://全压
+                        if(lastMoney>money){
+                            action.setAction(Constant.ACTION_ALLIN);
+                            action.setAddMoney(lastMoney);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dyq(allin) "+action.toString());
+                            actions.add(action);
+                        }
+                        break;
+                    case Constant.ACTION_DYQ_FOLD://弃牌
+                        if(user.getFoldRound()==-1){
+                            action.setAction(Constant.ACTION_FOLD);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dyq(弃牌) "+action.toString());
+                            actions.add(action);
+                            user.setFoldRound(boards.size());
+                        }
+                        break;
+                    case -1:
+                        if(seat.getHidecard()==1 && changeMoney>0){
+                            if(money<lastMoney){
+                                if(seat.getBet()==changeMoney || (seat.getBet()==0 && lastMoney-money==changeMoney)
+                                        || (seat.getBet()>0 && seat.getBet()<1000000 && (seat.getBet()+lastMoney-money==changeMoney))){
+                                    action.setAction(Constant.ACTION_CALL);
+                                    action.setAddMoney(lastMoney-money);
+                                    MyLog.e(TAG,seatIdx+"号位记录动作dyq[action=-1 (跟注) ] "+action.toString());
+                                    actions.add(action);
+                                }else if(seat.getBet()>changeMoney || (seat.getBet()==0 && lastMoney-money>changeMoney)
+                                        || (seat.getBet()>0 && seat.getBet()<1000000 && (seat.getBet()+lastMoney-money>changeMoney))){
+                                    action.setAction(Constant.ACTION_RAISE);
+                                    action.setAddMoney(lastMoney-money);
+                                    MyLog.e(TAG,seatIdx+"号位记录动作dyq[action=-1 (加注|Open|下注) ] "+action.toString());
+                                    changeMoney = lastMoney-money+seat.getBet();
+                                    if(seat.getBet()==0)
+                                        changeMoney = lastMoney-money;
+                                    action.setBet(changeMoney);
+                                    actions.add(action);
+                                }
+                            }
+                        }
+                        break;
+                }
+            }else if(flag==0){//德扑圈
+                switch (seat.getAction()){
+                    case Constant.ACTION_DPQ_STRADDLE:
+                        if(!haveAddStraddleAction(seatIdx)){
+                            action.setAction(Constant.ACTION_STRADDLE);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dpq(straddle) "+action.toString());
+                            actions.add(action);
+                            changeMoney = seat.getBet();
+                        }
+                        break;
+                    case Constant.ACTION_DPQ_CHECK://看牌
+                        if(seat.getBet()==0 && money==lastMoney){
+                            if(!haveAddCheckAction(seatIdx)){
+                                action.setAction(Constant.ACTION_CHECK);
+                                MyLog.e(TAG,seatIdx+"号位记录动作dpq(看牌) "+action.toString());
+                                if(size == 0|| size==3||size==4||size==5)
+                                    actions.add(action);
+                            }
+                        }else{
+                            if(money<lastMoney){
+                                action.setAction(Constant.ACTION_CALL);
+                                action.setAddMoney(lastMoney-money);
+                                MyLog.e(TAG,seatIdx+"号位记录动作dpq(看牌-->跟注) "+action.toString());
+                                actions.add(action);
+                            }
+                        }
+                        break;
+                    case Constant.ACTION_DPQ_CALL://跟注
+                        if(money!=lastMoney){
+                            action.setAction(Constant.ACTION_CALL);
+                            action.setAddMoney(lastMoney-money);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dpq(跟注) "+action.toString());
+                            actions.add(action);
+                        }
+                        break;
+                    case Constant.ACTION_DPQ_RAISE://加注
+                        if(money!=lastMoney) {
+                            action.setAction(Constant.ACTION_RAISE);
+                            action.setAddMoney(lastMoney - money);
+                            MyLog.e(TAG, seatIdx + "号位记录动作dpq(加注) " + action.toString());
+                            actions.add(action);
+                            changeMoney = seat.getBet();
+                        }
+                        break;
+                    case Constant.ACTION_DPQ_ALLIN://全压
+                        if(money<lastMoney){
+                            action.setAction(Constant.ACTION_ALLIN);
+                            action.setAddMoney(lastMoney);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dpq(allin) "+action.toString());
+                            actions.add(action);
+                            if(seat.getBet()>changeMoney){
+                                changeMoney = seat.getBet();
+                                action.setAction(Constant.ACTION_RAISE);
+                            }else if(seat.getBet()<=changeMoney){
+                                action.setAction(Constant.ACTION_CALL);
+                            }
+                        }
+                        break;
+                    case Constant.ACTION_DPQ_FOLD://弃牌
+                        if(user.getFoldRound()==-1){
+                            action.setAction(Constant.ACTION_FOLD);
+                            MyLog.e(TAG,seatIdx+"号位记录动作dpq(弃牌) "+action.toString());
+                            actions.add(action);
+                            user.setFoldRound(size);
+                        }
+                        break;
+                    case -1:
+                        if(money<lastMoney && (money>0 && money<1000000) && (lastMoney>0 && lastMoney<1000000)){
+                           if(lastMoney-money<changeMoney){
+                               if(actions.size()!=0){
+                                   action.setAction(Constant.ACTION_CALL);
+                                   action.setAddMoney(lastMoney-money);
+                                   MyLog.e(TAG,seatIdx+"号位记录动作dpq(action=-1跟注) "+action.toString());
+                                   actions.add(action);
+                               }
+                           }else if(seat.getBet()>changeMoney){
+                               action.setAction(Constant.ACTION_RAISE);
+                               action.setAddMoney(lastMoney - money);
+                               MyLog.e(TAG, seatIdx + "号位记录动作dpq(action=-1加注) " + action.toString());
+                               actions.add(action);
+                               changeMoney = seat.getBet();
+                               if(seat.getBet()==0)
+                                   changeMoney = lastMoney-money;
+                           }
+                        }
+                        if(!noHideCard){
+                            if(user.getFoldRound()==-1 && seat.getHidecard()==0 && seat.getMoney()>0){
+                                action.setAction(Constant.ACTION_FOLD);
+                                MyLog.e(TAG,seatIdx+"号位记录动作dpq(action=-1弃牌) "+action.toString());
+                                actions.add(action);
+                                user.setFoldRound(size);
+                            }
+                        }
+                        break;
+                }
+            }else if(flag>1){
+                switch (seat.getAction()){
+                    case Constant.ACTION_PKBL_CHECK://看牌
+                        if(!haveAddCheckAction(seatIdx)){
+                            action.setAction(Constant.ACTION_CHECK);
+                            MyLog.e(TAG,seatIdx+"号位记录动作pkbl(看牌) "+action.toString());
+                            if(size == 0|| size==3||size==4||size==5)
+                            actions.add(action);
+                        }
+                        break;
+                    case Constant.ACTION_PKBL_CALL://跟注
+                        if(money<lastMoney){
+                            if(seat.getBet()<=changeMoney){
+                                action.setAction(Constant.ACTION_CALL);
+                                action.setAddMoney(lastMoney-money);
+                                MyLog.e(TAG,seatIdx+"号位记录动作pkbl(跟注) "+action.toString());
+                                actions.add(action);
+                            }else if(seat.getBet()>changeMoney){
+                                action.setAction(Constant.ACTION_RAISE);
+                                action.setAddMoney(lastMoney - money);
+                                MyLog.e(TAG, seatIdx + "号位记录动作pkbl(跟注-->加注) " + action.toString());
+                                actions.add(action);
+                                changeMoney = seat.getBet();
+                                if(seat.getBet()==0)
+                                    changeMoney = lastMoney-money;
+                            }
+
+                        }
+                        break;
+                    case Constant.ACTION_PKBL_RAISE://加注
+                        if(money!=lastMoney) {
+                            action.setAction(Constant.ACTION_RAISE);
+                            action.setAddMoney(lastMoney - money);
+                            MyLog.e(TAG, seatIdx + "号位记录动作pkbl(加注) " + action.toString());
+                            actions.add(action);
+                            changeMoney = seat.getBet();
+                            if(seat.getBet()<changeMoney)
+                                changeMoney = lastMoney-money+seat.getBet();
+                        }
+                        break;
+                    case Constant.ACTION_PKBL_ALLIN://全压
+                        if(money<lastMoney){
+                            action.setAction(Constant.ACTION_ALLIN);
+                            action.setAddMoney(lastMoney);
+                            MyLog.e(TAG,seatIdx+"号位记录动作pkbl(allin) "+action.toString());
+                            actions.add(action);
+                            if(seat.getBet()>changeMoney)
+                                changeMoney = seat.getBet();
+                        }
+                        break;
+                    case Constant.ACTION_PKBL_FOLD://弃牌
+                        if(user.getFoldRound()==-1){
+                            action.setAction(Constant.ACTION_FOLD);
+                            MyLog.e(TAG,seatIdx+"号位记录动作pkbl(弃牌) "+action.toString());
+                            actions.add(action);
+                            user.setFoldRound(boards.size());
+                        }
+                        break;
+                    case -1:
+                        if(!noHideCard){
+                            if(user.getFoldRound()==-1 && seat.getHidecard()==0 && seat.getMoney()>0){
+                                action.setAction(Constant.ACTION_FOLD);
+                                MyLog.e(TAG,seatIdx+"号位记录动作pkbl(action=-1弃牌) "+action.toString());
+                                actions.add(action);
+                                user.setFoldRound(boards.size());
+                            }
+                            if(money<lastMoney && (money>0 && money<1000000) && (lastMoney>0 && lastMoney<1000000) && seat.getHidecard()==1) {
+                                if (lastMoney - money < changeMoney) {
+                                    action.setAction(Constant.ACTION_CALL);
+                                    action.setAddMoney(lastMoney - money);
+                                    MyLog.e(TAG, seatIdx + "号位记录动作pkbl(action=-1跟注) " + action.toString());
+                                    actions.add(action);
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+    }
+    /*判断在一个位置是否有straddle*/
+    public boolean haveAddStraddleAction(int seatIdx){
+        for (int i = 0; i < actions.size(); i++) {
             GameAction action = actions.get(i);
-            if(action.getAction()==Constant.ACTION_FOLD && action.getSeatIdx()==seatIdx){
-                actions.remove(i);
-                playerCount++;
-                gamers.get(seatIdx).setFoldRound(-1);
-                break;
+            if(action.getSeatIdx()==seatIdx && action.getAction()==Constant.ACTION_STRADDLE){
+                return true;
             }
         }
+        return false;
+    }
+    /*判断在一个位置是否有check*/
+    public boolean haveAddCheckAction(int seatIdx){
+        for (int i = 0; i < actions.size(); i++) {
+            GameAction action = actions.get(i);
+            int size = boards.size();
+            if(size==1||size==2)
+                size = 3;
+            if(action.getSeatIdx()==seatIdx && (action.getAction()==Constant.ACTION_CHECK || action.getAction()==Constant.ACTION_CALL)
+                    && action.getRound()== size){
+                //如果在一圈中已经有看牌或者跟注，就不可能再添加看牌动作
+                return true;
+            }
+
+        }
+        return false;
     }
     /*判断是否有大小盲*/
     public boolean haveHalfBlindsAndBlinds(){
@@ -712,20 +1038,28 @@ public class PokerAnalysisTool {
         {//有blinds存在的时候
             boolean haveHalfBlinds = false;
             boolean haveBlinds = false;
+            int blindIdx = -1;
+            int halfBlindIdx = -1;
             for (int i = 0; i < seats.size(); i++)
             {
                 Seat seat = seats.valueAt(i);
+                int seatIdx = seats.keyAt(i);
                 if(seat.getBet()==blinds)
                 {
                     haveBlinds = true;
+                    blindIdx = seatIdx;
                 }
                 if(seat.getBet() == blinds%2)
                 {
                     haveHalfBlinds = true;
+                    halfBlindIdx = seatIdx;
                 }
             }
             if(haveBlinds && haveHalfBlinds)
             {
+                //重新定义大小盲的筹码
+                lastSeats.put(blindIdx,seats.get(blindIdx));
+                lastSeats.put(halfBlindIdx,seats.get(halfBlindIdx));
                 return true;
             }
         }
@@ -742,7 +1076,7 @@ public class PokerAnalysisTool {
         seatNames = new SparseArray();
         boards = new ArrayList<Integer>();
         seats = new SparseArray<Seat>();
-        lastSeats = new SparseIntArray();
+        lastSeats = new SparseArray();
         tableRecord = new TableRecord();
         pokerRecord = new PokerRecord();
         actions = new ArrayList<>();
@@ -750,6 +1084,7 @@ public class PokerAnalysisTool {
         gamers = new SparseArray<GameUser>();
         service = Executors.newCachedThreadPool();
         service.submit(new ScanNameThread());
+        firstSeatCount = -1;
     }
     public static PokerAnalysisTool getInstance()
     {
@@ -777,10 +1112,9 @@ public class PokerAnalysisTool {
                     try {
                         bitmap = bitmaps.take();
                         getSeatNames(bitmap);
-                        Log.e(TAG,"识别名字name");
 //                        saveImgToSDCard(bitmap,Constant.TEST_NAME);
                     } catch (InterruptedException e) {
-                        Log.e(TAG,"线程获取任务失败");
+                        MyLog.e(TAG,"线程获取任务失败");
                     }
                 }else{
                     try {

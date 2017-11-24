@@ -5,7 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import com.ruilonglai.texas_scan.util.MyLog;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class SystemInfoUtil {
                 infos.put("versionCode", versionCode);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "NameNotFoundException", e);
+            MyLog.e(TAG, "NameNotFoundException", e);
         }
         Field[] fields = Build.class.getDeclaredFields();
         for (Field field : fields) {
@@ -41,7 +41,7 @@ public class SystemInfoUtil {
                 field.setAccessible(true);
                 infos.put(field.getName(), field.get(null).toString());
             } catch (Exception e) {
-                Log.e(TAG, e.toString());
+                MyLog.e(TAG, e.toString());
             }
         }
         return infos;

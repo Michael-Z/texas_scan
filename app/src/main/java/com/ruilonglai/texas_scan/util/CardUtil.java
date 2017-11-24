@@ -235,7 +235,7 @@ public class CardUtil {
             36.76,37.23,36.51,36.6,36.34,35.74,35.61,35.08,34.82,35.4,34.93,34.68,34.64,
             33.95,33.99,33.67,33.16,32.9,33.12,32.08,31.68,31.21,30.91,30.14,29.29}
     };
-    private static int[][] imgs = {
+    public static int[][] imgs = {
             {R.mipmap.heitao_2,R.mipmap.heitao_3,R.mipmap.heitao_4,R.mipmap.heitao_5,R.mipmap.heitao_6,R.mipmap.heitao_7,
                     R.mipmap.heitao_8,R.mipmap.heitao_9,R.mipmap.heitao_10,R.mipmap.heitao_j,R.mipmap.heitao_q,R.mipmap.heitao_k,R.mipmap.heitao_a}
             ,
@@ -249,15 +249,15 @@ public class CardUtil {
                     R.mipmap.fangkuai_8,R.mipmap.fangkuai_9,R.mipmap.fangkuai_10,R.mipmap.fangkuai_j,R.mipmap.fangkuai_q,R.mipmap.fangkuai_k,R.mipmap.fangkuai_a}
     };
     static String[] cardNames = {"2","3","4","5","6","7","8","9","T","J","Q","K","A"};
-    private final static String[][] seatFlags= {{},{},
-            {"BTN","BB"},
-            {"BTN","SB","BB"},
-            {"BTN","SB","BB","CO"},
-            {"BTN","SB","BB","UTG","CO"},
-            {"BTN","SB","BB","UTG","HJ","CO"},
-            {"BTN","SB","BB","UTG","UTG+1","HJ","CO"},
-            {"BTN","SB","BB","UTG","UTG+1","MP","HJ","CO"},
-            {"BTN","SB","BB","UTG","UTG+1","MP","MP+1","HJ","CO"}};
+    public final static String[][] seatFlags= {{},{},
+            {"BB","BTN"},
+            {"SB","BB","BTN"},
+            {"SB","BB","CO","BTN"},
+            {"SB","BB","UTG","CO","BTN"},
+            {"SB","BB","UTG","HJ","CO","BTN"},
+            {"SB","BB","UTG","UTG+1","HJ","CO","BTN"},
+            {"SB","BB","UTG","UTG+1","MP","HJ","CO","BTN"},
+            {"SB","BB","UTG","UTG+1","MP","MP+1","HJ","CO","BTN"}};
     public static double getWinPercent(int[] cards,int poker1,int poker2,int playerCount){
         if(poker1==-1 || poker2==-1){
             return 0.0;
